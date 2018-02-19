@@ -11,7 +11,7 @@ const { fromString, toString } = require('..');
 
 const { Readable: ReadableStream } = stream;
 
-describe('stream functions', () => {
+describe('stream lib', () => {
   
   const text = 'test-string';
   let stream;

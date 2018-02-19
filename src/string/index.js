@@ -21,12 +21,22 @@ const template = R.curry((tmpl, variables) => {
   });
 });
 
+// encode a string to base64
+// string -> string
+const toBase64 = (str) => new Buffer(str).toString('base64');
+
+// decode a base64 string
+// string -> string
+const parseBase64 = (base64str) => new Buffer(base64str, 'base64').toString('utf8');
+
 
 module.exports = {
-  escapeRegExpStr,
-  localeCompare,
   capitalize,
   charAt,
-  toUpperCase,
+  escapeRegExpStr,
+  localeCompare,
+  parseBase64,
   template,
+  toBase64,
+  toUpperCase,
 };

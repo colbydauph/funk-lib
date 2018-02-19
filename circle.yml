@@ -1,0 +1,12 @@
+machine:
+
+  timezone:
+    Etc/UTC
+
+  node:
+    version:
+      8.9.1
+      
+test:
+  override:
+    - npm run verify

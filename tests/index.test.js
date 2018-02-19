@@ -9,8 +9,18 @@ const index = require('..');
 const objectModule = require('../src/object');
 const streamModule = require('../src/stream');
 const stringModule = require('../src/string');
+const cryptoModule = require('../src/crypto');
+const datetimeModule = require('../src/datetime');
 
 describe('index', () => {
+  
+  it('should export the crypto module', () => {
+    expect(index.crypto).to.eql(cryptoModule);
+  });
+  
+  it('should export the datetime module', () => {
+    expect(index.datetime).to.eql(datetimeModule);
+  });
   
   it('should export the object module', () => {
     expect(index.object).to.eql(objectModule);

@@ -9,7 +9,6 @@
   "contributors": [
     "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)"
   ],
-  "main": "./src",
   "dependencies": {
     "is": "github:colbydauph/is",
     "ramda": "~0.25.0"

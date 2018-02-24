@@ -6,12 +6,12 @@ const { expect } = require('chai');
 // local
 const index = require('..');
 
-const asyncModule = require('../src/async');
-const objectModule = require('../src/object');
-const streamModule = require('../src/stream');
-const stringModule = require('../src/string');
-const cryptoModule = require('../src/crypto');
-const datetimeModule = require('../src/datetime');
+const asyncModule = require('../async');
+const objectModule = require('../object');
+const streamModule = require('../stream');
+const stringModule = require('../string');
+const cryptoModule = require('../crypto');
+const datetimeModule = require('../datetime');
 
 describe('index', () => {
   

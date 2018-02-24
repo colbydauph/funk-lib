@@ -2,6 +2,40 @@
 
 // modules
 const R = require('ramda');
+const { isPromise } = require('is');
+
+// @async number -> undefined
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+// wraps a function to always return a promise
+const toAsync = (func) => async (...args) => func(...args);
+
+// inverse of callbackify
+const promisify = (func) => (...args) => {
+  return new Promise((resolve, reject) => {
+    func(...args, (err, data) => {
+      // eslint-disable-next-line no-unused-expressions
+      err ? reject(err) : resolve(data);
+    });
+  });
+};
+
+// inverse of promisify
+const callbackify = (func) => (...args) => {
+  const cb = args.pop();
+  try {
+    let output = func(...args);
+    // all callbacks async
+    if (!isPromise(output)) {
+      output = delay(0).then(R.always(output));
+    }
+    output
+      .then((data) => cb(null, data))
+      .catch((err) => cb(err));
+  } catch (err) {
+    cb(err);
+  }
+};
 
 // @async (parallel)
 // predicate -> iterable -> iterable
@@ -39,9 +73,13 @@ const reduce = R.curry(async (pred, init, iterable) => {
 });
 
 module.exports = {
+  callbackify,
+  delay,
   filter,
   flatMap,
   forEach,
   map,
+  promisify,
   reduce,
+  toAsync,
 };

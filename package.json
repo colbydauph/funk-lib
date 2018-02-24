@@ -11,6 +11,7 @@
   ],
   "main": "./src",
   "dependencies": {
+    "is": "github:colbydauph/is",
     "ramda": "~0.25.0"
   },
   "devDependencies": {
@@ -23,7 +24,8 @@
     "sinon": "~4.0.1"
   },
   "scripts": {
-    "test": "mocha --reporter=list --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' ! -path '*example*' -name '*.test.js') --",
+    "test": "mocha --reporter=list --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
+    "test:watch": "mocha --watch --reporter=min --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "lint": "eslint --max-warnings=10 $(find . ! -path '*node_modules*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",
     "cover": "nyc --check-coverage npm test",
     "verify": "npm run lint && npm run cover"

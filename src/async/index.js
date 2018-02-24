@@ -4,6 +4,8 @@
 const R = require('ramda');
 const { isPromise } = require('is');
 
+const props = Promise.props;
+
 // @async number -> undefined
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -61,7 +63,7 @@ const filter = R.curry(async (pred, iterable) => {
 // predicate -> iterable -> iterable
 const flatMap = R.curry(async (pred, iterable) => {
   const arrs = await map(pred, iterable);
-  return [].concat(...arrs);
+  return R.chain(R.identity, arrs);
 });
 
 // @async (series)
@@ -80,6 +82,7 @@ module.exports = {
   forEach,
   map,
   promisify,
+  props,
   reduce,
   toAsync,
 };

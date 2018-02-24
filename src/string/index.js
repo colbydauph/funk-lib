@@ -12,7 +12,7 @@ const capitalize = (str) => toUpperCase(charAt(0, str)) + str.slice(1);
 // eslint-disable-next-line no-useless-escape
 const escapeRegExpStr = R.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
-// string templates matching(ish) js template literals
+// reasonably similar to js template literals
 // template('my name is ${ name }', { name: 'John' })
 // string -> object -> string
 const template = R.curry((tmpl, variables) => {

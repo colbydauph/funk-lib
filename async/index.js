@@ -25,18 +25,11 @@ const promisify = (func) => (...args) => {
 // inverse of promisify
 const callbackify = (func) => (...args) => {
   const cb = args.pop();
-  try {
-    let output = func(...args);
-    // all callbacks async
-    if (!isPromise(output)) {
-      output = delay(0).then(R.always(output));
-    }
-    output
-      .then((data) => cb(null, data))
-      .catch((err) => cb(err));
-  } catch (err) {
-    cb(err);
-  }
+  Promise
+    .resolve(args)
+    .then((args) => func(...args))
+    .then((res) => cb(null, res))
+    .catch((err) => cb(err));
 };
 
 // @async (parallel)

@@ -5,6 +5,7 @@ const R = require('ramda');
 
 const localeCompare = R.invoker(1, 'localeCompare');
 const toUpperCase = R.invoker(0, 'toUpperCase');
+const toLowerCase = R.invoker(0, 'toLowerCase');
 const charAt = R.invoker(1, 'charAt');
 const capitalize = (str) => toUpperCase(charAt(0, str)) + str.slice(1);
 
@@ -38,5 +39,6 @@ module.exports = {
   parseBase64,
   template,
   toBase64,
+  toLowerCase,
   toUpperCase,
 };

@@ -29,8 +29,14 @@ const mapValues = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [key, pred(value)], obj);
 });
 
+const deepFreeze = (obj) => {
+  Object.freeze(obj);
+  R.forEach(deepFreeze, R.values(obj));
+  return obj;
+};
 
 module.exports = {
+  deepFreeze,
   mapKeys,
   mapPairs,
   mapValues,

@@ -4,9 +4,47 @@
 const { expect } = require('chai');
 
 // local
-const { pickAs } = require('..');
+const { deepFreeze, pickAs } = require('..');
 
 describe('object lib', () => {
+  
+  describe('deepFreeze', () => {
+    
+    let obj;
+    beforeEach(() => {
+      obj = {
+        a: 1,
+        b: true,
+        c: [2, { d: 3 }],
+        d: {
+          e: undefined,
+          f: Symbol('g'),
+        },
+      };
+    });
+    
+    it('should deeply freeze', () => {
+      deepFreeze(obj);
+      
+      expect(() => {
+        obj.a = 2;
+      }).to.throw(Error);
+      
+      expect(() => {
+        obj.c[0] = 3;
+      }).to.throw(Error);
+      
+      expect(() => {
+        obj.c[1].e = 4;
+      }).to.throw(Error);
+      
+      expect(() => {
+        obj.d.e = 5;
+      }).to.throw(Error);
+      
+    });
+    
+  });
 
   describe('pickAs', () => {
     

@@ -2,7 +2,6 @@
 
 // modules
 const R = require('ramda');
-const { isPromise } = require('is');
 
 const props = Promise.props;
 

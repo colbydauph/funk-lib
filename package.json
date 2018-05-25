@@ -32,7 +32,7 @@
   },
   "nyc": {
     "statements": 90,
-    "branches": 70,
+    "branches": 75,
     "functions": 80,
     "lines": 95,
     "reporter": [
@@ -66,5 +66,5 @@
     "url": "https://github.com/colbydauph/funk-lib/issues"
   },
   "private": true,
-  "license": "UNLICENSED"
+  "license": "MIT"
 }

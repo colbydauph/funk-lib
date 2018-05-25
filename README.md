@@ -19,7 +19,7 @@ const { mapKeys } = require('funk-lib/object');
 | command      | description   |
 |--------------|---------------|
 | `cover`      | Run test coverage |
-| `init`       | [Re]]Install deps |
+| `init`       | Re/Install deps |
 | `lint`       | Lint the source |
 | `test:watch` | Run tests on change |
 | `test`       | Run tests |

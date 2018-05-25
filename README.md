@@ -9,7 +9,7 @@ Functional JavaScript Utilities
 
 | command      | description   |
 |--------------|---------------|
-| `test`       | Run tests *(source + CF template)* |
+| `test`       | Run tests |
 | `test:watch` | Run tests on change |
 | `cover`      | Run test coverage |
 | `lint`       | Lint the source |

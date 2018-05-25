@@ -16,13 +16,14 @@
   "devDependencies": {
     "chai": "~4.1.2",
     "chai-as-promised": "~7.1.1",
-    "eslint": "~4.9.0",
+    "eslint": "~4.19.1",
     "eslint-config-defaults": "github:colbydauph/eslint-config-defaults#1.1.0",
-    "mocha": "~4.0.1",
-    "nyc": "~11.2.1",
-    "sinon": "~4.0.1"
+    "mocha": "~5.2.0",
+    "nyc": "~11.8.0",
+    "sinon": "~5.0.10"
   },
   "scripts": {
+    "init": "rm -rf node_modules && npm install",
     "test": "mocha --reporter=list --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "mocha --watch --reporter=min --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "lint": "eslint --max-warnings=10 $(find . ! -path '*node_modules*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",
@@ -30,10 +31,10 @@
     "verify": "npm run lint && npm run cover"
   },
   "nyc": {
-    "statements": 80,
-    "branches": 0,
-    "functions": 50,
-    "lines": 90,
+    "statements": 90,
+    "branches": 70,
+    "functions": 80,
+    "lines": 95,
     "reporter": [
       "html",
       "text-summary"

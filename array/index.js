@@ -2,8 +2,11 @@
 
 const R = require('ramda');
 
+// Array<A> -> Object<K, A>
+const toObj = R.pipe(R.toPairs, R.fromPairs);
+
 // (A -> B) -> Array<A> -> Object<B, A>
-const toObjWith = R.curry((pred, arr) => {
+const toObjBy = R.curry((pred, arr) => {
   return R.fromPairs(R.map((el) => [pred(el), el], arr));
 });
 
@@ -13,5 +16,6 @@ const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 module.exports = {
   sample,
-  toObjWith,
+  toObj,
+  toObjBy,
 };

@@ -4,11 +4,25 @@
 const { expect } = require('chai');
 
 // local
-const { toObjWith, sample } = require('..');
+const { toObjBy, toObj, sample } = require('..');
 
 describe('array lib', () => {
   
-  describe('toObjWith()', () => {
+  describe('toObj()', () => {
+    
+    it('should key obj by index', () => {
+      const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      const expected = {
+        0: arr[0],
+        1: arr[1],
+        2: arr[2],
+      };
+      expect(toObj(arr)).to.eql(expected);
+    });
+    
+  });
+  
+  describe('toObjBy()', () => {
     
     it('should key obj by pred', () => {
       const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
@@ -18,7 +32,7 @@ describe('array lib', () => {
         2: arr[1],
         3: arr[2],
       };
-      expect(toObjWith(pred, arr)).to.eql(expected);
+      expect(toObjBy(pred, arr)).to.eql(expected);
     });
     
   });

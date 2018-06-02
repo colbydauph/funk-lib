@@ -3,8 +3,6 @@
 // modules
 const R = require('ramda');
 
-const props = Promise.props;
-
 // @async number -> undefined
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -65,6 +63,15 @@ const reduce = R.curry(async (pred, init, iterable) => {
   for (const el of iterable) result = await pred(result, el);
   return result;
 });
+
+// @async (parallel)
+// object -> object
+const props = async (obj) => {
+  const out = await map(async ([key, promise]) => {
+    return [key, await promise];
+  }, R.toPairs(obj));
+  return R.fromPairs(out);
+};
 
 module.exports = {
   callbackify,

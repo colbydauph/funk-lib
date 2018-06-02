@@ -1,6 +1,9 @@
 'use strict';
 
+// modules
 const R = require('ramda');
+
+// local
 const { mapValues } = require('../object');
 
 // string -> { r, g, b }

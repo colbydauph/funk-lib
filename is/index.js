@@ -3,8 +3,6 @@
 // modules
 const R = require('ramda');
 
-// const nonePass = R.pipe(R.anyPass, R.complement);
-
 const { isNaN } = Number;
 const { isArray } = Array;
 const { isBuffer } = Buffer;

@@ -4,7 +4,7 @@ Functional JavaScript Utilities
 
 ## Install
 ```shell
-$ npm i -P github:colbydauph/funk-lib#0.1.0
+$ npm i -P github:colbydauph/funk-lib#0.2.0
 ```
 
 ## Import
@@ -21,6 +21,6 @@ const { mapKeys } = require('funk-lib/object');
 | `cover`      | Run test coverage |
 | `init`       | Re/Install deps |
 | `lint`       | Lint the source |
-| `test:watch` | Run tests on change |
 | `test`       | Run tests |
+| `test:watch` | Run tests on change |
 | `verify`     | Verify linting, tests, coverage |

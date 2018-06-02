@@ -4,16 +4,21 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const R = require('ramda');
-const { isPromise } = require('is');
+
+// local
+const { isPromise } = require('../../is');
+const { random } = require('../../number');
 
 // local
 const {
   callbackify,
+  delay,
   filter,
   flatMap,
   forEach,
   map,
   promisify,
+  props,
   reduce,
   toAsync,
 } = require('..');
@@ -90,6 +95,13 @@ describe('async lib', () => {
   });
   
   describe('delay', () => {
+    
+    it('should resolve after n ms', async () => {
+      const start = Date.now();
+      await delay(100);
+      const end = Date.now();
+      expect(end - start).to.be.closeTo(100, 10);
+    });
     
   });
   
@@ -184,6 +196,16 @@ describe('async lib', () => {
       expect(stub.callCount).to.eql(5);
     });
     
+    it('should run in parallel', async () => {
+      const arr = [1, 2, 3, 4, 5];
+      const order = [];
+      await forEach(async (item) => {
+        await delay(random(0, 10));
+        order.push(item);
+      }, arr);
+      expect(order).to.not.eql(arr);
+    });
+    
   });
   
   describe('map', () => {
@@ -214,6 +236,16 @@ describe('async lib', () => {
       expect(pred.callCount).to.eql(5);
     });
     
+    it('should run in parallel', async () => {
+      const arr = [1, 2, 3, 4, 5];
+      const order = [];
+      await map(async (item) => {
+        await delay(random(0, 10));
+        order.push(item);
+      }, arr);
+      expect(order).to.not.eql(arr);
+    });
+    
   });
   
   describe('promisify', () => {
@@ -239,6 +271,36 @@ describe('async lib', () => {
       await expect(promisify((one, done) => done(error))(1))
         .to.be.rejectedWith(error);
     });
+    
+  });
+  
+  describe('props', () => {
+    
+    it('should resolve object values', async () => {
+      const input = {
+        one: Promise.resolve(1),
+        two: Promise.resolve(2),
+        three: Promise.resolve(3),
+      };
+      const output = await props(input);
+      expect(output).to.eql({
+        one: 1,
+        two: 2,
+        three: 3,
+      });
+    });
+    
+    it('should reject if any promise rejects', async () => {
+      const err = Error('oops');
+      const input = {
+        one: Promise.resolve(1),
+        two: Promise.reject(err),
+        three: Promise.resolve(3),
+      };
+      await expect(props(input)).to.be.rejectedWith(err);
+    });
+    
+    it('should run in parallel');
     
   });
   

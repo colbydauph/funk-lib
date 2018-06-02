@@ -9,7 +9,6 @@ const isDataUrl = R.test(DATA_URL_REGEXP);
 
 // dataurl -> { mediatype, data, base64 }
 const parseDataUrl = (url) => {
-  if (!isDataUrl(url)) return {};
   const [
     // eslint-disable-next-line no-unused-vars
     _,

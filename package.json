@@ -30,9 +30,9 @@
     "verify": "npm run lint && npm run cover"
   },
   "nyc": {
-    "statements": 90,
-    "branches": 75,
-    "functions": 80,
+    "statements": 95,
+    "branches": 90,
+    "functions": 95,
     "lines": 95,
     "reporter": [
       "html",

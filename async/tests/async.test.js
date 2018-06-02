@@ -7,10 +7,12 @@ const R = require('ramda');
 
 // local
 const { isPromise } = require('../../is');
+const { random } = require('../../number');
 
 // local
 const {
   callbackify,
+  delay,
   filter,
   flatMap,
   forEach,
@@ -93,6 +95,13 @@ describe('async lib', () => {
   });
   
   describe('delay', () => {
+    
+    it('should resolve after n ms', async () => {
+      const start = Date.now();
+      await delay(100);
+      const end = Date.now();
+      expect(end - start).to.be.closeTo(100, 10);
+    });
     
   });
   
@@ -187,6 +196,16 @@ describe('async lib', () => {
       expect(stub.callCount).to.eql(5);
     });
     
+    it('should run in parallel', async () => {
+      const arr = [1, 2, 3, 4, 5];
+      const order = [];
+      await forEach(async (item) => {
+        await delay(random(0, 10));
+        order.push(item);
+      }, arr);
+      expect(order).to.not.eql(arr);
+    });
+    
   });
   
   describe('map', () => {
@@ -217,7 +236,15 @@ describe('async lib', () => {
       expect(pred.callCount).to.eql(5);
     });
     
-    it('should run in parallel');
+    it('should run in parallel', async () => {
+      const arr = [1, 2, 3, 4, 5];
+      const order = [];
+      await map(async (item) => {
+        await delay(random(0, 10));
+        order.push(item);
+      }, arr);
+      expect(order).to.not.eql(arr);
+    });
     
   });
   

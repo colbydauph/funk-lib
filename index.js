@@ -7,6 +7,7 @@ const color = require('./color');
 const crypto = require('./crypto');
 const datetime = require('./datetime');
 const is = require('./is');
+const number = require('./number');
 const object = require('./object');
 const proc = require('./process');
 const stream = require('./stream');
@@ -21,6 +22,7 @@ module.exports = {
   crypto,
   datetime,
   is,
+  number,
   object,
   process: proc,
   stream,

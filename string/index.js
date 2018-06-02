@@ -14,7 +14,6 @@ const capitalize = (str) => toUpperCase(charAt(0, str)) + str.slice(1);
 const escapeRegExpStr = R.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
 // reasonably similar to js template literals
-// template('my name is ${ name }', { name: 'John' })
 // string -> object -> string
 const template = R.curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (match, variable) => {

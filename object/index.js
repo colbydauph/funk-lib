@@ -36,7 +36,7 @@ const mapValues = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [key, pred(value)], obj);
 });
 
-// recursive + mutating
+// recursive + mutating + identity
 const deepFreeze = (obj) => {
   Object.freeze(obj);
   R.forEach(deepFreeze, R.values(obj));

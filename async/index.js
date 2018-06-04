@@ -4,19 +4,23 @@
 const R = require('ramda');
 
 // @async number -> undefined
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+const delay = async (ms) => new Promise((res) => setTimeout(res, ms));
 
 // wraps a function to always return a promise
 const toAsync = (func) => async (...args) => func(...args);
 
-// inverse of callbackify
-const promisify = (func) => (...args) => {
+const fromCallback = async (func) => {
   return new Promise((resolve, reject) => {
-    func(...args, (err, data) => {
-      // eslint-disable-next-line no-unused-expressions
-      err ? reject(err) : resolve(data);
+    func((err, result) => {
+      if (err) return reject(err);
+      return resolve(result);
     });
   });
+};
+
+// inverse of callbackify
+const promisify = (func) => async (...args) => {
+  return fromCallback((cb) => func(...args, cb));
 };
 
 // inverse of promisify
@@ -27,6 +31,18 @@ const callbackify = (func) => (...args) => {
     .then((args) => func(...args))
     .then((res) => cb(null, res))
     .catch((err) => cb(err));
+};
+
+// creates an externally controlled promise
+const deferred = () => {
+  let resolve, reject;
+  return {
+    promise: new Promise((...args) => {
+      [resolve, reject] = args;
+    }),
+    resolve,
+    reject,
+  };
 };
 
 // @async (parallel)
@@ -75,10 +91,12 @@ const props = async (obj) => {
 
 module.exports = {
   callbackify,
+  deferred,
   delay,
   filter,
   flatMap,
   forEach,
+  fromCallback,
   map,
   promisify,
   props,

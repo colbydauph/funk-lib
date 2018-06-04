@@ -234,18 +234,16 @@ describe('async lib', () => {
   
   describe('fromCallback', () => {
     
-    let cbFunc;
-    describe('stub', () => {
-      cbFunc = (one, two, three, cb) => {
-        setTimeout(() => cb(null, [one, two, three]), 0);
-      };
-    });
-    
     it('should create a promise resolved by the passed callback', async () => {
       const res = await fromCallback((cb) => {
-        return cbFunc(1, 2, 3, cb);
+        return cb(null, [1, 2, 3]);
       });
       expect(res).to.eql([1, 2, 3]);
+    });
+    
+    it('should create a promise rejected by the passed callback', async () => {
+      const error = Error('oops');
+      await expect(fromCallback((cb) => cb(error))).to.be.rejectedWith(error);
     });
     
   });

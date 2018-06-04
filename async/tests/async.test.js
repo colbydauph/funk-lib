@@ -12,10 +12,12 @@ const { random } = require('../../number');
 // local
 const {
   callbackify,
+  deferred,
   delay,
   filter,
   flatMap,
   forEach,
+  fromCallback,
   map,
   promisify,
   props,
@@ -101,6 +103,28 @@ describe('async lib', () => {
       await delay(100);
       const end = Date.now();
       expect(end - start).to.be.closeTo(100, 10);
+    });
+    
+  });
+  
+  describe('deferred', () => {
+    
+    let promise, resolve, reject;
+    beforeEach('', () => {
+      ({ promise, resolve, reject } = deferred());
+    });
+    
+    it('should create an externally resolved promise', async () => {
+      const res = {};
+      resolve(res);
+      const out = await promise;
+      expect(out).to.equal(res);
+    });
+    
+    it('should create an externally rejected promise', async () => {
+      const err = Error('oops');
+      reject(err);
+      await expect(promise).to.be.rejectedWith(err);
     });
     
   });
@@ -204,6 +228,24 @@ describe('async lib', () => {
         order.push(item);
       }, arr);
       expect(order).to.not.eql(arr);
+    });
+    
+  });
+  
+  describe('fromCallback', () => {
+    
+    let cbFunc;
+    describe('stub', () => {
+      cbFunc = (one, two, three, cb) => {
+        setTimeout(() => cb(null, [one, two, three]), 0);
+      };
+    });
+    
+    it('should create a promise resolved by the passed callback', async () => {
+      const res = await fromCallback((cb) => {
+        return cbFunc(1, 2, 3, cb);
+      });
+      expect(res).to.eql([1, 2, 3]);
     });
     
   });

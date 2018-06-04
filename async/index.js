@@ -29,6 +29,28 @@ const callbackify = (func) => (...args) => {
     .catch((err) => cb(err));
 };
 
+const fromCallback = (func) => {
+  return new Promise((resolve, reject) => {
+    func((err, result) => {
+      if (err) return reject(err);
+      return resolve(result);
+    });
+  });
+};
+
+// creates an externally controlled promise
+const deferred = () => {
+  let resolve, reject;
+  return {
+    promise: new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    }),
+    resolve,
+    reject,
+  };
+};
+
 // @async (parallel)
 // predicate -> iterable -> iterable
 const forEach = R.curry(async (pred, iterable) => {
@@ -75,10 +97,12 @@ const props = async (obj) => {
 
 module.exports = {
   callbackify,
+  deferred,
   delay,
   filter,
   flatMap,
   forEach,
+  fromCallback,
   map,
   promisify,
   props,

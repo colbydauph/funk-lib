@@ -1,6 +1,10 @@
 'use strict';
 
+// core
+const path = require('path');
+
 // modules
+const R = require('ramda');
 const { expect } = require('chai');
 
 // local
@@ -9,9 +13,11 @@ const {
   firstKey,
   firstPair,
   firstValue,
+  flattenWith,
   mapKeys,
   mapPairs,
   mapValues,
+  nestWith,
   pickAs,
 } = require('..');
 
@@ -51,6 +57,86 @@ describe('object lib', () => {
         obj.d.e = 5;
       }).to.throw(Error);
       
+    });
+    
+  });
+  
+  describe('flattenWith', () => {
+    
+    let obj, flat;
+    beforeEach(() => {
+      obj = {
+        aaa: { bbb: 111, ccc: { ddd: 222 } },
+        ddd: { eee: 333 },
+      };
+      flat = {
+        'aaa/bbb': 111,
+        'aaa/ccc/ddd': 222,
+        'ddd/eee': 333,
+      };
+    });
+    
+    it('should join nested object keys by predicate', () => {
+      expect(flattenWith(path.join, obj)).to.eql(flat);
+    });
+    
+    it('should work with overlapping + nested keys', () => {
+      const obj = {
+        a: { b: 2, c: { d: 4 } },
+        'a/c/d/e': 3,
+      };
+      expect(flattenWith(path.join, obj)).to.eql({
+        'a/b': 2,
+        'a/c/d': 4,
+        'a/c/d/e': 3,
+      });
+    });
+    
+    it('should be the inverse of nestWith for inverse predicates', () => {
+      const res = R.pipe(
+        nestWith(R.split('/')),
+        flattenWith(path.join),
+      )(flat);
+      expect(res).to.eql(flat);
+    });
+    
+  });
+  
+  describe('nestWith', () => {
+    
+    let obj, flat;
+    beforeEach(() => {
+      obj = {
+        aaa: { bbb: 111, ccc: { ddd: 222 } },
+        ddd: { eee: 333 },
+      };
+      flat = {
+        'aaa/bbb': 111,
+        'aaa/ccc/ddd': 222,
+        'ddd/eee': 333,
+      };
+    });
+    
+    it('should split and nest keys by predicate', () => {
+      expect(nestWith(R.split('/'), flat)).to.eql(obj);
+    });
+    
+    it('should work with overlapping + nested keys', () => {
+      const flat = {
+        'a/c/d/e': 3,
+        'a/c/d/f': 4,
+      };
+      expect(nestWith(R.split('/'), flat)).to.eql({
+        a: { c: { d: { e: 3, f: 4 } } },
+      });
+    });
+    
+    it('should be the inverse of flattenWith for inverse predicates', () => {
+      const res = R.pipe(
+        flattenWith(path.join),
+        nestWith(R.split('/')),
+      )(obj);
+      expect(res).to.eql(obj);
     });
     
   });

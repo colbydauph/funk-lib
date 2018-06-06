@@ -3,12 +3,14 @@
 // modules
 const R = require('ramda');
 
-// todo: pickAsDeep (recursive)
+// local
+const { isObject } = require('../is');
 
 const firstKey = (obj) => Object.keys(obj)[0];
 const firstPair = (obj) => Object.entries(obj)[0];
 const firstValue = (obj) => Object.values(obj)[0];
 
+// todo: pickAsDeep (recursive)
 // pick the keys from the first argument, renaming by the values in the second arg
 // pickAs({ a: 'b', b: 'a' }, { a: 1, b: 2 }) === { a: 2, b: 1 }
 // object -> object -> object
@@ -43,6 +45,27 @@ const deepFreeze = (obj) => {
   return obj;
 };
 
+// inverse of nestWith
+const flattenWith = R.curry((pred, obj) => {
+  const flatPairs = R.pipe(
+    R.toPairs,
+    R.chain(([key, val]) => {
+      return isObject(val)
+        ? R.map(([k2, v2]) => [pred(key, k2), v2], flatPairs(val))
+        : [[key, val]];
+    }),
+  );
+  return R.fromPairs(flatPairs(obj));
+});
+
+// inverse of flattenWith
+const nestWith = R.curry((pred, obj) => {
+  return R.reduce((obj, [key, val]) => {
+    return R.assocPath(pred(key), val, obj);
+  }, {}, R.toPairs(obj));
+});
+
+
 // // recursive R.merge with predicate for custom merging
 // const mergeDeepWith = R.curry((pred, left, right) => {
 //   return R.mergeWith((left, right) => {
@@ -54,11 +77,13 @@ const deepFreeze = (obj) => {
 
 module.exports = {
   deepFreeze,
+  firstKey,
+  firstPair,
+  firstValue,
+  flattenWith,
   mapKeys,
   mapPairs,
   mapValues,
+  nestWith,
   pickAs,
-  firstKey,
-  firstValue,
-  firstPair,
 };

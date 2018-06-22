@@ -20,6 +20,7 @@ const { mapKeys } = require('funk-lib/object');
 |--------------|---------------|
 | `cover`      | Run test coverage |
 | `init`       | Re/Install deps |
+| `init:hard`  | `init` with a fresh `package-lock` |
 | `lint`       | Lint the source |
 | `test`       | Run tests |
 | `test:watch` | Run tests on change |

@@ -1,11 +1,15 @@
 'use strict';
 
 // local
+const { fromString } = require('../../stream');
 const assert = require('./assert-is');
 const {
+  isAsyncGenerator,
+  isAsyncGeneratorFunction,
   isBoolean,
   isFunction,
   isGenerator,
+  isGeneratorFunction,
   isInstanceOf,
   isIterable,
   isNegative,
@@ -13,6 +17,9 @@ const {
   isObject,
   isPositive,
   isPromise,
+  isStream,
+  isSyncGenerator,
+  isSyncGeneratorFunction,
   isTypeOf,
   isUndefined,
 } = require('..');
@@ -33,15 +40,101 @@ describe('is', () => {
     pass: [
       () => {},
       async () => {},
+      function func() {},
       function* gen() {},
+      async function* gen() {},
     ],
   });
   
   assert({
     func: isGenerator,
     name: 'isGenerator',
-    fail: [() => {}, {}, async () => {}, {}, [], 1, true, null],
-    pass: [function* gen() {}],
+    fail: [
+      () => {},
+      async () => {},
+      async function* gen() {},
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      (function* gen() {})(),
+      (async function* asyncGen() {})(),
+    ],
+  });
+  
+  assert({
+    func: isSyncGenerator,
+    name: 'isSyncGenerator',
+    fail: [
+      () => {},
+      async () => {},
+      async function* gen() {},
+      (async function* asyncGen() {})(),
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      (function* gen() {})(),
+    ],
+  });
+  
+  assert({
+    func: isAsyncGenerator,
+    name: 'isAsyncGenerator',
+    fail: [
+      () => {},
+      async () => {},
+      function* gen() {},
+      (function* gen() {})(),
+      async function* gen() {},
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      (async function* asyncGen() {})(),
+    ],
+  });
+  
+  assert({
+    func: isGeneratorFunction,
+    name: 'isGeneratorFunction',
+    fail: [
+      () => {},
+      async () => {},
+      function GeneratorFunction() {},
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      function* gen() {},
+      async function* asyncGen() {},
+    ],
+  });
+  
+  assert({
+    func: isSyncGeneratorFunction,
+    name: 'isSyncGeneratorFunction',
+    fail: [
+      () => {},
+      async () => {},
+      function GeneratorFunction() {},
+      async function* asyncGen() {},
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      function* gen() {},
+    ],
+  });
+  
+  assert({
+    func: isAsyncGeneratorFunction,
+    name: 'isAsyncGeneratorFunction',
+    fail: [
+      () => {},
+      async () => {},
+      function AsyncGeneratorFunction() {},
+      function* gen() {},
+      {}, [], 1, true, null,
+    ],
+    pass: [
+      async function* asyncGen() {},
+    ],
   });
   
   
@@ -72,7 +165,7 @@ describe('is', () => {
   assert({
     func: isIterable,
     name: 'isIterable',
-    fail: [{}, true, null],
+    fail: [{}, true, null, undefined, 1],
     pass: [[], { * [Symbol.iterator]() {} }],
   });
   
@@ -112,6 +205,15 @@ describe('is', () => {
       { then() {} },
     ],
     fail: [-1, -100000, -Infinity, NaN, undefined, {}, [], null, { catch() {} }],
+  });
+  
+  assert({
+    func: isStream,
+    name: 'isStream',
+    fail: [{}, () => {}, true, [], 1],
+    pass: [
+      fromString('test string'),
+    ],
   });
   
   assert({

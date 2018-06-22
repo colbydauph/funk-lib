@@ -3,7 +3,7 @@
 const R = require('ramda');
 
 // inclusive bounds
-// num -> num -> num
+// int -> int -> int
 const random = R.curry((min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 });

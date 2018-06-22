@@ -42,7 +42,7 @@ describe('is', () => {
       async () => {},
       function func() {},
       function* gen() {},
-      async function* gen() {},
+      // async function* gen() {},
     ],
   });
   
@@ -52,12 +52,12 @@ describe('is', () => {
     fail: [
       () => {},
       async () => {},
-      async function* gen() {},
+      // async function* gen() {},
       {}, [], 1, true, null,
     ],
     pass: [
       (function* gen() {})(),
-      (async function* asyncGen() {})(),
+      // (async function* asyncGen() {})(),
     ],
   });
   
@@ -67,8 +67,8 @@ describe('is', () => {
     fail: [
       () => {},
       async () => {},
-      async function* gen() {},
-      (async function* asyncGen() {})(),
+      // async function* gen() {},
+      // (async function* asyncGen() {})(),
       {}, [], 1, true, null,
     ],
     pass: [
@@ -84,11 +84,11 @@ describe('is', () => {
       async () => {},
       function* gen() {},
       (function* gen() {})(),
-      async function* gen() {},
+      // async function* gen() {},
       {}, [], 1, true, null,
     ],
     pass: [
-      (async function* asyncGen() {})(),
+      // (async function* asyncGen() {})(),
     ],
   });
   
@@ -103,7 +103,7 @@ describe('is', () => {
     ],
     pass: [
       function* gen() {},
-      async function* asyncGen() {},
+      // async function* asyncGen() {},
     ],
   });
   
@@ -114,7 +114,7 @@ describe('is', () => {
       () => {},
       async () => {},
       function GeneratorFunction() {},
-      async function* asyncGen() {},
+      // async function* asyncGen() {},
       {}, [], 1, true, null,
     ],
     pass: [
@@ -133,7 +133,7 @@ describe('is', () => {
       {}, [], 1, true, null,
     ],
     pass: [
-      async function* asyncGen() {},
+      // async function* asyncGen() {},
     ],
   });
   

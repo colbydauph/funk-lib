@@ -23,11 +23,11 @@ const template = R.curry((tmpl, variables) => {
 
 // encode a string to base64
 // string -> string
-const toBase64 = (str) => new Buffer(str).toString('base64');
+const toBase64 = (str) => Buffer.from(str).toString('base64');
 
 // decode a base64 string
 // string -> string
-const parseBase64 = (base64str) => new Buffer(base64str, 'base64').toString('utf8');
+const parseBase64 = (base64str) => Buffer.from(base64str, 'base64').toString('utf8');
 
 
 module.exports = {

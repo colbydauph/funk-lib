@@ -22,38 +22,76 @@ const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 const isTruthy = R.pipe(R.not, R.not);
 const isFalsey = R.not;
 const isPromise = R.allPass([isObject, R.pipe(R.prop('then'), isFunction)]);
-const isStream = R.allPass([R.identity, isObject, R.pipe(R.prop('pipe'), isFunction)]);
+const isStream = R.allPass([isObject, R.pipe(R.prop('pipe'), isFunction)]);
 const isNegative = R.flip(R.lt)(0);
 const isPositive = R.flip(R.gte)(0);
+
+// * -> boolean
 const isGenerator = R.allPass([
+  isObject,
+  R.pipe(R.prop('next'), isFunction),
+  R.pipe(R.prop('throw'), isFunction),
+]);
+
+// fixme: there must be a safer way to do this
+// const GeneratorFunction = Object.getPrototypeOf(function* () {}).constructor;
+const isSyncGenerator = R.allPass([
+  isGenerator,
+  (thing) => (thing[Symbol.toStringTag] === 'Generator'),
+]);
+
+// fixme: there must be a safer way to do this
+// const GeneratorFunction = Object.getPrototypeOf(function* () {}).constructor;
+const isAsyncGenerator = R.allPass([
+  isGenerator,
+  (thing) => (thing[Symbol.toStringTag] === 'AsyncGenerator'),
+]);
+
+const isSyncGeneratorFunction = R.allPass([
   isFunction,
   (fn) => (fn.constructor.name === 'GeneratorFunction'),
 ]);
+
+const isAsyncGeneratorFunction = R.allPass([
+  isFunction,
+  (fn) => (fn.constructor.name === 'AsyncGeneratorFunction'),
+]);
+
+const isGeneratorFunction = R.anyPass([
+  isSyncGeneratorFunction,
+  isAsyncGeneratorFunction,
+]);
+
+// isAsyncIterable Symbol.asyncIterator
 const isIterable = R.allPass([
   isTruthy,
-  (iter) => isFunction(iter[Symbol.iterator]),
+  R.pipe(R.prop(Symbol.iterator), isFunction),
 ]);
-// const isJSON = nonePass([isFalsey, isString, isFunction, isStream, isBuffer, isPromise]);
+
 
 module.exports = {
-  // isJSON,
   isArray,
+  isAsyncGenerator,
+  isAsyncGeneratorFunction,
   isBoolean,
   isBuffer,
   isFalsey,
   isFunction,
+  isGenerator,
+  isGeneratorFunction,
   isInstanceOf,
   isIterable,
   isNaN,
   isNegative,
   isNull,
-  isGenerator,
   isNumber,
   isObject,
   isPositive,
   isPromise,
   isStream,
   isString,
+  isSyncGenerator,
+  isSyncGeneratorFunction,
   isTruthy,
   isTypeOf,
   isUndefined,

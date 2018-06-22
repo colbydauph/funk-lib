@@ -339,8 +339,15 @@ describe('async lib', () => {
       };
       await expect(props(input)).to.be.rejectedWith(err);
     });
-    
-    it('should run in parallel');
+        
+    it('should work with arrays', async () => {
+      const out = await props(['a', 'b', 'c']);
+      expect(out).to.eql({
+        0: 'a',
+        1: 'b',
+        2: 'c',
+      });
+    });
     
   });
   

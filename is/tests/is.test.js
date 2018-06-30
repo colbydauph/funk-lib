@@ -7,6 +7,7 @@ const {
   isAsyncGenerator,
   isAsyncGeneratorFunction,
   isBoolean,
+  isDate,
   isFunction,
   isGenerator,
   isGeneratorFunction,
@@ -15,9 +16,12 @@ const {
   isNegative,
   isNull,
   isObject,
+  isPojo,
   isPositive,
   isPromise,
+  isRegExp,
   isStream,
+  isSymbol,
   isSyncGenerator,
   isSyncGeneratorFunction,
   isTypeOf,
@@ -31,6 +35,13 @@ describe('is', () => {
     name: 'isBoolean',
     fail: [1, {}, 0, () => {}, [], undefined, null],
     pass: [true, false],
+  });
+  
+  assert({
+    func: isDate,
+    name: 'isDate',
+    pass: [new Date()],
+    fail: [{}, [], null, undefined, 1, false, () => {}],
   });
   
   assert({
@@ -137,7 +148,6 @@ describe('is', () => {
     ],
   });
   
-  
   assert({
     /* eslint-disable no-new-wrappers, no-array-constructor */
     func: isInstanceOf,
@@ -179,7 +189,7 @@ describe('is', () => {
   assert({
     func: isNull,
     name: 'isNull',
-    fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined],
+    fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined, () => {}],
     pass: [null],
   });
   
@@ -189,7 +199,36 @@ describe('is', () => {
     pass: [{}],
     fail: [[], null, undefined, 1, false, () => {}],
   });
-    
+  
+  assert({
+    func: isPojo,
+    name: 'isPojo',
+    pass: [
+      {},
+      Object.create(Object.prototype),
+      // eslint-disable-next-line no-new-object
+      new Object(),
+    ],
+    fail: [
+      [],
+      Array(),
+      function test() {},
+      new Date(),
+      true,
+      'abc',
+      123,
+      new RegExp(),
+      null,
+      undefined,
+      Object.create({}),
+      Object.assign(Object.create(null), {
+        // hack to make serializable
+        [Symbol.toPrimitive]: () => 'obj',
+      }),
+      new (function Foo() {})(),
+    ],
+  });
+  
   assert({
     func: isPositive,
     name: 'isPositive',
@@ -208,12 +247,38 @@ describe('is', () => {
   });
   
   assert({
+    func: isRegExp,
+    name: 'isRegExp',
+    pass: [
+      /a/,
+      new RegExp('test'),
+    ],
+    fail: [
+      {},
+      () => {},
+      true,
+      [],
+      1,
+      new Date(),
+    ],
+  });
+  
+  assert({
     func: isStream,
     name: 'isStream',
     fail: [{}, () => {}, true, [], 1],
     pass: [
       fromString('test string'),
     ],
+  });
+  
+  assert({
+    func: isSymbol,
+    name: 'isSymbol',
+    pass: [
+      Symbol('test'),
+    ],
+    fail: [{}, () => {}, true, [], 1],
   });
   
   assert({

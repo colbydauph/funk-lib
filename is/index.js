@@ -6,25 +6,44 @@ const R = require('ramda');
 const { isNaN } = Number;
 const { isArray } = Array;
 const { isBuffer } = Buffer;
+
 const isInstanceOf = R.curry((type, thing) => thing instanceof type);
 const isTypeOf = R.curry((type, thing) => typeof thing === type);
+
+const isBoolean = isTypeOf('boolean');
+const isDate = isInstanceOf(Date);
+const isRegExp = isInstanceOf(RegExp);
+const isFunction = isTypeOf('function');
 const isNull = R.equals(null);
+const isString = isTypeOf('string');
+const isSymbol = isTypeOf('symbol');
 const isUndefined = isTypeOf('undefined');
+
+// * -> boolean
 const isObject = R.allPass([
   isTypeOf('object'),
   R.complement(isNull),
   R.complement(isArray),
 ]);
-const isBoolean = isTypeOf('boolean');
-const isFunction = isTypeOf('function');
-const isString = isTypeOf('string');
+
+// is "plain old javascript object"
+// * -> boolean
+const isPojo = R.allPass([
+  isObject,
+  R.pipe(Object.getPrototypeOf, (proto) => {
+    return (proto === Object.prototype);
+  }),
+]);
+
 const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
-const isTruthy = R.pipe(R.not, R.not);
-const isFalsey = R.not;
-const isPromise = R.allPass([isObject, R.pipe(R.prop('then'), isFunction)]);
-const isStream = R.allPass([isObject, R.pipe(R.prop('pipe'), isFunction)]);
 const isNegative = R.flip(R.lt)(0);
 const isPositive = R.flip(R.gte)(0);
+
+const isTruthy = R.pipe(R.not, R.not);
+const isFalsey = R.not;
+
+const isPromise = R.allPass([isObject, R.pipe(R.prop('then'), isFunction)]);
+const isStream = R.allPass([isObject, R.pipe(R.prop('pipe'), isFunction)]);
 
 // * -> boolean
 const isGenerator = R.allPass([
@@ -33,27 +52,28 @@ const isGenerator = R.allPass([
   R.pipe(R.prop('throw'), isFunction),
 ]);
 
-// fixme: there must be a safer way to do this
-// const GeneratorFunction = Object.getPrototypeOf(function* () {}).constructor;
+
 const isSyncGenerator = R.allPass([
   isGenerator,
+  // fixme: find a safer way to do this
   (thing) => (thing[Symbol.toStringTag] === 'Generator'),
 ]);
 
-// fixme: there must be a safer way to do this
-// const GeneratorFunction = Object.getPrototypeOf(function* () {}).constructor;
 const isAsyncGenerator = R.allPass([
   isGenerator,
+  // fixme: find a safer way to do this
   (thing) => (thing[Symbol.toStringTag] === 'AsyncGenerator'),
 ]);
 
 const isSyncGeneratorFunction = R.allPass([
   isFunction,
+  // fixme: find a safer way to do this
   (fn) => (fn.constructor.name === 'GeneratorFunction'),
 ]);
 
 const isAsyncGeneratorFunction = R.allPass([
   isFunction,
+  // fixme: find a safer way to do this
   (fn) => (fn.constructor.name === 'AsyncGeneratorFunction'),
 ]);
 
@@ -75,6 +95,7 @@ module.exports = {
   isAsyncGeneratorFunction,
   isBoolean,
   isBuffer,
+  isDate,
   isFalsey,
   isFunction,
   isGenerator,
@@ -86,10 +107,13 @@ module.exports = {
   isNull,
   isNumber,
   isObject,
+  isPojo,
   isPositive,
   isPromise,
+  isRegExp,
   isStream,
   isString,
+  isSymbol,
   isSyncGenerator,
   isSyncGeneratorFunction,
   isTruthy,

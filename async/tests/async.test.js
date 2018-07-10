@@ -306,12 +306,6 @@ describe('async lib', () => {
       await expect(composed(input)).to.eventually.eql(322);
     });
     
-    it('should be curried', async () => {
-      const composed = pipe(...funcs);
-      const input = { id: 123 };
-      await expect(composed(input)).to.eventually.eql(322);
-    });
-    
   });
   
   describe('promisify', () => {

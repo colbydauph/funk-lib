@@ -19,6 +19,7 @@ const {
   forEach,
   fromCallback,
   map,
+  pipe,
   promisify,
   props,
   reduce,
@@ -284,6 +285,31 @@ describe('async lib', () => {
         order.push(item);
       }, arr);
       expect(order).to.not.eql(arr);
+    });
+    
+  });
+  
+  describe('pipe', () => {
+    
+    let funcs;
+    beforeEach('setup', () => {
+      funcs = [
+        async ({ id }) => id,
+        async num => num + 100,
+        async num => +[...`${ num }`].reverse().join(''),
+      ];
+    });
+    
+    it('should perform left-to-right function composition of async functions', async () => {
+      const composed = pipe(...funcs);
+      const input = { id: 123 };
+      await expect(composed(input)).to.eventually.eql(322);
+    });
+    
+    it('should be curried', async () => {
+      const composed = pipe(...funcs);
+      const input = { id: 123 };
+      await expect(composed(input)).to.eventually.eql(322);
     });
     
   });

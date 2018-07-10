@@ -65,12 +65,15 @@ const filter = R.curry(async (pred, iterable) => {
   return iterable.filter((el, i) => bools[i]);
 });
 
+// serial + async R.pipe
+const pipe = (...funcs) => async (...args) => {
+  for (const func of funcs) args = [await func(...args)];
+  return args[0];
+};
+
 // @async (parallel)
 // predicate -> iterable -> iterable
-const flatMap = R.curry(async (pred, iterable) => {
-  const arrs = await map(pred, iterable);
-  return R.chain(R.identity, arrs);
-});
+const flatMap = R.curryN(2)(pipe(map, R.chain(R.identity)));
 
 // @async (series)
 // predicate -> * -> iterable -> iterable
@@ -98,6 +101,7 @@ module.exports = {
   forEach,
   fromCallback,
   map,
+  pipe,
   promisify,
   props,
   reduce,

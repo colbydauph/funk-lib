@@ -45,6 +45,7 @@ const deepFreeze = (obj) => {
   return obj;
 };
 
+// flatten a deeply nested object, joining keys with pred
 // inverse of nestWith
 const flattenWith = R.curry((pred, obj) => {
   const flatPairs = R.pipe(
@@ -58,6 +59,7 @@ const flattenWith = R.curry((pred, obj) => {
   return R.fromPairs(flatPairs(obj));
 });
 
+// deeply nest a flattened object, splitting keys with pred
 // inverse of flattenWith
 const nestWith = R.curry((pred, obj) => {
   return R.reduce((obj, [key, val]) => {

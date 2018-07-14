@@ -32,14 +32,10 @@ const {
 } = require('..');
 
 const assertIsParallel = async (isParallel, func) => {
-  const iterable = [...Array(10)];
   const start = Date.now();
-  await func(() => delay(10), iterable);
-  if (isParallel) {
-    expect(Date.now() - start).to.be.closeTo(10, 5);
-  } else {
-    expect(Date.now() - start).to.be.closeTo(100, 30);
-  }
+  await func(() => delay(1), [...Array(20)]);
+  const expected = isParallel ? [1, 2] : [20, 10];
+  expect(Date.now() - start).to.be.closeTo(...expected);
 };
 
 describe('async lib', () => {

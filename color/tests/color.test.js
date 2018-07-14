@@ -8,7 +8,7 @@ const { hexToRgb, rgbToHex } = require('..');
 
 describe('color lib', () => {
   
-  describe('hexToRgb()', () => {
+  describe('hexToRgb', () => {
     
     it('should convert hex to rgb', () => {
       const hex = '#0033ff';
@@ -24,7 +24,7 @@ describe('color lib', () => {
     
   });
   
-  describe('rgbToHex()', () => {
+  describe('rgbToHex', () => {
     
     it('should convert rgb to hex', () => {
       const rgb = { r: 0, g: 51, b: 255 };

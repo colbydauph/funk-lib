@@ -8,7 +8,7 @@ const { toObjBy, toObj, sample } = require('..');
 
 describe('array lib', () => {
   
-  describe('toObj()', () => {
+  describe('toObj', () => {
     
     it('should key obj by index', () => {
       const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
@@ -22,7 +22,7 @@ describe('array lib', () => {
     
   });
   
-  describe('toObjBy()', () => {
+  describe('toObjBy', () => {
     
     it('should key obj by pred', () => {
       const arr = [{ id: 1 }, { id: 2 }, { id: 3 }];
@@ -37,7 +37,7 @@ describe('array lib', () => {
     
   });
   
-  describe('sample()', () => {
+  describe('sample', () => {
     
     it('should select items from the array', () => {
       const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];

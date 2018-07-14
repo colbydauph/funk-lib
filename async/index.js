@@ -86,6 +86,7 @@ const forEachSeries = R.curry(async (pred, iterable) => {
   return iterable;
 });
 
+// fixme: do this in O(n)
 // @async (parallel)
 // predicate -> iterable -> iterable
 const filter = R.curry(async (pred, iterable) => {
@@ -93,6 +94,7 @@ const filter = R.curry(async (pred, iterable) => {
   return iterable.filter((el, i) => bools[i]);
 });
 
+// fixme: do this in O(n)
 // @async (series)
 // predicate -> iterable -> iterable
 const filterSeries = R.curry(async (pred, iterable) => {

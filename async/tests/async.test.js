@@ -148,44 +148,66 @@ describe('async lib', () => {
   
   describe('filter', () => {
     
-    let pred;
-    beforeEach('stub', () => {
-      pred = sinon.spy((num) => num % 2);
+    let pred, iterable;
+    beforeEach(() => {
+      pred = async num => num > 5;
+      iterable = R.range(0, 10);
     });
     
-    it('should call predicate once for each item in iterable', async () => {
-      await filter(pred, [1, 2, 3, 4, 5]);
-      expect(pred.callCount).to.eql(5);
-    });
-    
-    it('should call predicate with iterable element', async () => {
-      const iterable = [{}, {}, {}];
-      await filter(pred, iterable);
-      pred.args.forEach(([arg], i) => {
-        expect(arg).to.eql(iterable[i]);
-      });
-    });
-    
-    it('should return a filtered iterable', async () => {
-      const result = await filter(pred, [1, 2, 3, 4, 5]);
-      expect(result).to.eql([1, 3, 5]);
+    it('should filter by predicate', async () => {
+      await expect(filter(pred, iterable))
+        .to.eventually.eql([6, 7, 8, 9]);
     });
     
     it('should run in parallel', async () => {
       await assertIsParallel(true, filter);
     });
     
+    it('should propagate errors', async () => {
+      const error = Error('woops');
+      pred = () => {
+        throw error;
+      };
+      await expect(filter(pred, iterable))
+        .to.eventually.be.rejectedWith(error);
+    });
+    
     it('should be curried', async () => {
-      const result = await filter(pred)([1, 2, 3, 4, 5]);
-      expect(result).to.eql([1, 3, 5]);
+      await expect(filter(pred)(iterable))
+        .to.eventually.eql([6, 7, 8, 9]);
     });
     
   });
   
   describe('filterSeries', () => {
     
+    let pred, iterable;
+    beforeEach(() => {
+      pred = async num => num > 5;
+      iterable = R.range(0, 10);
+    });
+    
+    it('should filter by predicate', async () => {
+      await expect(filterSeries(pred, iterable))
+        .to.eventually.eql([6, 7, 8, 9]);
+    });
+    
     it('should run in series', async () => {
       await assertIsParallel(false, filterSeries);
+    });
+    
+    it('should propagate errors', async () => {
+      const error = Error('woops');
+      pred = () => {
+        throw error;
+      };
+      await expect(filterSeries(pred, iterable))
+        .to.eventually.be.rejectedWith(error);
+    });
+    
+    it('should be curried', async () => {
+      await expect(filterSeries(pred)(iterable))
+        .to.eventually.eql([6, 7, 8, 9]);
     });
     
   });
@@ -228,13 +250,13 @@ describe('async lib', () => {
   
   describe('forEach', () => {
     
-    it('should call predicate once for each item in iterable', async () => {
+    it('should call the predicate once per item', async () => {
       const pred = sinon.stub();
       await forEach(pred, [1, 2, 3, 4, 5]);
       expect(pred.callCount).to.eql(5);
     });
     
-    it('should call predicate with value', async () => {
+    it('should call predicate with item', async () => {
       const pred = sinon.stub();
       const arr = ['some-item-a', 'some-item-b'];
       await forEach(pred, arr);
@@ -247,14 +269,14 @@ describe('async lib', () => {
       expect(result).to.equal(iterable);
     });
     
+    it('should run in parallel', async () => {
+      await assertIsParallel(true, forEach);
+    });
+    
     it('should be curried', async () => {
       const stub = sinon.stub();
       await forEach(stub)([1, 2, 3, 4, 5]);
       expect(stub.callCount).to.eql(5);
-    });
-    
-    it('should run in parallel', async () => {
-      await assertIsParallel(true, forEach);
     });
     
   });
@@ -270,14 +292,28 @@ describe('async lib', () => {
       ]);
     });
     
-    it('should run in series', async () => {
-      await assertIsParallel(false, forEachSeries);
+    it('should call predicate with item', async () => {
+      const pred = sinon.stub();
+      const arr = ['some-item-a', 'some-item-b'];
+      await forEachSeries(pred, arr);
+      expect(pred.args.map(R.head)).to.eql(arr);
     });
+    
     
     it('should return the iterable', async () => {
       const iterable = [1, 2, 3, 4];
       await expect(forEachSeries(() => {}, iterable))
         .to.eventually.equal(iterable);
+    });
+    
+    it('should run in series', async () => {
+      await assertIsParallel(false, forEachSeries);
+    });
+    
+    it('should be curried', async () => {
+      const stub = sinon.stub();
+      await forEachSeries(stub)([1, 2, 3, 4, 5]);
+      expect(stub.callCount).to.eql(5);
     });
     
   });
@@ -300,42 +336,68 @@ describe('async lib', () => {
   
   describe('map', () => {
     
-    it('should call predicate once for each item in iterable', async () => {
-      const pred = sinon.stub();
-      await map(pred, [1, 2, 3, 4, 5]);
-      expect(pred.callCount).to.eql(5);
+    let pred, iterable, result;
+    beforeEach(() => {
+      pred = async num => num + 10;
+      iterable = R.range(0, 5);
+      result = [10, 11, 12, 13, 14];
     });
     
-    it('should call predicate with value', async () => {
-      const pred = sinon.stub();
-      const arr = ['some-item-a', 'some-item-b'];
-      await map(pred, arr);
-      expect(pred.args.map(R.head)).to.eql(arr);
+    it('should map with async predicate', async () => {
+      await expect(map(pred, iterable))
+        .to.eventually.eql(result);
     });
     
-    it('should return an iterable with the mapped contents', async () => {
-      const pred = (char) => `${ char }-1`;
-      const arr = ['a', 'b', 'c'];
-      const result = await map(pred, arr);
-      expect(result).to.eql(['a-1', 'b-1', 'c-1']);
+    it('should run in series', async () => {
+      await assertIsParallel(true, map);
+    });
+    
+    it('should propagate errors', async () => {
+      const error = Error('oops');
+      pred = () => {
+        throw error;
+      };
+      await expect(map(pred, iterable))
+        .to.be.rejectedWith(error);
     });
     
     it('should be curried', async () => {
-      const pred = sinon.stub();
-      await map(pred)([1, 2, 3, 4, 5]);
-      expect(pred.callCount).to.eql(5);
-    });
-    
-    it('should run in parallel', async () => {
-      await assertIsParallel(true, map);
+      await expect(map(pred)(iterable))
+        .to.eventually.eql(result);
     });
     
   });
   
   describe('mapSeries', () => {
     
-    it('should run in parallel', async () => {
+    let pred, iterable, result;
+    beforeEach(() => {
+      pred = async num => num + 10;
+      iterable = R.range(0, 5);
+      result = [10, 11, 12, 13, 14];
+    });
+    
+    it('should map with async predicate', async () => {
+      await expect(mapSeries(pred, iterable))
+        .to.eventually.eql(result);
+    });
+    
+    it('should run in series', async () => {
       await assertIsParallel(false, mapSeries);
+    });
+    
+    it('should propagate errors', async () => {
+      const error = Error('oops');
+      pred = () => {
+        throw error;
+      };
+      await expect(mapSeries(pred, iterable))
+        .to.be.rejectedWith(error);
+    });
+    
+    it('should be curried', async () => {
+      await expect(mapSeries(pred)(iterable))
+        .to.eventually.eql(result);
     });
     
   });

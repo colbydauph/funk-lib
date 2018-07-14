@@ -33,8 +33,8 @@ const {
 
 const assertIsParallel = async (isParallel, func) => {
   const start = Date.now();
-  await func(() => delay(1), [...Array(20)]);
-  const expected = isParallel ? [1, 2] : [20, 10];
+  await func(() => delay(2), [...Array(20)]);
+  const expected = isParallel ? [2, 10] : [40, 20];
   expect(Date.now() - start).to.be.closeTo(...expected);
 };
 

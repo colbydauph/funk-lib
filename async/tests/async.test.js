@@ -7,6 +7,7 @@ const R = require('ramda');
 
 // local
 const { isPromise } = require('../../is');
+const { random } = require('../../number');
 
 // local
 const {
@@ -31,11 +32,24 @@ const {
   toAsync,
 } = require('..');
 
+
 const assertIsParallel = async (isParallel, func) => {
-  const start = Date.now();
-  await func(() => delay(2), [...Array(20)]);
-  const expected = isParallel ? [2, 10] : [40, 20];
-  expect(Date.now() - start).to.be.closeTo(...expected);
+  const iterable = R.range(0, 20);
+  const out = [];
+  await func(async (i) => {
+    await delay(random(1, 2));
+    out.push(i);
+  }, iterable);
+  
+  if (isParallel) {
+    expect(out)
+      .to.have.members(iterable)
+      .but.not.to.have.ordered.members(iterable);
+  } else {
+    expect(out)
+      .to.have.ordered.members(iterable);
+  }
+  
 };
 
 describe('async lib', () => {

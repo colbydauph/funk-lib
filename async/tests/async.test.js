@@ -7,7 +7,6 @@ const R = require('ramda');
 
 // local
 const { isPromise } = require('../../is');
-const { random } = require('../../number');
 
 // local
 const {
@@ -15,16 +14,33 @@ const {
   deferred,
   delay,
   filter,
+  filterSeries,
   flatMap,
   forEach,
+  forEachSeries,
   fromCallback,
   map,
+  mapSeries,
   pipe,
   promisify,
   props,
+  race,
   reduce,
+  timeout,
+  TimeoutError,
   toAsync,
 } = require('..');
+
+const assertIsParallel = async (isParallel, func) => {
+  const iterable = [...Array(10)];
+  const start = Date.now();
+  await func(() => delay(10), iterable);
+  if (isParallel) {
+    expect(Date.now() - start).to.be.closeTo(10, 5);
+  } else {
+    expect(Date.now() - start).to.be.closeTo(100, 30);
+  }
+};
 
 describe('async lib', () => {
   
@@ -155,9 +171,21 @@ describe('async lib', () => {
       expect(result).to.eql([1, 3, 5]);
     });
     
+    it('should run in parallel', async () => {
+      await assertIsParallel(true, filter);
+    });
+    
     it('should be curried', async () => {
       const result = await filter(pred)([1, 2, 3, 4, 5]);
       expect(result).to.eql([1, 3, 5]);
+    });
+    
+  });
+  
+  describe('filterSeries', () => {
+    
+    it('should run in series', async () => {
+      await assertIsParallel(false, filterSeries);
     });
     
   });
@@ -185,6 +213,10 @@ describe('async lib', () => {
     it('should return concatenated results', async () => {
       const result = await flatMap(pred, [1, 2, 3]);
       expect(result).to.eql([1, 2, 2, 3, 3, 4]);
+    });
+    
+    it('should run in parallel', async () => {
+      await assertIsParallel(true, flatMap);
     });
     
     it('should be curried', async () => {
@@ -222,13 +254,30 @@ describe('async lib', () => {
     });
     
     it('should run in parallel', async () => {
-      const arr = [1, 2, 3, 4, 5];
-      const order = [];
-      await forEach(async (item) => {
-        await delay(random(0, 10));
-        order.push(item);
-      }, arr);
-      expect(order).to.not.eql(arr);
+      await assertIsParallel(true, forEach);
+    });
+    
+  });
+  
+  describe('forEachSeries', () => {
+    
+    it('should call the predicate once per item', async () => {
+      const pred = sinon.stub();
+      const iterable = [1, 2, 3, 4];
+      await forEachSeries(pred, iterable);
+      expect(pred.args).to.eql([
+        [1], [2], [3], [4],
+      ]);
+    });
+    
+    it('should run in series', async () => {
+      await assertIsParallel(false, forEachSeries);
+    });
+    
+    it('should return the iterable', async () => {
+      const iterable = [1, 2, 3, 4];
+      await expect(forEachSeries(() => {}, iterable))
+        .to.eventually.equal(iterable);
     });
     
   });
@@ -278,13 +327,15 @@ describe('async lib', () => {
     });
     
     it('should run in parallel', async () => {
-      const arr = [1, 2, 3, 4, 5];
-      const order = [];
-      await map(async (item) => {
-        await delay(random(0, 10));
-        order.push(item);
-      }, arr);
-      expect(order).to.not.eql(arr);
+      await assertIsParallel(true, map);
+    });
+    
+  });
+  
+  describe('mapSeries', () => {
+    
+    it('should run in parallel', async () => {
+      await assertIsParallel(false, mapSeries);
     });
     
   });
@@ -371,6 +422,32 @@ describe('async lib', () => {
     
   });
   
+  describe('race', () => {
+    
+    it('should resolve the value of the first-resolved promise', async () => {
+      
+      await expect(race([
+        delay(50).then(() => 'second'),
+        delay(10).then(() => 'first'),
+        delay(200).then(() => 'third'),
+      ])).to.eventually.eql('first');
+      
+    });
+    
+    it('should reject if any promise rejects first', async () => {
+      const error = Error('woops');
+      await expect(race([
+        delay(50).then(() => 'second'),
+        delay(10).then(() => {
+          throw error;
+        }),
+        delay(100).then(() => 'third'),
+      ])).to.be.rejectedWith(error);
+      
+    });
+    
+  });
+  
   describe('reduce', () => {
     
     let pred, iterable, init;
@@ -417,6 +494,30 @@ describe('async lib', () => {
     
   });
     
+  describe('timeout', () => {
+    
+    it('should resolve if promise is resolved before timeout', async () => {
+      const promise = delay(100).then(() => 'done');
+      await expect(timeout(500, promise)).to.eventually.eql('done');
+    });
+    
+    it('should be rejected with a TimeoutError if promise does not resolve before timeout', async () => {
+      const promise = delay(500);
+      await expect(timeout(100, promise))
+        .to.be.rejectedWith(TimeoutError, 'timed out after 100ms');
+    });
+    
+    it('should propagate promise errors', async () => {
+      const error = Error('woops');
+      const promise = delay(100).then(() => {
+        throw error;
+      });
+      await expect(timeout(100, promise))
+        .to.be.rejectedWith(error);
+    });
+    
+  });
+  
   describe('toAsync', () => {
     
     it('should return a function', () => {

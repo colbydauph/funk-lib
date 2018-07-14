@@ -3,6 +3,9 @@
 // modules
 const R = require('ramda');
 
+// @async array<promise> -> *
+const race = Promise.race.bind(Promise);
+
 // @async number -> undefined
 const delay = async (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -18,11 +21,13 @@ const fromCallback = async (func) => {
   });
 };
 
+// make an errback-yielding function promise-returning
 // inverse of callbackify
 const promisify = (func) => async (...args) => {
   return fromCallback((cb) => func(...args, cb));
 };
 
+// make a promise-returning function errback-yielding
 // inverse of promisify
 const callbackify = (func) => (...args) => {
   const cb = args.pop();
@@ -45,11 +50,12 @@ const deferred = () => {
   };
 };
 
-// @async (parallel)
-// predicate -> iterable -> iterable
-const forEach = R.curry(async (pred, iterable) => {
-  await Promise.all(iterable.map((item) => pred(item)));
-  return iterable;
+// @async (series)
+// predicate -> * -> iterable -> iterable
+const reduce = R.curry(async (pred, init, iterable) => {
+  let result = init;
+  for (const el of iterable) result = await pred(result, el);
+  return result;
 });
 
 // @async (parallel)
@@ -58,10 +64,39 @@ const map = R.curry(async (pred, iterable) => {
   return Promise.all(iterable.map((item) => pred(item)));
 });
 
+// @async (series)
+// predicate -> iterable -> iterable
+const mapSeries = R.curry(async (pred, iterable) => {
+  return reduce(async (out, item) => {
+    return [...out, await pred(item)];
+  }, [], iterable);
+});
+
+// @async (parallel)
+// predicate -> iterable -> iterable
+const forEach = R.curry(async (pred, iterable) => {
+  await map(pred, iterable);
+  return iterable;
+});
+
+// @async (series)
+// predicate -> iterable -> iterable
+const forEachSeries = R.curry(async (pred, iterable) => {
+  await mapSeries(pred, iterable);
+  return iterable;
+});
+
 // @async (parallel)
 // predicate -> iterable -> iterable
 const filter = R.curry(async (pred, iterable) => {
   const bools = await map(pred, iterable);
+  return iterable.filter((el, i) => bools[i]);
+});
+
+// @async (series)
+// predicate -> iterable -> iterable
+const filterSeries = R.curry(async (pred, iterable) => {
+  const bools = await mapSeries(pred, iterable);
   return iterable.filter((el, i) => bools[i]);
 });
 
@@ -75,35 +110,42 @@ const pipe = (...funcs) => async (...args) => {
 // predicate -> iterable -> iterable
 const flatMap = R.curryN(2)(pipe(map, R.chain(R.identity)));
 
-// @async (series)
-// predicate -> * -> iterable -> iterable
-const reduce = R.curry(async (pred, init, iterable) => {
-  let result = init;
-  for (const el of iterable) result = await pred(result, el);
-  return result;
-});
-
 // @async (parallel)
 // object -> object
-const props = async (obj) => {
-  const out = await map(async ([key, promise]) => {
-    return [key, await promise];
-  }, R.toPairs(obj));
-  return R.fromPairs(out);
-};
+const props = pipe(
+  R.toPairs,
+  map(async ([key, val]) => [key, await val]),
+  R.fromPairs,
+);
+
+// timeout a promise. timeout throws TimeoutError
+class TimeoutError extends Error {}
+// number -> promise -> promise
+const timeout = R.curry((ms, promise) => race([
+  promise,
+  delay(ms).then(() => {
+    throw new TimeoutError(`timed out after ${ ms }ms`);
+  }),
+]));
 
 module.exports = {
   callbackify,
   deferred,
   delay,
   filter,
+  filterSeries,
   flatMap,
   forEach,
+  forEachSeries,
   fromCallback,
   map,
+  mapSeries,
   pipe,
   promisify,
   props,
+  race,
   reduce,
+  timeout,
+  TimeoutError,
   toAsync,
 };

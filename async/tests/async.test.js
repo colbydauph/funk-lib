@@ -17,6 +17,7 @@ const {
   filter,
   filterSeries,
   flatMap,
+  flatMapSeries,
   forEach,
   forEachSeries,
   fromCallback,
@@ -31,7 +32,6 @@ const {
   TimeoutError,
   toAsync,
 } = require('..');
-
 
 const assertIsParallel = async (isParallel, func) => {
   const iterable = R.range(0, 20);
@@ -257,6 +257,43 @@ describe('async lib', () => {
     });
 
   });
+  
+  describe('flatMapSeries', () => {
+    
+    let pred;
+    beforeEach('stub', () => {
+      pred = sinon.spy((num) => [num, num + 1]);
+    });
+    
+    it('should call predicate once for each item in iterable', async () => {
+      await flatMapSeries(pred, [1, 2, 3, 4, 5]);
+      expect(pred.callCount).to.eql(5);
+    });
+    
+    it('should call predicate with iterable element', async () => {
+      const iterable = [{}, {}, {}];
+      await flatMapSeries(pred, iterable);
+      pred.args.forEach(([arg], i) => {
+        expect(arg).to.eql(iterable[i]);
+      });
+    });
+    
+    it('should return concatenated results', async () => {
+      const result = await flatMapSeries(pred, [1, 2, 3]);
+      expect(result).to.eql([1, 2, 2, 3, 3, 4]);
+    });
+    
+    it('should run in series', async () => {
+      await assertIsParallel(false, flatMapSeries);
+    });
+    
+    it('should be curried', async () => {
+      const result = await flatMapSeries(pred)([1]);
+      expect(result).to.eql([1, 2]);
+    });
+
+  });
+  
   
   describe('forEach', () => {
     

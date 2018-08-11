@@ -112,6 +112,10 @@ const pipe = (...funcs) => async (...args) => {
 // predicate -> iterable -> iterable
 const flatMap = R.curryN(2)(pipe(map, R.chain(R.identity)));
 
+// @async (series)
+// predicate -> iterable -> iterable
+const flatMapSeries = R.curryN(2)(pipe(mapSeries, R.chain(R.identity)));
+
 // @async (parallel)
 // object -> object
 const props = pipe(
@@ -126,7 +130,7 @@ class TimeoutError extends Error {}
 const timeout = R.curry((ms, promise) => race([
   promise,
   delay(ms).then(() => {
-    throw new TimeoutError(`timed out after ${ ms }ms`);
+    throw new TimeoutError(`promise timed out after ${ ms }ms`);
   }),
 ]));
 
@@ -137,6 +141,7 @@ module.exports = {
   filter,
   filterSeries,
   flatMap,
+  flatMapSeries,
   forEach,
   forEachSeries,
   fromCallback,

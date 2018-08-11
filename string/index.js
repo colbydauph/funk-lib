@@ -29,6 +29,8 @@ const toBase64 = (str) => Buffer.from(str).toString('base64');
 // string -> string
 const parseBase64 = (base64str) => Buffer.from(base64str, 'base64').toString('utf8');
 
+// const slugify =
+
 
 module.exports = {
   capitalize,

@@ -34,9 +34,7 @@ const mapKeys = R.curry((pred, obj) => {
 });
 
 // (V -> M) -> Object<K, V> -> Object<K, M>
-const mapValues = R.curry((pred, obj) => {
-  return mapPairs(([key, value]) => [key, pred(value)], obj);
-});
+const mapValues = R.map;
 
 // recursive + mutating + identity
 const deepFreeze = (obj) => {
@@ -67,6 +65,8 @@ const nestWith = R.curry((pred, obj) => {
   }, {}, R.toPairs(obj));
 });
 
+// serialize to json with indents
+const toHumanJson = (obj) => JSON.stringify(obj, null, 2);
 
 // // recursive R.merge with predicate for custom merging
 // const mergeDeepWith = R.curry((pred, left, right) => {
@@ -87,5 +87,6 @@ module.exports = {
   mapPairs,
   mapValues,
   nestWith,
+  toHumanJson,
   pickAs,
 };

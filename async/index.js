@@ -90,6 +90,27 @@ const forEachSeries = R.curry(async (pred, iterable) => {
   return iterable;
 });
 
+// @async (parallel)
+// predicate -> Iterable<A> -> A
+const find = R.curry(async (pred, iterable) => {
+  return new Promise(async (resolve, reject) => {
+    await forEach(async (item) => {
+      if (await pred(item)) resolve(item);
+    }, iterable)
+      // resolve undefined if none found
+      .then(() => resolve())
+      .catch(reject);
+  });
+});
+
+// @async (series)
+// predicate -> Iterable<A> -> A
+const findSeries = R.curry(async (pred, iterable) => {
+  for (const item of iterable) {
+    if (await pred(item)) return item;
+  }
+});
+
 // fixme: do this in O(n)
 // @async (parallel)
 // predicate -> iterable -> iterable
@@ -144,6 +165,8 @@ module.exports = {
   delay,
   filter,
   filterSeries,
+  find,
+  findSeries,
   flatMap,
   flatMapSeries,
   forEach,

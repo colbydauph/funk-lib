@@ -16,6 +16,8 @@ const {
   delay,
   filter,
   filterSeries,
+  find,
+  findSeries,
   flatMap,
   flatMapSeries,
   forEach,
@@ -57,6 +59,9 @@ const iterOf = (items) => (function* iter() {
     yield item;
   }
 })();
+
+// it('should work with sync functions');
+// it('should work with async iterables');
 
 describe('async lib', () => {
   
@@ -316,6 +321,82 @@ describe('async lib', () => {
       expect(pred.callCount).to.eql(5);
     });
 
+  });
+  
+  describe('find', () => {
+    
+    let pred, iterable, result;
+    before('stub', () => {
+      pred = async num => num > 5;
+      iterable = R.range(0, 10);
+      result = 6;
+    });
+    
+    it('should return the first item with a truthy predicate', async () => {
+      await expect(find(pred, iterable))
+        .to.eventually.eql(result);
+    });
+    
+    it('should should be curried', async () => {
+      await expect(find(pred)(iterable))
+        .to.eventually.eql(result);
+    });
+    
+    it('should run in parallel', async () => {
+      await assertIsParallel(true, find);
+    });
+    
+    it('should should work with iterables', async () => {
+      await expect(find(pred, iterOf(iterable)))
+        .to.eventually.eql(result);
+    });
+    
+    it('should work with async iterables');
+    
+    it('should return undefined if no item found', async () => {
+      pred = num => num > 1000;
+      await expect(find(pred, iterable))
+        .to.eventually.eql(undefined);
+    });
+    
+  });
+  
+  describe('findSeries', () => {
+    
+    let pred, iterable, result;
+    before('stub', () => {
+      pred = async num => num > 5;
+      iterable = R.range(0, 10);
+      result = 6;
+    });
+    
+    it('should return the first item with a truthy predicate', async () => {
+      await expect(findSeries(pred, iterable))
+        .to.eventually.eql(result);
+    });
+    
+    it('should should be curried', async () => {
+      await expect(findSeries(pred)(iterable))
+        .to.eventually.eql(result);
+    });
+    
+    it('should run in series', async () => {
+      await assertIsParallel(false, findSeries);
+    });
+    
+    it('should should work with iterables', async () => {
+      await expect(findSeries(pred, iterOf(iterable)))
+        .to.eventually.eql(result);
+    });
+    
+    it('should work with async iterables');
+    
+    it('should return undefined if no item found', async () => {
+      pred = num => num > 1000;
+      await expect(findSeries(pred, iterable))
+        .to.eventually.eql(undefined);
+    });
+    
   });
   
   describe('forEach', () => {
@@ -597,6 +678,10 @@ describe('async lib', () => {
         delay(100).then(() => 'third'),
       ])).to.be.rejectedWith(error);
     });
+    
+    // spec says never resolve. logic says immediate resolve
+    it('should ? if passed an empty array');
+    
   });
   
   describe('reduce', () => {

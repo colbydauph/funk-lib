@@ -61,7 +61,11 @@ const reduce = R.curry(async (pred, init, iterable) => {
 // @async (parallel)
 // predicate -> iterable -> iterable
 const map = R.curry(async (pred, iterable) => {
-  return Promise.all(iterable.map((item) => pred(item)));
+  const promises = [];
+  for (const item of iterable) {
+    promises.push(pred(item));
+  }
+  return Promise.all(promises);
 });
 
 // @async (series)

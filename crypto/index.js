@@ -5,8 +5,9 @@ const crypto = require('crypto');
 
 const R = require('ramda');
 
-const hashWith = R.curry((hash, str) => crypto
-  .createHash(hash)
+// calculates the hash of a string, by type name
+const hashWith = R.curry((type, str) => crypto
+  .createHash(type)
   .update(str)
   .digest('hex'));
 

@@ -57,9 +57,7 @@ const assertIsParallel = async (isParallel, func) => {
 };
 
 const iterOf = (items) => (function* iter() {
-  for (const item of items) {
-    yield item;
-  }
+  for (const item of items) yield item;
 })();
 
 // it('should work with sync functions');

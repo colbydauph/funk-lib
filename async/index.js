@@ -58,14 +58,13 @@ const reduce = R.curry(async (pred, init, iterable) => {
   return result;
 });
 
+
 // @async (parallel)
 // predicate -> iterable -> iterable
 const map = R.curry(async (pred, iterable) => {
-  const promises = [];
-  for (const item of iterable) {
-    promises.push(pred(item));
-  }
-  return Promise.all(promises);
+  const output = [];
+  for (const item of iterable) output.push(pred(item));
+  return Promise.all(output);
 });
 
 // @async (series)
@@ -86,11 +85,12 @@ const forEach = R.curry(async (pred, iterable) => {
 // @async (series)
 // predicate -> iterable -> iterable
 const forEachSeries = R.curry(async (pred, iterable) => {
+  // ignore output values
   await mapSeries(pred, iterable);
   return iterable;
 });
 
-// fixme: this can be O(n)
+// fixme: this can be O(n) with an eager return
 // @async (parallel)
 // predicate -> iterable -> iterable
 const every = R.curry(async (pred, iterable) => {
@@ -102,6 +102,7 @@ const every = R.curry(async (pred, iterable) => {
 // predicate -> iterable -> iterable
 const everySeries = R.curry(async (pred, iterable) => {
   for (const item of iterable) {
+    // eagerly return
     if (!await pred(item)) return false;
   }
   return true;
@@ -124,6 +125,7 @@ const find = R.curry(async (pred, iterable) => {
 // predicate -> Iterable<A> -> A
 const findSeries = R.curry(async (pred, iterable) => {
   for (const item of iterable) {
+    // eagerly return
     if (await pred(item)) return item;
   }
 });

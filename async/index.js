@@ -90,6 +90,23 @@ const forEachSeries = R.curry(async (pred, iterable) => {
   return iterable;
 });
 
+// fixme: this can be O(n)
+// @async (parallel)
+// predicate -> iterable -> iterable
+const every = R.curry(async (pred, iterable) => {
+  return await map(pred, iterable)
+    .then(R.all(R.identity));
+});
+
+// @async (series)
+// predicate -> iterable -> iterable
+const everySeries = R.curry(async (pred, iterable) => {
+  for (const item of iterable) {
+    if (!await pred(item)) return false;
+  }
+  return true;
+});
+
 // @async (parallel)
 // predicate -> Iterable<A> -> A
 const find = R.curry(async (pred, iterable) => {
@@ -155,7 +172,7 @@ class TimeoutError extends Error {}
 const timeout = R.curry((ms, promise) => race([
   promise,
   delay(ms).then(() => {
-    throw new TimeoutError(`promise timed out after ${ ms }ms`);
+    throw new TimeoutError(`Promise timed out after ${ ms }ms`);
   }),
 ]));
 
@@ -163,6 +180,8 @@ module.exports = {
   callbackify,
   deferred,
   delay,
+  every,
+  everySeries,
   filter,
   filterSeries,
   find,

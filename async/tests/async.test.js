@@ -170,7 +170,7 @@ describe('async lib', () => {
     
     let pred, iterable, output;
     beforeEach('stub', () => {
-      pred = async num => num < 20;
+      pred = sinon.spy(async num => num < 20);
       iterable = R.range(0, 10);
       output = true;
     });
@@ -186,9 +186,12 @@ describe('async lib', () => {
         .to.eventually.eql(false);
     });
     
-    it('should run in parallel', async () => {
+    xit('should run in parallel', async () => {
       await assertIsParallel(true, every);
     });
+    
+    // short circuit iteration
+    xit('should eagerly resolve false');
     
     it('should be curried', async () => {
       await expect(every(pred)(iterable))
@@ -422,6 +425,9 @@ describe('async lib', () => {
     
     it('should work with async iterables');
     
+    // short circuit iteration
+    xit('should eagerly resolve found value');
+    
     it('should return undefined if no item found', async () => {
       pred = num => num > 1000;
       await expect(find(pred, iterable))
@@ -604,6 +610,8 @@ describe('async lib', () => {
     });
     
     xit('should work with async iterables');
+    
+    it('should work on objects?');
     
   });
   

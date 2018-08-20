@@ -21,17 +21,16 @@ const template = R.curry((tmpl, variables) => {
   });
 });
 
-// encode a string to base64
+// https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings
+// string -> string -> string -> string
+const encodeFrom = R.curry((from, to, string) => Buffer
+  .from(string, from)
+  .toString(to));
+  
+// encode and decode base64 strings
 // string -> string
-const toBase64 = (str) => Buffer
-  .from(str)
-  .toString('base64');
-
-// decode a base64 string
-// string -> string
-const parseBase64 = (base64str) => Buffer
-  .from(base64str, 'base64')
-  .toString('utf8');
+const toBase64 = encodeFrom('utf8', 'base64');
+const parseBase64 = encodeFrom('base64', 'utf8');
 
 // const slugify =
 

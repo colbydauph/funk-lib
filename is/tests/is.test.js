@@ -177,7 +177,11 @@ describe('is', () => {
     func: isIterable,
     name: 'isIterable',
     fail: [{}, true, null, undefined, 1],
-    pass: [[], { * [Symbol.iterator]() {} }],
+    pass: [
+      [],
+      { * [Symbol.iterator]() {} },
+      (function* iterator() {})(),
+    ],
   });
   
   assert({
@@ -186,6 +190,7 @@ describe('is', () => {
     fail: [{}, true, null, undefined, 1, { * [Symbol.iterator]() {} }],
     pass: [
       { * [Symbol.asyncIterator]() {} },
+      // (async function* ayncIterable() {})(),
     ],
   });
   

@@ -26,6 +26,7 @@ const {
   isSyncGeneratorFunction,
   isTypeOf,
   isUndefined,
+  isAsyncIterable,
 } = require('..');
 
 describe('is', () => {
@@ -56,7 +57,7 @@ describe('is', () => {
       // async function* gen() {},
     ],
   });
-  
+
   assert({
     func: isGenerator,
     name: 'isGenerator',
@@ -176,7 +177,21 @@ describe('is', () => {
     func: isIterable,
     name: 'isIterable',
     fail: [{}, true, null, undefined, 1],
-    pass: [[], { * [Symbol.iterator]() {} }],
+    pass: [
+      [],
+      { * [Symbol.iterator]() {} },
+      (function* iterator() {})(),
+    ],
+  });
+  
+  assert({
+    func: isAsyncIterable,
+    name: 'isAsyncIterable',
+    fail: [{}, true, null, undefined, 1, { * [Symbol.iterator]() {} }],
+    pass: [
+      { * [Symbol.asyncIterator]() {} },
+      // (async function* ayncIterable() {})(),
+    ],
   });
   
   assert({

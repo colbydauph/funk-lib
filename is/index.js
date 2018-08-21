@@ -7,8 +7,8 @@ const { isNaN } = Number;
 const { isArray } = Array;
 const { isBuffer } = Buffer;
 
-const isInstanceOf = R.curry((type, thing) => thing instanceof type);
-const isTypeOf = R.curry((type, thing) => typeof thing === type);
+const isInstanceOf = R.curry((constructor, thing) => (thing instanceof constructor));
+const isTypeOf = R.curry((type, thing) => (typeof thing === type));
 
 const isBoolean = isTypeOf('boolean');
 const isDate = isInstanceOf(Date);
@@ -82,10 +82,13 @@ const isGeneratorFunction = R.anyPass([
   isAsyncGeneratorFunction,
 ]);
 
-// isAsyncIterable Symbol.asyncIterator
 const isIterable = R.allPass([
   isTruthy,
   R.pipe(R.prop(Symbol.iterator), isFunction),
+]);
+const isAsyncIterable = R.allPass([
+  isTruthy,
+  R.pipe(R.prop(Symbol.asyncIterator), isFunction),
 ]);
 
 
@@ -93,6 +96,7 @@ module.exports = {
   isArray,
   isAsyncGenerator,
   isAsyncGeneratorFunction,
+  isAsyncIterable,
   isBoolean,
   isBuffer,
   isDate,

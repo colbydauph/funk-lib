@@ -103,9 +103,8 @@ const filterSeries = R.curry(async (pred, iterable) => {
 });
 
 // serial + async R.pipe
-const pipe = (...funcs) => async (...args) => {
-  for (const func of funcs) args = [await func(...args)];
-  return args[0];
+const pipe = (fn, ...fns) => async (...args) => {
+  return reduce(R.applyTo, await fn(...args), fns);
 };
 
 // @async (parallel)

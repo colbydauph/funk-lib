@@ -29,9 +29,9 @@ const {
   uniqueSync,
   windowSync,
   zipSync,
-} = require('..');
+} = require('../sync');
 
-describe('iterator', () => {
+describe('sync iterable', () => {
   
   let pred, iterator, output;
   beforeEach('stub', () => {
@@ -91,10 +91,13 @@ describe('iterator', () => {
   describe('cycleSync', () => {
     
     it('should infinitely cycle through the iterable', () => {
-      const iterable = rangeSync(0, 5);
-      const cycled = cycleSync(iterable);
-      const taken = takeSync(17, cycled);
-      expect(toArraySync(taken)).to.eql([
+      const iterator = R.pipe(
+        cycleSync,
+        takeSync(17)
+      )(rangeSync(0, 5));
+      
+      
+      expect(toArraySync(iterator)).to.eql([
         ...R.range(0, 5),
         ...R.range(0, 5),
         ...R.range(0, 5),

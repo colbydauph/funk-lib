@@ -8,7 +8,7 @@ const crypto = require('./crypto');
 const datetime = require('./datetime');
 const generator = require('./generator');
 const is = require('./is');
-const iterator = require('./iterator');
+const iterable = require('./iterable');
 const number = require('./number');
 const object = require('./object');
 const proc = require('./process');
@@ -25,7 +25,7 @@ module.exports = {
   datetime,
   generator,
   is,
-  iterator,
+  iterable,
   number,
   object,
   process: proc,

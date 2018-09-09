@@ -12,9 +12,11 @@ const {
   isGenerator,
   isGeneratorFunction,
   isInstanceOf,
+  isInteger,
   isIterable,
   isNegative,
   isNull,
+  isNumber,
   isObject,
   isPojo,
   isPositive,
@@ -226,6 +228,23 @@ describe('is', () => {
         [Symbol.toPrimitive]: () => 'obj',
       }),
       new (function Foo() {})(),
+    ],
+  });
+  
+  assert({
+    func: isNumber,
+    name: 'isNumber',
+    pass: [-Infinity, -100, -10.10, -0, 0, 10.10, 100, Infinity],
+    fail: [NaN, [], {}, true, false, () => {}],
+  });
+  
+  assert({
+    func: isInteger,
+    name: 'isInteger',
+    pass: [-100, -0, 0, 100],
+    fail: [
+      -Infinity, Infinity, -10.10, 10.10, NaN,
+      [], {}, true, false, () => {},
     ],
   });
   

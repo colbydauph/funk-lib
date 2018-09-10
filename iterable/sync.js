@@ -2,21 +2,28 @@
 
 const R = require('ramda');
 
+// https://esdoc.org/
 // const reduceYieldSync
 
+// Iterable<T> -> Iterable<T> -> Iterable<T>
+const concat = R.curry(function* concat(iterator1, iterator2) {
+  yield* iterator1;
+  yield* iterator2;
+});
+
 // ((A, T) -> A) -> Iterable<T> -> A -> A
-const reduceSync = R.curry((pred, acc, iterable) => {
+const reduce = R.curry((pred, acc, iterable) => {
   for (const item of iterable) acc = pred(acc, item);
   return acc;
 });
 
 // (A -> B) -> Iterable<A> -> Iterable<B>
-const mapSync = R.curry(function* mapSync(pred, iterable) {
+const map = R.curry(function* map(pred, iterable) {
   for (const item of iterable) yield pred(item);
 });
 
 // todo: figure out how to annotate these types
-const flatMapSync = R.curry(function* flatMapSync(pred, iterable) {
+const flatMap = R.curry(function* flatMap(pred, iterable) {
   for (const item of iterable) yield* pred(item);
 });
 
@@ -29,14 +36,14 @@ const forEachSync = R.curry(function* forEachSync(pred, iterable) {
 });
 
 // (T -> Boolean) -> Iterable<T> -> Iterable<T>
-const filterSync = R.curry(function* filterSync(pred, iterable) {
+const filter = R.curry(function* filter(pred, iterable) {
   for (const item of iterable) {
     if (pred(item)) yield item;
   }
 });
 
 // ((B, A) -> B) -> Iterable<A> -> Iterable<B>
-const accumulateSync = R.curry(function* accumulate(pred, iterable) {
+const accumulate = R.curry(function* accumulate(pred, iterable) {
   let last;
   for (const item of iterable) {
     last = last ? pred(last, item) : item;
@@ -45,28 +52,28 @@ const accumulateSync = R.curry(function* accumulate(pred, iterable) {
 });
 
 // Iterable<T> -> Iterable<Tuple<T, Integer>>
-const enumerateSync = function* enumerateSync(iterable) {
+const enumerate = function* enumerate(iterable) {
   let i = 0;
-  yield* mapSync((item) => [item, i++], iterable);
+  yield* map((item) => [item, i++], iterable);
 };
 
 // Integer -> Integer -> Iterable<T>
-const rangeSync = R.curry(function* rangeSync(start, end) {
+const range = R.curry(function* range(start, end) {
   while (start < end) yield start++;
 });
 
 // Integer -> T -> Iterable<T>
-const timesSync = R.curry(function* timesSync(num, thing) {
+const times = R.curry(function* times(num, thing) {
   while (num-- > 0) yield thing;
 });
 
 // T -> Iterable<T>
-const repeatSync = timesSync(Infinity);
+const repeat = times(Infinity);
 
 // Iterable<T> -> Iterable<T>
-const uniqueSync = function* uniqueSync(iterable) {
+const unique = function* unique(iterable) {
   const set = new Set();
-  yield* filterSync((item) => {
+  yield* filter((item) => {
     if (set.has(item)) return;
     set.add(item);
     return true;
@@ -74,7 +81,7 @@ const uniqueSync = function* uniqueSync(iterable) {
 };
 
 // Iterable<A> -> Iterable<B> -> Iterable<Tuple<A, B>>
-const zipSync = R.curry(function* zipSync(iterable1, iterable2) {
+const zip = R.curry(function* zip(iterable1, iterable2) {
   while (true) {
     const { value: value1, done: done1 } = iterable1.next();
     const { value: value2, done: done2 } = iterable2.next();
@@ -84,37 +91,37 @@ const zipSync = R.curry(function* zipSync(iterable1, iterable2) {
 });
 
 // Integer -> Integer -> Iterable<T> -> Iterable<T>
-const sliceSync = R.curry(function* sliceSync(start, stop, iterable) {
-  for (const [item, i] of enumerateSync(iterable)) {
+const slice = R.curry(function* slice(start, stop, iterable) {
+  for (const [item, i] of enumerate(iterable)) {
     if (i >= start) yield item;
     if (i >= stop - 1) return;
   }
 });
 
 // Integer -> Iterable<T> -> Iterable<T>
-const takeSync = R.curry(function* takeSync(num, iterable) {
-  for (const [item, i] of enumerateSync(iterable)) {
+const take = R.curry(function* take(num, iterable) {
+  for (const [item, i] of enumerate(iterable)) {
     yield item;
     if ((i + 1) >= num) return;
   }
 });
 
 // Integer -> Iterable<T> -> Iterable<T>
-const dropSync = R.curry(function* takeSync(num, iterable) {
-  for (const [item, i] of enumerateSync(iterable)) {
+const drop = R.curry(function* take(num, iterable) {
+  for (const [item, i] of enumerate(iterable)) {
     if (i >= num) yield item;
   }
 });
 
 // Iterable<T> -> T
-const nextSync = (iterable) => {
+const next = (iterable) => {
   const { value, done } = iterable.next();
   if (done) throw Error('iterable exhausted');
   return value;
 };
 
 // * -> Iterable<T> -> Boolean
-const includesSync = R.curry(async (it, iterable) => {
+const includes = R.curry(async (it, iterable) => {
   for (const item of iterable) {
     if (it === item) return true;
   }
@@ -122,27 +129,27 @@ const includesSync = R.curry(async (it, iterable) => {
 });
 
 // Iterable<T> -> Integer
-const lengthSync = reduceSync(R.add(1), 0);
+const length = reduce(R.add(1), 0);
 
 // Iterable<N> -> N
-const sumSync = reduceSync(R.add, 0);
+const sum = reduce(R.add, 0);
 
 // Iterable<T> -> Array<T>
-const toArraySync = reduceSync(R.flip(R.append), []);
+const toArray = reduce(R.flip(R.append), []);
 
 // is this more generic?
 // Array<T> -> Iterable<T>
-const fromArraySync = mapSync(R.identity);
+const fromArray = map(R.identity);
 
 // Integer -> Iterable<T> -> T
-const nthSync = R.curry((num, iterable) => {
-  for (const [item, i] of enumerateSync(iterable)) {
+const nth = R.curry((num, iterable) => {
+  for (const [item, i] of enumerate(iterable)) {
     if (i >= num) return item;
   }
 });
 
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const someSync = R.curry(function* someSync(pred, iterable) {
+const some = R.curry(function* some(pred, iterable) {
   for (const item of iterable) {
     if (pred(item)) return true;
   }
@@ -150,7 +157,7 @@ const someSync = R.curry(function* someSync(pred, iterable) {
 });
 
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const everySync = R.curry(function* everySync(pred, iterable) {
+const every = R.curry(function* every(pred, iterable) {
   for (const item of iterable) {
     if (!pred(item)) return false;
   }
@@ -158,25 +165,41 @@ const everySync = R.curry(function* everySync(pred, iterable) {
 });
 
 // (T -> T) -> Iterable<T> -> T
-const findSync = R.curry(function* findSync(pred, iterable) {
+const find = R.curry(function* find(pred, iterable) {
   for (const item of iterable) {
     if (pred(item)) return item;
   }
 });
 
 // Iterable<T> -> Iterable<T>
-const exhaustSync = forEachSync(() => {});
+const exhaust = forEachSync(() => {});
 
 // (T -> Boolean) -> Iterable<T> -> Iterable<T>
-const takeWhileSync = R.curry(function* takeWhileSync(pred, iterable) {
+const takeWhile = R.curry(function* takeWhile(pred, iterable) {
   for (const item of iterable) {
     if (!pred(item)) return;
     yield item;
   }
 });
 
+// fromArray = getIterator
+
+// (T -> Boolean) -> Iterable<T> -> Iterable<T>
+const dropWhile = R.curry(function* dropWhile(pred, iterable) {
+  let done = false;
+  for (const item of iterable) {
+    if (!pred(item)) {
+      done = true;
+    } else {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    if (done) yield item;
+  }
+});
+
 // Iterable<T> -> Iterable<T>
-const cycleSync = R.curry(function* cycleSync(iterable) {
+const cycle = R.curry(function* cycle(iterable) {
   const buffer = [];
   yield* forEachSync((item) => buffer.push(item), iterable);
   if (!buffer.length) return;
@@ -184,14 +207,14 @@ const cycleSync = R.curry(function* cycleSync(iterable) {
 });
 
 // Iterable<T> -> Iterable<T>
-const reverseSync = R.curry(function* reverseSync(iterable) {
-  yield* toArraySync(iterable).reverse();
+const reverse = R.curry(function* reverse(iterable) {
+  yield* toArray(iterable).reverse();
 });
 
 // R.aperture
 // eslint-disable-next-line max-statements
 // Integer -> Iterable<T> -> Iterable<[T]>
-const windowSync = R.curry(function* windowSync(size, iterable) {
+const frame = R.curry(function* frame(size, iterable) {
   let cache = [];
   for (const item of iterable) {
     if (cache.length === size) {
@@ -204,47 +227,41 @@ const windowSync = R.curry(function* windowSync(size, iterable) {
   yield cache;
 });
 
-// Iterable<T> -> Iterable<T> -> Iterable<T>
-const concatSync = R.curry(function* concatSync(iterator1, iterator2) {
-  yield* iterator1;
-  yield* iterator2;
-});
 
 
-// const takeWhileSync = () => {};
 // const dropWhileSync = () => {};
 // const countWhereSync = () => {};
-// const chainSync = () => {};
 
 module.exports = {
-  accumulateSync,
-  concatSync,
-  cycleSync,
-  dropSync,
-  enumerateSync,
-  everySync,
-  exhaustSync,
-  filterSync,
-  findSync,
-  flatMapSync,
-  fromArraySync,
-  includesSync,
-  lengthSync,
-  mapSync,
-  nextSync,
-  nthSync,
-  rangeSync,
-  reduceSync,
-  repeatSync,
-  reverseSync,
-  sliceSync,
-  someSync,
-  sumSync,
-  takeSync,
-  takeWhileSync,
-  timesSync,
-  toArraySync,
-  uniqueSync,
-  windowSync,
-  zipSync,
+  accumulate,
+  concat,
+  cycle,
+  drop,
+  dropWhile,
+  enumerate,
+  every,
+  exhaust,
+  filter,
+  find,
+  flatMap,
+  frame,
+  fromArray,
+  includes,
+  length,
+  map,
+  next,
+  nth,
+  range,
+  reduce,
+  repeat,
+  reverse,
+  slice,
+  some,
+  sum,
+  take,
+  takeWhile,
+  times,
+  toArray,
+  unique,
+  zip,
 };

@@ -28,7 +28,7 @@ const flatMap = R.curry(function* flatMap(pred, iterable) {
 });
 
 // (T -> *) -> Iterable<T> -> Iterable<T>
-const forEachSync = R.curry(function* forEachSync(pred, iterable) {
+const forEach = R.curry(function* forEach(pred, iterable) {
   for (const item of iterable) {
     pred(item);
     yield item;
@@ -51,6 +51,7 @@ const accumulate = R.curry(function* accumulate(pred, iterable) {
   }
 });
 
+// todo: should tuple be reversed? to match entries?
 // Iterable<T> -> Iterable<Tuple<T, Integer>>
 const enumerate = function* enumerate(iterable) {
   let i = 0;
@@ -138,6 +139,7 @@ const sum = reduce(R.add, 0);
 const toArray = reduce(R.flip(R.append), []);
 
 // is this more generic?
+// fromArray = getIterator
 // Array<T> -> Iterable<T>
 const fromArray = map(R.identity);
 
@@ -172,7 +174,7 @@ const find = R.curry(function* find(pred, iterable) {
 });
 
 // Iterable<T> -> Iterable<T>
-const exhaust = forEachSync(() => {});
+const exhaust = forEach(() => {});
 
 // (T -> Boolean) -> Iterable<T> -> Iterable<T>
 const takeWhile = R.curry(function* takeWhile(pred, iterable) {
@@ -181,8 +183,6 @@ const takeWhile = R.curry(function* takeWhile(pred, iterable) {
     yield item;
   }
 });
-
-// fromArray = getIterator
 
 // (T -> Boolean) -> Iterable<T> -> Iterable<T>
 const dropWhile = R.curry(function* dropWhile(pred, iterable) {
@@ -201,7 +201,7 @@ const dropWhile = R.curry(function* dropWhile(pred, iterable) {
 // Iterable<T> -> Iterable<T>
 const cycle = R.curry(function* cycle(iterable) {
   const buffer = [];
-  yield* forEachSync((item) => buffer.push(item), iterable);
+  yield* forEach((item) => buffer.push(item), iterable);
   if (!buffer.length) return;
   while (true) yield* buffer;
 });
@@ -227,10 +227,12 @@ const frame = R.curry(function* frame(size, iterable) {
   yield cache;
 });
 
-
-
-// const dropWhileSync = () => {};
-// const countWhereSync = () => {};
+// T -> Iterable<T> -> Integer
+const indexOf = R.curry(function* indexOf(toFind, iterable) {
+  for (const [item, i] of enumerate(iterable)) {
+    if (item === toFind) return i;
+  }
+});
 
 module.exports = {
   accumulate,
@@ -244,9 +246,11 @@ module.exports = {
   filter,
   find,
   flatMap,
+  forEach,
   frame,
   fromArray,
   includes,
+  indexOf,
   length,
   map,
   next,

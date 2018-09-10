@@ -1,32 +1,41 @@
 'use strict';
 
 // modules
-// const sinon = require('sinon');
 const R = require('ramda');
 const { expect } = require('chai');
 
 // local
 const {
-  // repeatSync,
-  // takeWhile,
   accumulate,
   concat,
   cycle,
   drop,
   dropWhile,
   enumerate,
+  // every,
+  // exhaust,
   filter,
+  // find,
   flatMap,
+  // forEach,
   frame,
   fromArray,
+  // includes,
+  // indexOf,
   length,
+  // map,
   next,
   nth,
   range,
   reduce,
+  // repeat,
+  // repeatSync,
+  // reverse,
   slice,
+  // some,
   sum,
   take,
+  // takeWhile,
   times,
   toArray,
   unique,

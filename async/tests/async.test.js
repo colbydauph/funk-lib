@@ -32,7 +32,6 @@ const {
   toAsync,
 } = require('..');
 
-
 const assertIsParallel = async (isParallel, func) => {
   const iterable = R.range(0, 20);
   const out = [];
@@ -375,6 +374,8 @@ describe('async lib', () => {
       await expect(map(pred)(iterable))
         .to.eventually.eql(result);
     });
+    
+    it('should work on objects');
     
   });
   

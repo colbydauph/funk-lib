@@ -2,8 +2,6 @@
 
 const R = require('ramda');
 
-// https://esdoc.org/
-// const reduceYieldSync
 
 // Iterable<T> -> Iterable<T> -> Iterable<T>
 const concat = R.curry(function* concat(iterator1, iterator2) {
@@ -22,7 +20,7 @@ const map = R.curry(function* map(pred, iterable) {
   for (const item of iterable) yield pred(item);
 });
 
-// todo: figure out how to annotate these types
+// (T *-> T) -> Iterable<T> -> Iterable<T>
 const flatMap = R.curry(function* flatMap(pred, iterable) {
   for (const item of iterable) yield* pred(item);
 });
@@ -117,7 +115,7 @@ const drop = R.curry(function* take(num, iterable) {
 // Iterable<T> -> T
 const next = (iterable) => {
   const { value, done } = iterable.next();
-  if (done) throw Error('iterable exhausted');
+  if (done) throw Error('iterator exhausted');
   return value;
 };
 
@@ -138,10 +136,13 @@ const sum = reduce(R.add, 0);
 // Iterable<T> -> Array<T>
 const toArray = reduce(R.flip(R.append), []);
 
-// is this more generic?
-// fromArray = getIterator
-// Array<T> -> Iterable<T>
-const fromArray = map(R.identity);
+// returns an async iterator for an iterable
+// Iterable<T> -> AsyncIterable<T>
+const from = map(R.identity);
+
+// create a async iterator from one or more (variadic) arguments
+// T -> AsyncIterable<T>
+const of = R.unapply(from);
 
 // Integer -> Iterable<T> -> T
 const nth = R.curry((num, iterable) => {
@@ -174,7 +175,10 @@ const find = R.curry(function* find(pred, iterable) {
 });
 
 // Iterable<T> -> Iterable<T>
-const exhaust = forEach(() => {});
+const exhaust = R.curry(function* exhaust(iterable) {
+  // eslint-disable-next-line no-unused-vars
+  for (const item of iterable) { /* do nothing */ }
+});
 
 // (T -> Boolean) -> Iterable<T> -> Iterable<T>
 const takeWhile = R.curry(function* takeWhile(pred, iterable) {
@@ -248,13 +252,14 @@ module.exports = {
   flatMap,
   forEach,
   frame,
-  fromArray,
+  from,
   includes,
   indexOf,
   length,
   map,
   next,
   nth,
+  of,
   range,
   reduce,
   repeat,

@@ -16,10 +16,11 @@ const map = R.curry(async function* map(pred, iterable) {
 });
 
 // Array<T> -> Iterable<T>
-const fromArray = map(R.identity);
+const from = map(R.identity);
 
-// get an iterator from anything?
-const iteratorFrom = () => {};
+// create a async iterator from one or more (variadic) arguments
+// T -> AsyncIterable<T>
+const of = R.unapply(from);
 
 // Iterable<N> -> N
 const sum = reduce(R.add, 0);
@@ -34,7 +35,7 @@ const next = async (iterable) => {
   return value;
 };
 
-// todo: figure out how to annotate these types
+// (T *-> T) -> Iterable<T> -> AsyncIterable<T>
 const flatMap = R.curry(async function* flatMap(pred, iterable) {
   for await (const item of iterable) {
     yield* await pred(item);
@@ -76,10 +77,11 @@ module.exports = {
   filter,
   flatMap,
   forEach,
-  fromArray,
+  from,
   length,
   map,
   next,
+  of,
   sum,
   toArray,
 };

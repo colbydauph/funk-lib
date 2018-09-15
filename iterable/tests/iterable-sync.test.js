@@ -19,7 +19,7 @@ const {
   flatMap,
   // forEach,
   frame,
-  fromArray,
+  from,
   // includes,
   // indexOf,
   length,
@@ -48,7 +48,7 @@ describe('iterable/sync', () => {
   beforeEach(() => {
     pred = R.identity;
     arr = R.range(0, 5);
-    iterator = fromArray(arr);
+    iterator = from(arr);
     expected = [0, 1, 0, 2, 1, 0, 3, 2, 1, 0];
   });
   
@@ -147,7 +147,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = R.range(0, 100);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       pred = n => n < 70;
       expected = R.range(70, 100);
     });
@@ -170,7 +170,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = R.range(10, 20);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = toArray(zip(
         range(10, 20),
         range(0, 10),
@@ -194,7 +194,7 @@ describe('iterable/sync', () => {
     beforeEach(() => {
       pred = num => num < 8;
       arr = R.range(0, 20);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = [0, 1, 2, 3, 4, 5, 6, 7];
     });
     
@@ -222,7 +222,7 @@ describe('iterable/sync', () => {
         while (num--) yield num;
       };
       arr = R.range(0, 5);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = [0, 1, 0, 2, 1, 0, 3, 2, 1, 0];
     });
     
@@ -248,7 +248,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = R.range(0, 10);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = [
         [0, 1, 2],
         [1, 2, 3],
@@ -321,7 +321,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = R.range(100, 1000);
-      iterator = fromArray(arr);
+      iterator = from(arr);
     });
     
     it('should return the nth item', () => {
@@ -343,7 +343,7 @@ describe('iterable/sync', () => {
     let iterator;
     beforeEach(() => {
       arr = R.range(0, 10);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = arr;
     });
     
@@ -370,7 +370,7 @@ describe('iterable/sync', () => {
     beforeEach(() => {
       pred = (acc, num) => acc + num;
       arr = R.range(0, 200);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = 19900;
     });
     
@@ -398,7 +398,7 @@ describe('iterable/sync', () => {
       start = 10;
       end = 20;
       arr = R.range(0, 100);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = R.slice(start, end, arr);
     });
     
@@ -435,7 +435,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = R.range(50, 500);
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = R.range(50, 120);
     });
     
@@ -478,7 +478,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       arr = [1, 2, 3, 3, 3, 2, 1];
-      iterator = fromArray(arr);
+      iterator = from(arr);
       expected = [1, 2, 3];
     });
     
@@ -501,8 +501,8 @@ describe('iterable/sync', () => {
     beforeEach('stub', () => {
       range1 = R.range(0, 10);
       range2 = R.range(0, 7).reverse();
-      iter1 = fromArray(range1);
-      iter2 = fromArray(range2);
+      iter1 = from(range1);
+      iter2 = from(range2);
       expected = R.zip(range1, range2);
     });
         

@@ -9,7 +9,7 @@ const concat = R.curry(function* concat(iterator1, iterator2) {
   yield* iterator2;
 });
 
-// ((A, T) -> A) -> Iterable<T> -> A -> A
+// ((A, T) -> A) -> A -> Iterable<T> -> A
 const reduce = R.curry((pred, acc, iterable) => {
   for (const item of iterable) acc = pred(acc, item);
   return acc;

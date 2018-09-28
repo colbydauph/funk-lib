@@ -51,6 +51,7 @@ const isPojo = R.allPass([
     return (proto === Object.prototype);
   }),
 ]);
+// fixme: this should be isIterator
 // * -> boolean
 const isGenerator = R.allPass([
   isObject,

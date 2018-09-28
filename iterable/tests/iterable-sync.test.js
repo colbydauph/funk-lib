@@ -2,7 +2,10 @@
 
 // modules
 const R = require('ramda');
+const sinon = require('sinon');
 const { expect } = require('chai');
+
+const { isGenerator } = require('../../is');
 
 // local
 const {
@@ -12,24 +15,25 @@ const {
   drop,
   dropWhile,
   enumerate,
-  // every,
-  // exhaust,
+  every,
+  exhaust,
   filter,
   // find,
   flatMap,
-  // forEach,
+  forEach,
   frame,
   from,
+  groupWith,
   // includes,
   // indexOf,
   length,
   // map,
   next,
   nth,
+  of,
   range,
   reduce,
-  // repeat,
-  // repeatSync,
+  repeat,
   // reverse,
   slice,
   // some,
@@ -41,6 +45,8 @@ const {
   unique,
   zip,
 } = require('../sync');
+
+const noop = () => {};
 
 describe('iterable/sync', () => {
   
@@ -92,8 +98,9 @@ describe('iterable/sync', () => {
     });
     
     it('should work with arrays', () => {
-      expect(toArray(concat([1, 2, 3], [4, 5, 6])))
-        .to.eql([1, 2, 3, 4, 5, 6]);
+      const arrays = iterators.map(toArray);
+      expect(toArray(concat(...arrays)))
+        .to.eql(expected);
     });
     
     it('should be curried', () => {
@@ -128,16 +135,20 @@ describe('iterable/sync', () => {
   
   describe('drop', () => {
     
+    beforeEach(() => {
+      expected = R.drop(3, arr);
+    });
+    
     it('should drop n items', () => {
-      expect(toArray(drop(3, iterator))).to.eql([3, 4]);
+      expect(toArray(drop(3, iterator))).to.eql(expected);
     });
     
     it('should work with arrays', () => {
-      expect(toArray(drop(3, arr))).to.eql([3, 4]);
+      expect(toArray(drop(3, arr))).to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(toArray(drop(3)(iterator))).to.eql([3, 4]);
+      expect(toArray(drop(3)(iterator))).to.eql(expected);
     });
     
   });
@@ -153,15 +164,18 @@ describe('iterable/sync', () => {
     });
     
     it('should drop items while the predicate is satisfied', () => {
-      expect(toArray(dropWhile(pred, iterator))).to.eql(expected);
+      expect(toArray(dropWhile(pred, iterator)))
+        .to.eql(expected);
     });
     
     it('work with arrays', () => {
-      expect(toArray(dropWhile(pred, arr))).to.eql(expected);
+      expect(toArray(dropWhile(pred, arr)))
+        .to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(toArray(dropWhile(pred)(iterator))).to.eql(expected);
+      expect(toArray(dropWhile(pred)(iterator)))
+        .to.eql(expected);
     });
     
   });
@@ -185,6 +199,44 @@ describe('iterable/sync', () => {
     it('should work with arrays', () => {
       expect(toArray(enumerate(arr)))
         .to.eql(expected);
+    });
+    
+  });
+  
+  describe('every', () => {
+    
+    let lt20;
+    beforeEach(() => {
+      lt20 = (num) => num < 20;
+      arr = R.range(0, 10);
+      iterator = from(arr);
+      expected = R.all(lt20, arr);
+    });
+    
+    it('should return true if all items pass the predicate', () => {
+      expect(every(lt20, iterator)).to.eql(expected);
+    });
+    
+    it('should return false if any item does not pass the predicate', () => {
+      const lt5 = (num) => num < 5;
+      expect(every(lt5, iterator)).to.eql(R.all(lt5, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(every(lt20)(iterator)).to.eql(expected);
+    });
+    
+  });
+  
+  describe('exhaust', () => {
+    
+    it('should return undefined', () => {
+      expect(exhaust(iterator)).to.eql(undefined);
+    });
+    
+    it('should exhaust the iterator', () => {
+      exhaust(iterator);
+      expect(toArray(iterator)).to.eql([]);
     });
     
   });
@@ -244,21 +296,34 @@ describe('iterable/sync', () => {
             
   });
   
+  describe('forEach', () => {
+    
+    it('should call predicate for each yielded item', () => {
+      pred = sinon.stub();
+      toArray(forEach(pred, iterator));
+      const args = pred.args.map(R.head);
+      expect(args).to.eql(arr);
+    });
+    
+    it('should yield items from the input iterator', () => {
+      expect(toArray(forEach(noop, iterator))).to.eql(arr);
+    });
+    
+    it('should be curried', () => {
+      pred = sinon.stub();
+      toArray(forEach(pred)(iterator));
+      const args = pred.args.map(R.head);
+      expect(args).to.eql(arr);
+    });
+    
+  });
+  
   describe('frame', () => {
     
     beforeEach(() => {
       arr = R.range(0, 10);
       iterator = from(arr);
-      expected = [
-        [0, 1, 2],
-        [1, 2, 3],
-        [2, 3, 4],
-        [3, 4, 5],
-        [4, 5, 6],
-        [5, 6, 7],
-        [6, 7, 8],
-        [7, 8, 9],
-      ];
+      expected = R.aperture(3, arr);
     });
     
     it('should yield sliding frames of size n', () => {
@@ -275,6 +340,27 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('from', () => {
+    
+    it('should return an iterator for an iterable', () => {
+      expect(isGenerator(from(arr))).to.eql(true);
+      expect(toArray(from(arr))).to.eql(arr);
+    });
+    
+  });
+  
+  xdescribe('groupWith', () => {
+    
+    it('should', () => {
+      pred = (a, b) => a + 1 === b;
+      arr = [0, 1, 1, 2, 3, 5, 8, 13, 21];
+      iterator = from(arr);
+      expect(toArray(groupWith(pred, iterator)))
+        .to.eql(R.groupWith(pred, arr));
+    });
+    
+  });
+
   describe('length', () => {
     
     it('should return the iterator length', () => {
@@ -313,7 +399,14 @@ describe('iterable/sync', () => {
       expect(toArray(iterator)).to.eql([1, 2, 3, 4]);
     });
     
-    it('should throw ? if the iterator is exhausted');
+    xit('should return ? for arrays', () => {
+      expect(next(arr)).to.eql();
+    });
+    
+    it('should throw ? if the iterator is exhausted', () => {
+      exhaust(iterator);
+      expect(() => next(iterator)).to.throw(Error);
+    });
     
   });
   
@@ -332,8 +425,20 @@ describe('iterable/sync', () => {
       expect(nth(15, arr)).to.eql(115);
     });
     
+    xit('should work with negative indices', () => {});
+    
     it('should be curried', () => {
       expect(nth(15)(iterator)).to.eql(115);
+    });
+    
+  });
+  
+  describe('of', () => {
+    
+    it('should yield arguments', () => {
+      const items = R.range(0, 10);
+      expect(isGenerator(of(...items))).to.eql(true);
+      expect(toArray(of(...items))).to.eql(items);
     });
     
   });
@@ -389,6 +494,17 @@ describe('iterable/sync', () => {
         .to.eql(expected);
     });
             
+  });
+  
+  describe('repeat', () => {
+    
+    it('should repeat the input infinitely', () => {
+      const thing = { test: true };
+      const times = 45;
+      const taken = toArray(take(times, repeat(thing)));
+      expect(taken).to.eql(R.times(() => thing, times));
+    });
+    
   });
   
   describe('slice', () => {
@@ -511,8 +627,7 @@ describe('iterable/sync', () => {
         .to.eql(expected);
     });
     
-    // fixme
-    xit('should work with arrays', () => {
+    it('should work with arrays', () => {
       expect(toArray(zip(range1, range2)))
         .to.eql(expected);
     });

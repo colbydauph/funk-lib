@@ -2,6 +2,7 @@
 
 const R = require('ramda');
 
+class StopIteration extends Error {}
 
 // Iterable<T> -> Iterable<T> -> Iterable<T>
 const concat = R.curry(function* concat(iterator1, iterator2) {
@@ -63,10 +64,20 @@ const enumerate = function* enumerate(iterable) {
   yield* map((item) => [item, i++], iterable);
 };
 
-// Integer -> Integer -> Iterator<Integer>
-const range = R.curry(function* range(start, end) {
-  while (start < end) yield start++;
+// (T -> T) -> T -> Iterator<T>
+const iterateWith = R.curry(function* iterateWith(pred, item) {
+  yield item;
+  while (true) yield item = pred(item);
 });
+
+// Number -> Number -> Number -> Iterator<Number>
+const rangeStep = R.curry(function* rangeStep(step, start, stop) {
+  const done = i => (step > 0 ? i < stop : i > stop);
+  for (let i = start; done(i); i += step) yield i;
+});
+
+// Number -> Number -> Iterator<Number>
+const range = rangeStep(1);
 
 // Integer -> T -> Iterator<T>
 const times = R.curry(function* times(num, thing) {
@@ -122,7 +133,7 @@ const drop = R.curry(function* take(num, iterable) {
 // Iterable<T> -> T
 const next = (iterable) => {
   const { value, done } = iterable.next();
-  if (done) throw Error('iterator exhausted');
+  if (done) throw StopIteration();
   return value;
 };
 
@@ -151,7 +162,7 @@ const nth = R.curry((num, iterable) => {
 });
 
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const some = R.curry(function* some(pred, iterable) {
+const some = R.curry((pred, iterable) => {
   for (const item of iterable) {
     if (pred(item)) return true;
   }
@@ -167,7 +178,7 @@ const every = R.curry((pred, iterable) => {
 });
 
 // (T -> Boolean) -> Iterable<T> -> T | Undefined
-const find = R.curry(function* find(pred, iterable) {
+const find = R.curry((pred, iterable) => {
   for (const item of iterable) {
     if (pred(item)) return item;
   }
@@ -214,18 +225,15 @@ const reverse = function* reverse(iterable) {
   yield* toArray(iterable).reverse();
 };
 
-// R.aperture
-// eslint-disable-next-line max-statements
 // Integer -> Iterable<T> -> Iterator<[T]>
 const frame = R.curry(function* frame(size, iterable) {
-  let cache = [];
+  const cache = [];
   for (const item of iterable) {
     if (cache.length === size) {
-      yield cache;
-      cache = R.pipe(R.append(item), R.tail)(cache);
-    } else {
-      cache = [...cache, item];
+      yield [...cache];
+      cache.shift();
     }
+    cache.push(item);
   }
   yield cache;
 });
@@ -243,6 +251,36 @@ const groupWith = R.curry(function* groupWith(pred, iterable) {
   for (const item of iterable) {
     console.log(item);
   }
+});
+
+// Integer -> Iterable<T> -> [Iterator<T>]
+const tee = R.curry((n, iterator) => {
+  iterator = from(iterator);
+  const caches = [...Array(n)].map(() => []);
+  
+  return caches.map(function* gen(cache) {
+    while (true) {
+      if (!cache.length) {
+        const { done, value } = iterator.next();
+        if (done) return;
+        for (const cache of caches) cache.push(value);
+      }
+      yield cache.shift();
+    }
+  });
+});
+
+// Integer -> Iterable<T> -> Iterator<[T]>
+const splitEvery = R.curry(function* splitEvery(n, iterable) {
+  let group = [];
+  for (const item of iterable) {
+    group.push(item);
+    if (group.length === n) {
+      yield group;
+      group = [];
+    }
+  }
+  if (group.length) yield group;
 });
 
 
@@ -264,20 +302,24 @@ module.exports = {
   groupWith,
   includes,
   indexOf,
+  iterateWith,
   length,
   map,
   next,
   nth,
   of,
   range,
+  rangeStep,
   reduce,
   repeat,
   reverse,
   slice,
   some,
+  splitEvery,
   sum,
   take,
   takeWhile,
+  tee,
   times,
   toArray,
   unique,

@@ -22,10 +22,7 @@ const pickAs = R.curry((keyVals, obj) => {
 
 // ([K, V] -> [L, M]) -> Object<K, V> -> Object<L, M>
 const mapPairs = R.curry((pred, obj) => {
-  const pairs = R
-    .toPairs(obj)
-    .map(pred);
-  return R.fromPairs(pairs);
+  return R.fromPairs(R.map(pred, R.toPairs(obj)));
 });
 
 // (K -> M) -> Object<K, V> -> Object<M, V>
@@ -33,6 +30,7 @@ const mapKeys = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [pred(key), value], obj);
 });
 
+// todo: deprecate in favor of R.map
 // (V -> M) -> Object<K, V> -> Object<K, M>
 const mapValues = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [key, pred(value)], obj);

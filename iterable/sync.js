@@ -58,17 +58,15 @@ const accumulate = R.curry(function* accumulate(pred, iterable) {
   }
 });
 
-// Iterable<T> -> Iterator<[T, Integer]>
-const enumerate = function* enumerate(iterable) {
-  let i = 0;
-  yield* map((item) => [item, i++], iterable);
-};
-
-// (T -> T) -> T -> Iterator<T>
-const iterateWith = R.curry(function* iterateWith(pred, item) {
-  yield item;
-  while (true) yield item = pred(item);
-});
+// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
+const zip = R.useWith(function* zip(iterable1, iterable2) {
+  while (true) {
+    const { value: value1, done: done1 } = iterable1.next();
+    const { value: value2, done: done2 } = iterable2.next();
+    if (done1 || done2) return;
+    yield [value1, value2];
+  }
+}, [from, from]);
 
 // Number -> Number -> Number -> Iterator<Number>
 const rangeStep = R.curry(function* rangeStep(step, start, stop) {
@@ -78,6 +76,15 @@ const rangeStep = R.curry(function* rangeStep(step, start, stop) {
 
 // Number -> Number -> Iterator<Number>
 const range = rangeStep(1);
+
+// Iterable<T> -> Iterator<[Integer, T]>
+const enumerate = (iterable) => zip(range(0, Infinity), iterable);
+
+// (T -> T) -> T -> Iterator<T>
+const iterateWith = R.curry(function* iterateWith(pred, item) {
+  yield item;
+  while (true) yield item = pred(item);
+});
 
 // Integer -> T -> Iterator<T>
 const times = R.curry(function* times(num, thing) {
@@ -97,19 +104,9 @@ const unique = function* unique(iterable) {
   }, iterable);
 };
 
-// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
-const zip = R.useWith(function* zip(iterable1, iterable2) {
-  while (true) {
-    const { value: value1, done: done1 } = iterable1.next();
-    const { value: value2, done: done2 } = iterable2.next();
-    if (done1 || done2) return;
-    yield [value1, value2];
-  }
-}, [from, from]);
-
 // Integer -> Integer -> Iterable<T> -> Iterator<T>
 const slice = R.curry(function* slice(start, stop, iterable) {
-  for (const [item, i] of enumerate(iterable)) {
+  for (const [i, item] of enumerate(iterable)) {
     if (i >= start) yield item;
     if (i >= stop - 1) return;
   }
@@ -117,7 +114,7 @@ const slice = R.curry(function* slice(start, stop, iterable) {
 
 // Integer -> Iterable<T> -> Iterator<T>
 const take = R.curry(function* take(num, iterable) {
-  for (const [item, i] of enumerate(iterable)) {
+  for (const [i, item] of enumerate(iterable)) {
     yield item;
     if ((i + 1) >= num) return;
   }
@@ -125,7 +122,7 @@ const take = R.curry(function* take(num, iterable) {
 
 // Integer -> Iterable<T> -> Iterator<T>
 const drop = R.curry(function* take(num, iterable) {
-  for (const [item, i] of enumerate(iterable)) {
+  for (const [i, item] of enumerate(iterable)) {
     if (i >= num) yield item;
   }
 });
@@ -156,7 +153,7 @@ const toArray = reduce(R.flip(R.append), []);
 
 // Integer -> Iterable<T> -> T
 const nth = R.curry((num, iterable) => {
-  for (const [item, i] of enumerate(iterable)) {
+  for (const [i, item] of enumerate(iterable)) {
     if (i >= num) return item;
   }
 });
@@ -240,7 +237,7 @@ const frame = R.curry(function* frame(size, iterable) {
 
 // T -> Iterable<T> -> Integer
 const indexOf = R.curry(function* indexOf(toFind, iterable) {
-  for (const [item, i] of enumerate(iterable)) {
+  for (const [i, item] of enumerate(iterable)) {
     if (item === toFind) return i;
   }
   return -1;

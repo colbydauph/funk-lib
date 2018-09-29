@@ -191,8 +191,8 @@ describe('iterable/sync', () => {
       arr = R.range(10, 20);
       iterator = from(arr);
       expected = toArray(zip(
-        range(10, 20),
         range(0, 10),
+        range(10, 20),
       ));
     });
     

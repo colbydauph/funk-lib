@@ -9,9 +9,12 @@ const { isGenerator } = require('../../is');
 
 // local
 const {
+  append,
+  prepend,
   accumulate,
   concat,
   cycle,
+  cycleN,
   drop,
   dropWhile,
   enumerate,
@@ -24,27 +27,28 @@ const {
   frame,
   from,
   groupWith,
-  // includes,
-  // indexOf,
+  includes,
+  indexOf,
   iterateWith,
   length,
   map,
   next,
   nth,
   of,
+  partition,
   range,
   rangeStep,
   reduce,
   repeat,
-  // reverse,
+  reverse,
   slice,
   some,
   splitEvery,
   StopIteration,
   sum,
-  tee,
   take,
   // takeWhile,
+  tee,
   times,
   toArray,
   unique,
@@ -86,6 +90,20 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('append', () => {
+    
+    it('should append an element', () => {
+      expect(toArray(append('test', iterator)))
+        .to.eql(R.append('test', arr));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(append('test')(iterator)))
+        .to.eql(R.append('test', arr));
+    });
+    
+  });
+  
   describe('concat', () => {
     
     let iterators;
@@ -119,9 +137,9 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       expected = [
-        ...R.range(0, 5),
-        ...R.range(0, 5),
-        ...R.range(0, 5),
+        ...arr,
+        ...arr,
+        ...arr,
         ...R.range(0, 2),
       ];
     });
@@ -133,6 +151,41 @@ describe('iterable/sync', () => {
     
     it('should work with arrays', () => {
       iterator = R.pipe(cycle, take(17))(arr);
+      expect(toArray(iterator)).to.eql(expected);
+    });
+    
+  });
+  
+  describe('cycleN', () => {
+    
+    let n;
+    beforeEach(() => {
+      n = 3;
+      expected = R.chain(() => arr, [...Array(n)]);
+    });
+    
+    it('should cycle through the iterator n times', () => {
+      iterator = cycleN(n, iterator);
+      expect(toArray(iterator)).to.eql(expected);
+    });
+    
+    it('should yield original items if n = 1', () => {
+      iterator = cycleN(1, iterator);
+      expect(toArray(iterator)).to.eql(arr);
+    });
+    
+    it('should return an empty iterator if n = 0', () => {
+      iterator = cycleN(0, iterator);
+      expect(toArray(iterator)).to.eql([]);
+    });
+    
+    it('should work with arrays', () => {
+      iterator = cycleN(n, arr);
+      expect(toArray(iterator)).to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      iterator = cycleN(n)(iterator);
       expect(toArray(iterator)).to.eql(expected);
     });
     
@@ -158,14 +211,13 @@ describe('iterable/sync', () => {
     
   });
   
-  // todo: test for predicate flipping pass / fail
   describe('dropWhile', () => {
     
     beforeEach(() => {
       arr = R.range(0, 100);
       iterator = from(arr);
-      pred = n => n < 70;
-      expected = R.range(70, 100);
+      pred = n => (n < 70 || n > 90);
+      expected = R.dropWhile(pred, arr);
     });
     
     it('should drop items while the predicate is satisfied', () => {
@@ -391,14 +443,56 @@ describe('iterable/sync', () => {
     
   });
   
-  xdescribe('groupWith', () => {
+  describe('groupWith', () => {
     
     it('should', () => {
-      pred = (left, right) => ((left + 1) === right);
-      arr = [0, 1, 1, 2, 3, 5, 8, 13, 21];
-      iterator = from(arr);
-      expect(toArray(groupWith(pred, iterator)))
-        .to.eql(R.groupWith(pred, arr));
+      const preds = [
+        (left, right) => (left === right),
+        (left, right) => (left !== right),
+        (left, right) => (left >= right),
+        (left, right) => (left <= right),
+        (left, right) => (left + 1 === right),
+        (left, right) => (left % 2 === right % 2),
+      ];
+      [
+        [0, 1, 1, 2, 2, 3, 4, 5, 5],
+        [],
+        [0, 0, 0, 0],
+        [9, 8, 7, 6, 5, 4, 3, 2, 1],
+        [2, 2, 1, 2, 3, 4, 4, 6, 8, 7, 1, 2, 9, 9],
+      ].forEach((arr) => {
+        
+        preds.forEach((pred) => {
+          expect(toArray(groupWith(pred, from(arr))))
+            .to.eql(R.groupWith(pred, arr));
+        });
+        
+      });
+      
+    });
+    
+  });
+  
+  describe('includes', () => {
+    
+    it('should return true if a value in the iterable strictly equals', () => {
+      expect(includes(3, iterator)).to.eql(true);
+    });
+    
+    it('should return false if no value in the iterable strictly equals', () => {
+      expect(includes({ test: true }, iterator)).to.eql(false);
+    });
+    
+  });
+  
+  describe('indexOf', () => {
+    
+    it('should return the index of the first strictly equal match', () => {
+      expect(indexOf(3, iterator)).to.eql(3);
+    });
+    
+    it('should return -1 if no value in the iterable strictly equals', () => {
+      expect(indexOf({ test: true }, iterator)).to.eql(-1);
     });
     
   });
@@ -527,6 +621,40 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('partition', () => {
+    
+    beforeEach(() => {
+      pred = n => n % 2;
+      arr = R.range(0, 100);
+      iterator = from(arr);
+    });
+    
+    it('should bifurcate by pred', () => {
+      expect(partition(pred, iterator).map(toArray))
+        .to.eql(R.partition(pred, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(partition(pred)(iterator).map(toArray))
+        .to.eql(R.partition(pred, arr));
+    });
+    
+  });
+  
+  describe('prepend', () => {
+    
+    it('should prepend an element', () => {
+      expect(toArray(prepend('test', iterator)))
+        .to.eql(R.prepend('test', arr));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(prepend('test')(iterator)))
+        .to.eql(R.prepend('test', arr));
+    });
+    
+  });
+  
   describe('range', () => {
     
     let iterator;
@@ -624,6 +752,14 @@ describe('iterable/sync', () => {
       const times = 45;
       const taken = toArray(take(times, repeat(thing)));
       expect(taken).to.eql(R.times(() => thing, times));
+    });
+    
+  });
+  
+  describe('reverse', () => {
+    
+    it('should reverse the iterator', () => {
+      expect(toArray(reverse(iterator))).to.eql(R.reverse(arr));
     });
     
   });

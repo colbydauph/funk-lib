@@ -1,6 +1,11 @@
 'use strict';
 
+// modules
 const R = require('ramda');
+
+// local
+const { pipeC } = require('../function');
+
 
 class StopIteration extends Error {}
 
@@ -60,15 +65,18 @@ const accumulate = R.curry(function* accumulate(pred, iterable) {
   }
 });
 
-// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
-const zip = R.useWith(function* zip(iterable1, iterable2) {
+// ((A, B) -> C) -> Iterable<A> -> Iterable<B> -> Iterator<C>
+const zipWith = R.useWith(function* zipWith(pred, iterable1, iterable2) {
   while (true) {
     const { value: value1, done: done1 } = iterable1.next();
     const { value: value2, done: done2 } = iterable2.next();
     if (done1 || done2) return;
-    yield [value1, value2];
+    yield pred(value1, value2);
   }
-}, [from, from]);
+}, [R.identity, from, from]);
+
+// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
+const zip = zipWith((left, right) => [left, right]);
 
 // Number -> Number -> Number -> Iterator<Number>
 const rangeStep = R.curry(function* rangeStep(step, start, stop) {
@@ -83,13 +91,13 @@ const range = rangeStep(1);
 // Iterable<T> -> Iterator<[Integer, T]>
 const enumerate = (iterable) => zip(range(0, Infinity), iterable);
 
-// todo: maybe this is iterateFrom or repeatFrom
 // (T -> T) -> T -> Iterator<T>
-const iterateWith = R.curry(function* iterateWith(pred, item) {
+const iterate = R.curry(function* iterate(pred, item) {
   yield item;
   while (true) yield item = pred(item);
 });
 
+// aka replicate
 // Integer -> T -> Iterator<T>
 const times = R.curry(function* times(num, thing) {
   while (num-- > 0) yield thing;
@@ -162,6 +170,13 @@ const find = R.curry((pred, iterable) => {
   for (const item of iterable) if (pred(item)) return item;
 });
 
+// (T -> Boolean) -> Iterable<T> -> Integer | Undefined
+const findIndex = R.curry((pred, iterable) => {
+  for (const [i, item] of enumerate(iterable)) {
+    if (pred(item)) return i;
+  }
+});
+
 // Iterable<T> -> Undefined
 const exhaust = (iterable) => {
   // eslint-disable-next-line no-unused-vars
@@ -227,7 +242,7 @@ const indexOf = R.curry((toFind, iterable) => {
 });
 
 // * -> Iterable<T> -> Boolean
-const includes = R.curry((item, iterable) => indexOf(item, iterable) > -1);
+const includes = pipeC(indexOf, R.lt(-1));
 
 // (T -> T -> Boolean) -> Iterable<T> -> Iterator<[T]>
 const groupWith = R.curry(function* groupWith(pred, iterable) {
@@ -273,6 +288,12 @@ const splitEvery = R.curry(function* splitEvery(n, iterable) {
   if (group.length) yield group;
 });
 
+// Integer -> Iterable<T> -> [Iterator<T>, Iterator<T>]
+const splitAt = R.curry((n, iterable) => {
+  const [it1, it2] = tee(2, iterable);
+  return [take(n, it1), drop(n, it2)];
+});
+
 // (T -> Boolean) -> Iterable<T> -> [Iterable<T>, Iterable<T>]
 const partition = R.curry((pred, iterable) => {
   const [pass, fail] = tee(2, iterable);
@@ -282,6 +303,47 @@ const partition = R.curry((pred, iterable) => {
   ];
 });
 
+// Number -> Iterable<Iterable<T>> -> Iterator<T>
+const flattenN = R.curry((n, iterable) => {
+  
+});
+
+// Number -> Iterable<Iterable<T>> -> Iterator<T>
+const flatten = flattenN(1);
+
+const combinations = R.curry(function* combinations() {
+  // todo
+});
+
+// Number -> Iterable<T> -> Iterator<[T]>
+const permutations = R.curry(function* permutations(n, iterable) {
+  // todo
+});
+
+// Iterable<[A, B]> -> [Iterator<A>, Iterator<B>]
+const unzip = R.pipe(
+  tee(2),
+  R.addIndex(R.map)((iter, i) => map(nth(i), iter)),
+);
+
+// T -> Iterable<T> -> Iterator<T>
+const intersperse = R.curry(function* intersperse(spacer, iterator) {
+  let first = true;
+  for (const item of iterator) {
+    if (!first) {
+      yield spacer;
+    } else {
+      first = false;
+    }
+    yield item;
+  }
+});
+
+// String -> Iterable<T> -> String
+const join = pipeC(
+  intersperse,
+  reduce((left, right) => `${ left }${ right }`, '')
+);
 
 module.exports = {
   accumulate,
@@ -296,20 +358,24 @@ module.exports = {
   exhaust,
   filter,
   find,
+  findIndex,
   flatMap,
   forEach,
   frame,
   from,
   groupWith,
   includes,
+  intersperse,
   indexOf,
-  iterateWith,
+  iterate,
+  join,
   length,
   map,
   next,
   nth,
   of,
   partition,
+  permutations,
   prepend,
   range,
   rangeStep,
@@ -319,6 +385,7 @@ module.exports = {
   slice,
   some,
   sort,
+  splitAt,
   splitEvery,
   StopIteration,
   sum,
@@ -328,5 +395,7 @@ module.exports = {
   times,
   toArray,
   unique,
+  unzip,
   zip,
+  zipWith,
 };

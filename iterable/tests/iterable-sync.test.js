@@ -9,9 +9,10 @@ const { isGenerator } = require('../../is');
 
 // local
 const {
-  append,
-  prepend,
+  // permutations,
+  // takeWhile,
   accumulate,
+  append,
   concat,
   cycle,
   cycleN,
@@ -29,13 +30,16 @@ const {
   groupWith,
   includes,
   indexOf,
-  iterateWith,
+  intersperse,
+  iterate,
+  join,
   length,
   map,
   next,
   nth,
   of,
   partition,
+  prepend,
   range,
   rangeStep,
   reduce,
@@ -43,16 +47,18 @@ const {
   reverse,
   slice,
   some,
+  splitAt,
   splitEvery,
   StopIteration,
   sum,
   take,
-  // takeWhile,
   tee,
   times,
   toArray,
   unique,
+  unzip,
   zip,
+  zipWith,
 } = require('../sync');
 
 const noop = () => {};
@@ -476,7 +482,7 @@ describe('iterable/sync', () => {
   describe('includes', () => {
     
     it('should return true if a value in the iterable strictly equals', () => {
-      expect(includes(3, iterator)).to.eql(true);
+      expect(includes(0, iterator)).to.eql(true);
     });
     
     it('should return false if no value in the iterable strictly equals', () => {
@@ -497,7 +503,18 @@ describe('iterable/sync', () => {
     
   });
   
-  describe('iterateWith', () => {
+  describe('intersperse', () => {
+    
+    it('should work', () => {
+      const sep = '|';
+      const iter = intersperse(sep, iterator);
+      expect(toArray(iter))
+        .to.eql(R.intersperse(sep, arr));
+    });
+    
+  });
+  
+  describe('iterate', () => {
     
     beforeEach(() => {
       pred = R.add(10);
@@ -505,13 +522,23 @@ describe('iterable/sync', () => {
     });
     
     it('should yield initial item and predicate returns', () => {
-      iterator = take(5, iterateWith(pred, 15));
+      iterator = take(5, iterate(pred, 15));
       expect(toArray(iterator)).to.eql(expected);
     });
     
     it('should be curried', () => {
-      iterator = take(5, iterateWith(pred)(15));
+      iterator = take(5, iterate(pred)(15));
       expect(toArray(iterator)).to.eql(expected);
+    });
+    
+  });
+
+  describe('join', () => {
+    
+    it('should join iterator into string', () => {
+      const sep = '|';
+      expect(join(sep, iterator))
+        .to.eql(R.join(sep, arr));
     });
     
   });
@@ -639,6 +666,10 @@ describe('iterable/sync', () => {
         .to.eql(R.partition(pred, arr));
     });
     
+  });
+  
+  xdescribe('permutations', () => {
+    // todo
   });
   
   describe('prepend', () => {
@@ -820,6 +851,27 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('splitAt', () => {
+    
+    let n;
+    beforeEach(() => {
+      n = 42;
+      arr = R.range(0, 100);
+      iterator = from(arr);
+    });
+    
+    it('should split iterator at the nth element', () => {
+      const [left, right] = splitAt(n, iterator);
+      const [leftArr, rightArr] = R.splitAt(n, arr);
+      expect(toArray(left))
+        .to.eql(leftArr);
+      expect(toArray(right))
+        .to.eql(rightArr);
+    });
+    
+    
+  });
+  
   describe('splitEvery', () => {
     
     let n;
@@ -949,6 +1001,26 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('unzip', () => {
+    
+    let arr1, arr2;
+    let range1, range2;
+    beforeEach(() => {
+      arr1 = R.range(0, 10);
+      arr2 = R.range(10, 20);
+      range1 = from(arr1);
+      range2 = from(arr2);
+    });
+    
+    it('should unzip tuples', () => {
+      const zipped = zip(range1, range2);
+      const [left, right] = unzip(zipped);
+      expect(toArray(left)).to.eql(arr1);
+      expect(toArray(right)).to.eql(arr2);
+    });
+    
+  });
+  
   describe('zip', () => {
     
     let range1, range2;
@@ -974,6 +1046,26 @@ describe('iterable/sync', () => {
     it('should be curried', () => {
       expect(toArray(zip(iter1)(iter2)))
         .to.eql(expected);
+    });
+    
+  });
+  
+  describe('zipWith', () => {
+    
+    let range1, range2;
+    let iter1, iter2;
+    beforeEach('stub', () => {
+      pred = R.add;
+      range1 = R.range(0, 10);
+      range2 = R.range(10, 20);
+      iter1 = from(range1);
+      iter2 = from(range2);
+      expected = R.zip(range1, range2);
+    });
+    
+    it('should yield items returned from predicate', () => {
+      expect(toArray(zipWith(pred, iter1, iter2)))
+        .to.eql(R.zipWith(pred, range1, range2));
     });
     
   });

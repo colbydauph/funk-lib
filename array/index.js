@@ -6,17 +6,20 @@ const R = require('ramda');
 // local
 const { random } = require('../number');
 
-// Array<A> -> Object<K, A>
+// Array<V> -> Object<K, V>
 const toObj = R.pipe(R.toPairs, R.fromPairs);
 
+// todo: deprecate
 // (A -> B) -> Array<A> -> Object<B, A>
-const toObjBy = R.curry((pred, arr) => {
-  return R.fromPairs(R.map((el) => [pred(el), el], arr));
-});
+const toObjBy = R.indexBy;
 
 // select a random array item
-// Array<A> -> A
+// Array<T> -> T
 const sample = (arr) => arr[random(0, arr.length - 1)];
+
+// todo
+// Array<T> -> Array<T>
+const shuffle = (arr) => {};
 
 module.exports = {
   sample,

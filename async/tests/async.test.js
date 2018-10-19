@@ -58,6 +58,15 @@ describe('async lib', () => {
     it('should return a function', () => {
       expect(callbackify(() => {})).to.be.a('function');
     });
+    
+    it('should call the wrapped function with the input args', (cb) => {
+      const args = [1, 2, 3];
+      const pred = sinon.stub().resolves();
+      callbackify(pred)(...args, (err, res) => {
+        expect(pred.args[0]).to.eql(args);
+        cb(err);
+      });
+    });
         
     describe('async', () => {
     
@@ -93,7 +102,7 @@ describe('async lib', () => {
       
       it('should call the callback with the rejected promise error', (cb) => {
         const error = Error('oops');
-        callbackify(() => {
+        callbackify(async () => {
           throw error;
         })(1, 2, 3, (err) => {
           expect(err).to.equal(error);
@@ -126,9 +135,9 @@ describe('async lib', () => {
     
     it('should resolve after n ms', async () => {
       const start = Date.now();
-      await delay(100);
+      await delay(10);
       const end = Date.now();
-      expect(end - start).to.be.closeTo(100, 10);
+      expect(end - start).to.be.closeTo(10, 2);
     });
     
   });
@@ -140,14 +149,14 @@ describe('async lib', () => {
       ({ promise, resolve, reject } = deferred());
     });
     
-    it('should create an externally resolved promise', async () => {
-      const res = {};
+    it('should create an externally resolvable promise', async () => {
+      const res = { obj: true };
       resolve(res);
       const out = await promise;
       expect(out).to.equal(res);
     });
     
-    it('should create an externally rejected promise', async () => {
+    it('should create an externally rejectable promise', async () => {
       const err = Error('oops');
       reject(err);
       await expect(promise).to.be.rejectedWith(err);
@@ -570,19 +579,19 @@ describe('async lib', () => {
   describe('timeout', () => {
     
     it('should resolve if promise is resolved before timeout', async () => {
-      const promise = delay(100).then(() => 'done');
+      const promise = delay(10).then(() => 'done');
       await expect(timeout(500, promise)).to.eventually.eql('done');
     });
     
     it('should be rejected with a TimeoutError if promise does not resolve before timeout', async () => {
       const promise = delay(500);
-      await expect(timeout(100, promise))
-        .to.be.rejectedWith(TimeoutError, 'timed out after 100ms');
+      await expect(timeout(10, promise))
+        .to.be.rejectedWith(TimeoutError, 'timed out after 10ms');
     });
     
     it('should propagate promise errors', async () => {
       const error = Error('woops');
-      const promise = delay(100).then(() => {
+      const promise = delay(10).then(() => {
         throw error;
       });
       await expect(timeout(100, promise))

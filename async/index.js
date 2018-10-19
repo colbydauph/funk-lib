@@ -3,6 +3,12 @@
 // modules
 const R = require('ramda');
 
+// local
+const { map: mapIterable } = require('../iterable/sync');
+
+// @async parallel resolve promises
+const all = Promise.all.bind(Promise);
+
 // @async array<promise> -> *
 const race = Promise.race.bind(Promise);
 
@@ -31,9 +37,7 @@ const promisify = (func) => async (...args) => {
 // inverse of promisify
 const callbackify = (func) => (...args) => {
   const cb = args.pop();
-  Promise
-    .resolve(args)
-    .then((args) => func(...args))
+  toAsync(func)(...args)
     .then((res) => cb(null, res))
     .catch((err) => cb(err));
 };
@@ -58,11 +62,17 @@ const reduce = R.curry(async (pred, init, iterable) => {
   return result;
 });
 
+// serial + async R.pipe
+// works with sync or async functions
+const pipe = (fn, ...fns) => async (...args) => {
+  return reduce(R.applyTo, await fn(...args), fns);
+};
+// curried async pipe
+const pipeC = (...funcs) => R.curryN(funcs[0].length, pipe(...funcs));
+
 // @async (parallel)
-// predicate -> iterable -> iterable
-const map = R.curry(async (pred, iterable) => {
-  return Promise.all(iterable.map((item) => pred(item)));
-});
+// (A -> B) -> Iterable<A> -> Iterable<B>
+const map = pipeC(mapIterable, all);
 
 // @async (series)
 // predicate -> iterable -> iterable
@@ -102,15 +112,9 @@ const filterSeries = R.curry(async (pred, iterable) => {
   return iterable.filter((el, i) => bools[i]);
 });
 
-// serial + async R.pipe
-// works with sync or async functions
-const pipe = (fn, ...fns) => async (...args) => {
-  return reduce(R.applyTo, await fn(...args), fns);
-};
-
 // @async (parallel)
 // predicate -> iterable -> iterable
-const flatMap = R.curryN(2, pipe(map, R.chain(R.identity)));
+const flatMap = pipeC(map, R.chain(R.identity));
 
 // @async (parallel)
 // object -> object
@@ -143,6 +147,7 @@ module.exports = {
   map,
   mapSeries,
   pipe,
+  pipeC,
   promisify,
   props,
   race,

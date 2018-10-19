@@ -3,11 +3,14 @@
 // modules
 const R = require('ramda');
 
+// string -> string -> number
 const localeCompare = R.invoker(1, 'localeCompare');
+// string -> string
 const toUpperCase = R.invoker(0, 'toUpperCase');
+// string -> string
 const toLowerCase = R.invoker(0, 'toLowerCase');
-const charAt = R.invoker(1, 'charAt');
-const capitalize = (str) => toUpperCase(charAt(0, str)) + str.slice(1);
+// string -> string
+const capitalize = (str) => toUpperCase(R.nth(0, str)) + str.slice(1);
 
 // string -> string
 // eslint-disable-next-line no-useless-escape
@@ -21,18 +24,20 @@ const template = R.curry((tmpl, variables) => {
   });
 });
 
+// string -> string -> string -> string
+const convertString = R.curry((from, to, str) => Buffer.from(str, from).toString(to));
+
 // encode a string to base64
 // string -> string
-const toBase64 = (str) => Buffer.from(str).toString('base64');
+const toBase64 = convertString('utf8', 'base64');
 
 // decode a base64 string
 // string -> string
-const parseBase64 = (base64str) => Buffer.from(base64str, 'base64').toString('utf8');
+const parseBase64 = convertString('base64', 'utf8');
 
 
 module.exports = {
   capitalize,
-  charAt,
   escapeRegExpStr,
   localeCompare,
   parseBase64,

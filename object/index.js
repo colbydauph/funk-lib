@@ -6,9 +6,12 @@ const R = require('ramda');
 // local
 const { isObject } = require('../is');
 
-const firstKey = (obj) => Object.keys(obj)[0];
-const firstPair = (obj) => Object.entries(obj)[0];
-const firstValue = (obj) => Object.values(obj)[0];
+// Object<K, V> -> [K, V]
+const firstPair = R.pipe(R.toPairs, R.nth(0));
+// Object<K, V> -> K
+const firstKey = R.pipe(firstPair, R.nth(0));
+// Object<K, V> -> V
+const firstValue = R.pipe(firstPair, R.nth(1));
 
 // todo: pickAsDeep (recursive)
 // pick the keys from the first argument, renaming by the values in the second arg

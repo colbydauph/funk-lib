@@ -3,8 +3,12 @@
 const R = require('ramda');
 
 // curried R.pipe
-const pipeC = (...funcs) => R.curryN(funcs[0].length)(R.pipe(...funcs));
+const pipeC = (...funcs) => R.curryN(funcs[0].length, R.pipe(...funcs));
+
+// (b -> b -> c) -> (a -> b) -> a -> a -> c
+const on = R.curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 
 module.exports = {
+  on,
   pipeC,
 };

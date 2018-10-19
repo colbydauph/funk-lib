@@ -58,7 +58,7 @@ const forEach = R.curry(async function* forEach(pred, iterable) {
 });
 
 // Iterable<T> -> Promise<[T]>
-const toArray = async function* toArray(iterable) {
+const toArray = async (iterable) => {
   const arr = [];
   for await (const item of iterable) arr.push(item);
   return arr;

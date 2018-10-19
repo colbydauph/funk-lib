@@ -1,16 +1,21 @@
+/* eslint-disable no-underscore-dangle */
 'use strict';
 
 // modules
 const R = require('ramda');
 
-const { isNaN, isInteger } = Number;
+const { isNaN, isFinite, isInteger } = Number;
 const { isArray } = Array;
 const { isBuffer } = Buffer;
 
+// * -> * -> boolean
+const is = R.curry((left, right) => (left === right));
+// * -> * -> boolean
+const isNot = R.complement(is);
 // string -> * -> boolean
 const isInstanceOf = R.curry((type, thing) => thing instanceof type);
 // string -> * -> boolean
-const isTypeOf = R.curry((type, thing) => typeof thing === type);
+const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 // * -> boolean
 const isBoolean = isTypeOf('boolean');
 // * -> boolean
@@ -20,7 +25,7 @@ const isRegExp = isInstanceOf(RegExp);
 // * -> boolean
 const isFunction = isTypeOf('function');
 // * -> boolean
-const isNull = R.equals(null);
+const isNull = is(null);
 // * -> boolean
 const isString = isTypeOf('string');
 // * -> boolean
@@ -30,33 +35,44 @@ const isUndefined = isTypeOf('undefined');
 // * -> boolean
 const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 // * -> boolean
-const isNegative = R.flip(R.lt)(0);
+const isNegative = R.lt(R.__, 0);
 // * -> boolean
-const isPositive = R.flip(R.gte)(0);
+const isPositive = R.gte(R.__, 0);
+// * -> boolean
+const isFloat = R.allPass([isFinite, R.complement(isInteger)]);
 // * -> boolean
 const isTruthy = R.pipe(R.not, R.not);
 // * -> boolean
 const isFalsey = R.not;
 // * -> boolean
-const isObject = R.allPass([isTypeOf('object'), R.complement(isNull), R.complement(isArray)]);
+const isObject = R.allPass([
+  isTypeOf('object'),
+  R.complement(isNull),
+  R.complement(isArray),
+]);
 // * -> boolean
-const isPromise = R.allPass([isObject, R.pipe(R.prop('then'), isFunction)]);
+const isPromise = R.allPass([
+  isObject,
+  R.propSatisfies(isFunction, 'then'),
+  R.propSatisfies(isFunction, 'catch'),
+]);
 // * -> boolean
-const isStream = R.allPass([isObject, R.pipe(R.prop('pipe'), isFunction)]);
+const isStream = R.allPass([
+  isObject,
+  R.propSatisfies(isFunction, 'pipe'),
+]);
 // is "plain old javascript object"
 // * -> boolean
 const isPojo = R.allPass([
   isObject,
-  R.pipe(Object.getPrototypeOf, (proto) => {
-    return (proto === Object.prototype);
-  }),
+  R.pipe(Object.getPrototypeOf, is(Object.prototype)),
 ]);
 // fixme: this should be isIterator
 // * -> boolean
 const isGenerator = R.allPass([
   isObject,
-  R.pipe(R.prop('next'), isFunction),
-  R.pipe(R.prop('throw'), isFunction),
+  R.propSatisfies(isFunction, 'next'),
+  R.propSatisfies(isFunction, 'throw'),
 ]);
 // * -> boolean
 const isSyncGenerator = R.allPass([
@@ -91,16 +107,17 @@ const isGeneratorFunction = R.anyPass([
 // * -> boolean
 const isAsyncIterable = R.allPass([
   isTruthy,
-  R.pipe(R.prop(Symbol.asyncIterator), isFunction),
+  R.propSatisfies(isFunction, Symbol.asyncIterator),
 ]);
 // fixme: this does not seem to be named correctly
 // * -> boolean
 const isIterable = R.allPass([
   isTruthy,
-  R.pipe(R.prop(Symbol.iterator), isFunction),
+  R.propSatisfies(isFunction, Symbol.iterator),
 ]);
 
 module.exports = {
+  is,
   isArray,
   isAsyncGenerator,
   isAsyncGeneratorFunction,
@@ -109,6 +126,7 @@ module.exports = {
   isBuffer,
   isDate,
   isFalsey,
+  isFloat,
   isFunction,
   isGenerator,
   isGeneratorFunction,
@@ -117,6 +135,7 @@ module.exports = {
   isIterable,
   isNaN,
   isNegative,
+  isNot,
   isNull,
   isNumber,
   isObject,

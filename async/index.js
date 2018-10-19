@@ -110,7 +110,7 @@ const pipe = (fn, ...fns) => async (...args) => {
 
 // @async (parallel)
 // predicate -> iterable -> iterable
-const flatMap = R.curryN(2)(pipe(map, R.chain(R.identity)));
+const flatMap = R.curryN(2, pipe(map, R.chain(R.identity)));
 
 // @async (parallel)
 // object -> object

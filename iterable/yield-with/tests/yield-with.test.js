@@ -6,13 +6,17 @@ const { expect } = require('chai');
 
 // local
 const {
-  yieldWith,
-  // yieldWithSync,
+  // yieldWith,
+  yieldWithAsync,
 } = require('..');
 
-describe('generator', () => {
+describe('yield-With', () => {
       
   describe('yieldWith', () => {
+    
+  });
+  
+  describe('yieldWithAsync', () => {
     
     let onYield, generator;
     beforeEach('stub', () => {
@@ -26,7 +30,7 @@ describe('generator', () => {
         yield 1;
         return out;
       })();
-      await expect(yieldWith(onYield, generator)).to.eventually.equal(out);
+      await expect(yieldWithAsync(onYield, generator)).to.eventually.equal(out);
     });
     
     it('should not delegate to yielded generators', async () => {
@@ -37,7 +41,7 @@ describe('generator', () => {
       generator = (async function* generator() {
         yield gen;
       })();
-      await yieldWith(onYield, generator);
+      await yieldWithAsync(onYield, generator);
       expect(onYield.callCount).to.eql(1);
       expect(onYield.args[0][0]).to.equal(gen);
     });
@@ -52,7 +56,7 @@ describe('generator', () => {
       generator = (async function* gen() {
         out = yield 1;
       })();
-      await yieldWith(onYield, generator);
+      await yieldWithAsync(onYield, generator);
       expect(gen).to.equal(out);
     });
     
@@ -63,7 +67,7 @@ describe('generator', () => {
         generator = (async function* generator() {
           yield item;
         })();
-        await yieldWith(onYield, generator);
+        await yieldWithAsync(onYield, generator);
         expect(onYield.args[0].length).to.eql(1);
         expect(onYield.args[0][0]).to.equal(item);
       });
@@ -79,7 +83,7 @@ describe('generator', () => {
           for (const item of items) yield item;
           return false;
         })();
-        await yieldWith(onYield, generator);
+        await yieldWithAsync(onYield, generator);
         expect(onYield.callCount).to.eql(10);
       });
       
@@ -90,7 +94,7 @@ describe('generator', () => {
         generator = (async function* generator() {
           out = yield 0;
         })();
-        await yieldWith(onYield, generator);
+        await yieldWithAsync(onYield, generator);
         await expect(out).to.equal(item);
       });
             
@@ -103,7 +107,7 @@ describe('generator', () => {
           yield 1;
           return 2;
         })();
-        await expect(yieldWith(onYield, generator))
+        await expect(yieldWithAsync(onYield, generator))
           .to.eventually.be.rejectedWith(error);
       });
       
@@ -112,7 +116,7 @@ describe('generator', () => {
     it('should work with synchronous iterators', async () => {
       const arr = [1, 2, 3];
       generator = arr[Symbol.iterator]();
-      await yieldWith(onYield, generator);
+      await yieldWithAsync(onYield, generator);
       const yields = onYield.args.map(([arg]) => arg);
       expect(yields).to.eql(arr);
     });
@@ -132,7 +136,7 @@ describe('generator', () => {
         }
         return 10;
       })();
-      await expect(yieldWith(onYield, generator))
+      await expect(yieldWithAsync(onYield, generator))
         .to.eventually.equal(10);
     });
     
@@ -150,7 +154,7 @@ describe('generator', () => {
         }
         return 10;
       })();
-      await expect(yieldWith(onYield, generator))
+      await expect(yieldWithAsync(onYield, generator))
         .to.eventually.equal(error);
     });
         

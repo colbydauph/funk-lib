@@ -4,10 +4,13 @@
 const { fromString } = require('../../stream');
 const assert = require('./assert-is');
 const {
+  is,
   isAsyncGenerator,
   isAsyncGeneratorFunction,
   isBoolean,
   isDate,
+  isFalsey,
+  isFloat,
   isFunction,
   isGenerator,
   isGeneratorFunction,
@@ -15,6 +18,7 @@ const {
   isInteger,
   isIterable,
   isNegative,
+  isNot,
   isNull,
   isNumber,
   isObject,
@@ -26,11 +30,41 @@ const {
   isSymbol,
   isSyncGenerator,
   isSyncGeneratorFunction,
+  isTruthy,
   isTypeOf,
   isUndefined,
 } = require('..');
 
 describe('is', () => {
+  
+  assert({
+    func: is,
+    name: 'is',
+    pass: [
+      [1, 1],
+      [true, true],
+      (() => {
+        const prop = [1, 2, 3];
+        return [prop, prop];
+      })(),
+      (() => {
+        const prop = { prop: true };
+        return [prop, prop];
+      })(),
+    ],
+    fail: [
+      [1, 2],
+      [true, false],
+      [{}, []],
+      [0, undefined],
+      [null, undefined],
+      [null, NaN],
+      [NaN, NaN],
+      [[1, 2, 3], [1, 2, 3]],
+      [{ prop: true }, { prop: true }],
+    ],
+    spread: true,
+  });
   
   assert({
     func: isBoolean,
@@ -44,6 +78,20 @@ describe('is', () => {
     name: 'isDate',
     pass: [new Date()],
     fail: [{}, [], null, undefined, 1, false, () => {}],
+  });
+  
+  assert({
+    func: isFalsey,
+    name: 'isFalsey',
+    pass: [null, undefined, false, 0, -0, 0x0, 0.0, '', NaN],
+    fail: [1, true, [], {}, () => {}, 'test'],
+  });
+  
+  assert({
+    func: isFloat,
+    name: 'isFloat',
+    pass: [1.1, 10.99999999, 1 / 3],
+    fail: [1, 2, 10.0, Infinity, -Infinity, NaN, 0, -0],
   });
   
   assert({
@@ -189,6 +237,35 @@ describe('is', () => {
   });
   
   assert({
+    func: isNot,
+    name: 'isNot',
+    pass: [
+      [1, 2],
+      [true, false],
+      [{}, []],
+      [0, undefined],
+      [null, undefined],
+      [null, NaN],
+      [NaN, NaN],
+      [[1, 2, 3], [1, 2, 3]],
+      [{ prop: true }, { prop: true }],
+    ],
+    fail: [
+      [1, 1],
+      [true, true],
+      (() => {
+        const prop = [1, 2, 3];
+        return [prop, prop];
+      })(),
+      (() => {
+        const prop = { prop: true };
+        return [prop, prop];
+      })(),
+    ],
+    spread: true,
+  });
+  
+  assert({
     func: isNull,
     name: 'isNull',
     fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined, () => {}],
@@ -260,9 +337,14 @@ describe('is', () => {
     name: 'isPromise',
     pass: [
       Promise.resolve(1),
-      { then() {} },
+      { then() {}, catch() {} },
     ],
-    fail: [-1, -100000, -Infinity, NaN, undefined, {}, [], null, { catch() {} }],
+    fail: [
+      -1, -100000, -Infinity, NaN, undefined,
+      {}, [], null,
+      { then() {} },
+      { catch() {} },
+    ],
   });
   
   assert({
@@ -298,6 +380,13 @@ describe('is', () => {
       Symbol('test'),
     ],
     fail: [{}, () => {}, true, [], 1],
+  });
+  
+  assert({
+    func: isTruthy,
+    name: 'isTruthy',
+    true: [1, true, [], {}, () => {}, 'test'],
+    fail: [null, undefined, false, 0, -0, 0x0, 0.0, '', NaN],
   });
   
   assert({

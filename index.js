@@ -7,7 +7,6 @@ const color = require('./color');
 const crypto = require('./crypto');
 const datetime = require('./datetime');
 const func = require('./function');
-const generator = require('./generator');
 const is = require('./is');
 const iterable = require('./iterable');
 const number = require('./number');
@@ -25,7 +24,6 @@ module.exports = {
   crypto,
   datetime,
   function: func,
-  generator,
   is,
   iterable,
   number,

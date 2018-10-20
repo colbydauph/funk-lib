@@ -24,6 +24,8 @@ const {
   filter,
   find,
   flatMap,
+  flatten,
+  flattenN,
   forEach,
   frame,
   from,
@@ -31,11 +33,13 @@ const {
   includes,
   indexOf,
   intersperse,
+  isEmpty,
   iterate,
   join,
   length,
   map,
   next,
+  none,
   nth,
   of,
   partition,
@@ -45,6 +49,7 @@ const {
   reduce,
   repeat,
   reverse,
+  scan,
   slice,
   some,
   splitAt,
@@ -55,7 +60,10 @@ const {
   tee,
   times,
   toArray,
+  unfold,
   unique,
+  uniqueBy,
+  unnest,
   unzip,
   zip,
   zipWith,
@@ -63,6 +71,7 @@ const {
 
 const noop = () => {};
 
+// eslint-disable-next-line max-statements
 describe('iterable/sync', () => {
   
   let pred, arr, iterator, expected;
@@ -361,6 +370,37 @@ describe('iterable/sync', () => {
     
     it('should be curried', () => {
       expect(find(pred)(iterator)).to.eql(expected);
+    });
+    
+  });
+  
+  describe('flatten', () => {
+    
+    it('should flatten recursively', () => {
+      arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+      iterator = from(arr);
+      expect(toArray(flatten(iterator)))
+        .to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11]);
+    });
+    
+  });
+  
+  describe('flattenN', () => {
+    
+    const input = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+    const outputs = {
+      0: [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]],
+      1: [1, 2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]], 9, 10, 11],
+      2: [1, 2, 3, 4, 5, 6, 7, 8, 9, [12, 13, 14], 9, 10, 11],
+      3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
+      4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
+    };
+    
+    it('should flatten n levels of depth', () => {
+      Object.entries(outputs).forEach(([n, output]) => {
+        iterator = from(input);
+        expect(toArray(flattenN(+n, iterator))).to.eql(output);
+      });
     });
     
   });
@@ -795,6 +835,17 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('scan', () => {
+    
+    it('should yield intermediate reductions', () => {
+      pred = R.add;
+      const it = scan(pred, 1, iterator);
+      expect(toArray(it))
+        .to.eql(R.scan(pred, 1, arr));
+    });
+    
+  });
+  
   describe('slice', () => {
     
     let start, end;
@@ -997,6 +1048,27 @@ describe('iterable/sync', () => {
     it('should work with arrays', () => {
       expect(toArray(unique(arr)))
         .to.eql(expected);
+    });
+    
+  });
+  
+  describe('unfold', () => {
+    
+    it('should yield until a falsey value is returned', () => {
+      pred = n => (n > 50 ? false : [-n, n + 10]);
+      expect(toArray(unfold(pred, 10)))
+        .to.eql(R.unfold(pred, 10));
+    });
+    
+  });
+  
+  describe('unnest', () => {
+        
+    it('should flatten one level', () => {
+      arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+      iterator = from(arr);
+      expect(toArray(unnest(iterator)))
+        .to.eql(R.unnest(arr));
     });
     
   });

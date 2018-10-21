@@ -783,6 +783,13 @@ describe('iterable/sync', () => {
       
     });
     
+    it('should return an empty iterable when step = 0', () => {
+      // asc
+      expect(toArray(rangeStep(0, 20, 40))).to.eql([]);
+      // desc
+      expect(toArray(rangeStep(0, 80, 40))).to.eql([]);
+    });
+    
     it('should be curried', () => {
       expect(toArray(rangeStep(5)(15)(30)))
         .to.eql([15, 20, 25]);

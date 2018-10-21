@@ -5,9 +5,8 @@ const R = require('ramda');
 
 // local
 const { pipeC } = require('../function');
-const { isIterable } = require('../is');
+const { is, isIterable } = require('../is');
 
-const strictEqual = R.curry((left, right) => (left === right));
 
 class StopIteration extends Error {}
 
@@ -33,10 +32,28 @@ const last = (iterable) => {
   return last;
 };
 
+// (A -> Iterable<B>) -> Iterable<A> -> Iterator<B>
+const flatMap = R.curry(function* flatMap(pred, iterable) {
+  for (const item of iterable) yield* pred(item);
+});
+
+// (A -> B) -> Iterable<A> -> Iterator<B>
+const map = R.curry(function* map(pred, iterable) {
+  for (const item of iterable) yield pred(item);
+});
+
+// returns an iterator from an iterable
+// Iterable<T> -> Iterator<T>
+const from = map(R.identity);
+
+// create an iterator of one or more (variadic) arguments
+// T... -> Iterator<T>
+const of = R.unapply(from);
+
 // ((A, T) -> A) -> A -> Iterable<T> -> Iterator<A>
 const scan = R.curry(function* scan(pred, acc, iterable) {
   yield acc;
-  for (const item of iterable) yield acc = pred(acc, item);
+  yield* map((item) => (acc = pred(acc, item)), iterable);
 });
 
 // ((A, T) -> A) -> A -> Iterable<T> -> A
@@ -53,16 +70,6 @@ const accumulate = R.curry(function* accumulate(pred, iterable) {
   }
 });
 
-// (A -> B) -> Iterable<A> -> Iterator<B>
-const map = R.curry(function* map(pred, iterable) {
-  for (const item of iterable) yield pred(item);
-});
-
-// (A -> Iterable<B>) -> Iterable<A> -> Iterator<B>
-const flatMap = R.curry(function* flatMap(pred, iterable) {
-  for (const item of iterable) yield* pred(item);
-});
-
 // Integer -> Integer -> Iterable<T> -> Iterator<T>
 const slice = R.curry(function* slice(start, stop, iterable) {
   for (const [i, item] of enumerate(iterable)) {
@@ -70,14 +77,6 @@ const slice = R.curry(function* slice(start, stop, iterable) {
     if (i >= stop - 1) return;
   }
 });
-
-// returns an iterator from an iterable
-// Iterable<T> -> Iterator<T>
-const from = map(R.identity);
-
-// create an iterator of one or more (variadic) arguments
-// T... -> Iterator<T>
-const of = R.unapply(from);
 
 // Iterable<T> -> Iterable<T> -> Iterable<T>
 const concat = R.curry(function* concat(iterator1, iterator2) {
@@ -118,9 +117,9 @@ const zipWith = R.useWith(function* zipWith(pred, iterator1, iterator2) {
 // Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
 const zip = zipWith(Array.of);
 
-// todo: test with step = 0
 // Number -> Number -> Number -> Iterator<Number>
 const rangeStep = R.curry(function* rangeStep(step, start, stop) {
+  if (step === 0) return;
   const cont = i => (step > 0 ? i < stop : i > stop);
   for (let i = start; cont(i); i += step) yield i;
 });
@@ -128,7 +127,6 @@ const rangeStep = R.curry(function* rangeStep(step, start, stop) {
 // Number -> Number -> Iterator<Number>
 const range = rangeStep(1);
 
-// todo: should this be called entries?
 // Iterable<T> -> Iterator<[Integer, T]>
 const enumerate = iterable => zip(range(0, Infinity), iterable);
 
@@ -150,9 +148,9 @@ const iterate = R.useWith(unfold, [
 // todo: consider uniqueWith
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterator<T>
 const uniqueBy = R.curry(function* uniqueBy(pred, iterable) {
-  const arr = [];
-  const add = item => arr.push(item);
-  const has = item => arr.some((ai) => pred(item, ai));
+  const seen = [];
+  const add = saw => seen.push(saw);
+  const has = item => seen.some((saw) => pred(item, saw));
   yield* filter((item) => {
     if (has(item)) return false;
     add(item);
@@ -226,11 +224,12 @@ const find = R.curry((pred, iterable) => {
   for (const item of iterable) if (pred(item)) return item;
 });
 
-// (T -> Boolean) -> Iterable<T> -> Integer | Undefined
+// (T -> Boolean) -> Iterable<T> -> Integer
 const findIndex = R.curry((pred, iterable) => {
   for (const [i, item] of enumerate(iterable)) {
     if (pred(item)) return i;
   }
+  return -1;
 });
 
 // Iterable<T> -> Undefined
@@ -255,19 +254,6 @@ const dropWhile = R.curry(function* dropWhile(pred, iterable) {
   }
 });
 
-// todo: this can be implemented with chain + times
-// Integer -> Iterable<T> -> Iterator<T>
-const cycleN = R.curry(function* cycleN(n, iterable) {
-  if (n < 1) return;
-  const buffer = [];
-  yield* forEach((item) => buffer.push(item), iterable);
-  if (!buffer.length) return;
-  while (n-- > 1) yield* buffer;
-});
-
-// Iterable<T> -> Iterator<T>
-const cycle = cycleN(Infinity);
-
 // todo: there might be a more efficient strategy for arrays
 // generators are not iterable in reverse
 // Iterable<T> -> Iterator<T>
@@ -289,16 +275,12 @@ const frame = R.curry(function* frame(size, iterable) {
   yield cache;
 });
 
+
 // T -> Iterable<T> -> Integer
-const indexOf = R.curry((toFind, iterable) => {
-  for (const [i, item] of enumerate(iterable)) {
-    if (item === toFind) return i;
-  }
-  return -1;
-});
+const indexOf = R.useWith(findIndex, [is, R.identity]);
 
 // * -> Iterable<T> -> Boolean
-const includes = R.useWith(some, [strictEqual, R.identity]);
+const includes = R.useWith(some, [is, R.identity]);
 
 // (T -> T -> Boolean) -> Iterable<T> -> Iterator<[T]>
 const groupWith = R.curry(function* groupWith(pred, iterable) {
@@ -315,7 +297,7 @@ const groupWith = R.curry(function* groupWith(pred, iterable) {
 });
 
 // Iterable<T> -> Iterator<[T]>
-const group = groupWith(strictEqual);
+const group = groupWith(is);
 
 // Integer -> Iterable<T> -> [Iterator<T>]
 const tee = R.curry((n, iterable) => {
@@ -377,6 +359,19 @@ const unnest = flattenN(1);
 // Iterable<Iterable<T>> -> Iterator<T>
 const flatten = flattenN(Infinity);
 
+// todo: this can be implemented with unnest + times
+// Integer -> Iterable<T> -> Iterator<T>
+const cycleN = R.curry(function* cycleN(n, iterable) {
+  if (n < 1) return;
+  const buffer = [];
+  yield* forEach((item) => buffer.push(item), iterable);
+  if (!buffer.length) return;
+  while (n-- > 1) yield* buffer;
+});
+
+// Iterable<T> -> Iterator<T>
+const cycle = cycleN(Infinity);
+
 const combinations = R.curry(function* combinations() {
   // todo
 });
@@ -393,36 +388,30 @@ const unzip = R.pipe(
 );
 
 // T -> Iterable<T> -> Iterator<T>
-const intersperse = R.curry(function* intersperse(spacer, iterable) {
-  let first = true;
-  for (const item of iterable) {
-    if (!first) {
-      yield spacer;
-    } else {
-      first = false;
-    }
-    yield item;
-  }
-});
+const intersperse = R.useWith(flatMap, [
+  spacer => ([i, item]) => (i ? [spacer, item] : [item]),
+  enumerate,
+]);
 
 // String -> Iterable<T> -> String
 const join = pipeC(
   intersperse,
-  reduce((left, right) => `${ left }${ right }`, '')
+  reduce((left, right) => `${ left }${ right }`, ''),
 );
 
 const isEmpty = some(R.always(true));
 
 const unionWith = R.curry(() => {});
-const union = unionWith(strictEqual);
+const union = unionWith(is);
 
 const intersectWith = R.curry(() => {});
-const intersect = intersectWith(strictEqual);
+const intersect = intersectWith(is);
 
 module.exports = {
   accumulate,
   append,
   concat,
+  combinations,
   cycle,
   cycleN,
   drop,

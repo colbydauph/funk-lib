@@ -65,7 +65,7 @@ const {
   StopIteration,
   sum,
   take,
-  // takeWhile,
+  takeWhile,
   tee,
   times,
   toArray,
@@ -74,6 +74,7 @@ const {
   uniqueWith,
   unnest,
   unzip,
+  // unzipN,
   zip,
   zipWith,
 } = require('../sync');
@@ -992,6 +993,32 @@ describe('iterable/sync', () => {
     
     it('should be curried', () => {
       expect(toArray(take(70)(iterator)))
+        .to.eql(expected);
+    });
+    
+  });
+  
+  describe('takeWhile', () => {
+    
+    beforeEach(() => {
+      arr = R.range(50, 500);
+      iterator = from(arr);
+      pred = n => (n < 175 || n > 200);
+      expected = R.takeWhile(pred, arr);
+    });
+    
+    it('should take items while pred is true', () => {
+      expect(toArray(takeWhile(pred, iterator)))
+        .to.eql(expected);
+    });
+    
+    it('should work with arrays', () => {
+      expect(toArray(takeWhile(pred, arr)))
+        .to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(takeWhile(pred)(iterator)))
         .to.eql(expected);
     });
     

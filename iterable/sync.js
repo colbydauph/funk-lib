@@ -195,7 +195,7 @@ const max = reduce(Math.max, -Infinity);
 // Iterable<T> -> [T]
 const toArray = reduce(R.flip(R.append), []);
 
-// Integer -> Iterable<T> -> T
+// Integer -> Iterable<T> -> T | Undefined
 const nth = R.curry((n, iterable) => {
   for (const [i, item] of enumerate(iterable)) {
     if (i === n) return item;
@@ -264,16 +264,15 @@ const sort = R.useWith(R.sort, [R.identity, toArray]);
 // Integer -> Iterable<T> -> Iterator<[T]>
 const frame = R.curry(function* frame(size, iterable) {
   const cache = [];
-  for (const item of iterable) {
+  yield* flatMap(function* fmap(item) {
     if (cache.length === size) {
       yield [...cache];
       cache.shift();
     }
     cache.push(item);
-  }
+  }, iterable);
   yield cache;
 });
-
 
 // T -> Iterable<T> -> Integer
 const indexOf = R.useWith(findIndex, [is, R.identity]);
@@ -283,15 +282,14 @@ const includes = R.useWith(some, [is, R.identity]);
 
 // ((T , T) -> Boolean) -> Iterable<T> -> Iterator<[T]>
 const groupWith = R.curry(function* groupWith(pred, iterable) {
-  const INIT = Symbol('INIT');
-  let last = INIT, group = [];
-  for (const item of iterable) {
-    if (last !== INIT && !pred(last, item)) {
+  let last, group = [];
+  yield* flatMap(function* fmap([i, item]) {
+    if (i && !pred(last, item)) {
       yield group;
       group = [];
     }
     group.push(last = item);
-  }
+  }, enumerate(iterable));
   if (group.length) yield group;
 });
 
@@ -318,13 +316,12 @@ const tee = R.curry((n, iterable) => {
 // Integer -> Iterable<T> -> Iterator<[T]>
 const splitEvery = R.curry(function* splitEvery(n, iterable) {
   let group = [];
-  for (const item of iterable) {
+  yield* flatMap(function* fmap(item) {
     group.push(item);
-    if (group.length === n) {
-      yield group;
-      group = [];
-    }
-  }
+    if (group.length < n) return;
+    yield group;
+    group = [];
+  }, iterable);
   if (group.length) yield group;
 });
 
@@ -369,11 +366,11 @@ const cycleN = R.curry(function* cycleN(n, iterable) {
 // Iterable<T> -> Iterator<T>
 const cycle = cycleN(Infinity);
 
+// Number -> Iterable<[A, B, ...Z]> -> [Iterator<A>, Iterator<B>, ...Iterator<Z>]
+const unzipN = pipeC(tee, R.addIndex(R.map)((iter, i) => map(nth(i), iter)));
+
 // Iterable<[A, B]> -> [Iterator<A>, Iterator<B>]
-const unzip = R.pipe(
-  tee(2),
-  R.addIndex(R.map)((iter, i) => map(nth(i), iter)),
-);
+const unzip = unzipN(2);
 
 // T -> Iterable<T> -> Iterator<T>
 const intersperse = R.useWith(flatMap, [
@@ -464,6 +461,7 @@ module.exports = {
   uniqueWith,
   unnest,
   unzip,
+  unzipN,
   zip,
   zipWith,
 };

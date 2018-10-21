@@ -145,9 +145,8 @@ const iterate = R.useWith(unfold, [
   R.identity,
 ]);
 
-// todo: consider uniqueWith
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterator<T>
-const uniqueBy = R.curry(function* uniqueBy(pred, iterable) {
+const uniqueWith = R.curry(function* uniqueWith(pred, iterable) {
   const seen = [];
   const add = saw => seen.push(saw);
   const has = item => seen.some((saw) => pred(item, saw));
@@ -282,7 +281,7 @@ const indexOf = R.useWith(findIndex, [is, R.identity]);
 // * -> Iterable<T> -> Boolean
 const includes = R.useWith(some, [is, R.identity]);
 
-// (T -> T -> Boolean) -> Iterable<T> -> Iterator<[T]>
+// ((T , T) -> Boolean) -> Iterable<T> -> Iterator<[T]>
 const groupWith = R.curry(function* groupWith(pred, iterable) {
   const INIT = Symbol('INIT');
   let last = INIT, group = [];
@@ -359,27 +358,16 @@ const unnest = flattenN(1);
 // Iterable<Iterable<T>> -> Iterator<T>
 const flatten = flattenN(Infinity);
 
-// todo: this can be implemented with unnest + times
 // Integer -> Iterable<T> -> Iterator<T>
 const cycleN = R.curry(function* cycleN(n, iterable) {
   if (n < 1) return;
   const buffer = [];
   yield* forEach((item) => buffer.push(item), iterable);
-  if (!buffer.length) return;
   while (n-- > 1) yield* buffer;
 });
 
 // Iterable<T> -> Iterator<T>
 const cycle = cycleN(Infinity);
-
-const combinations = R.curry(function* combinations() {
-  // todo
-});
-
-// Number -> Iterable<T> -> Iterator<[T]>
-const permutations = R.curry(function* permutations(n, iterable) {
-
-});
 
 // Iterable<[A, B]> -> [Iterator<A>, Iterator<B>]
 const unzip = R.pipe(
@@ -401,17 +389,21 @@ const join = pipeC(
 
 const isEmpty = some(R.always(true));
 
-const unionWith = R.curry(() => {});
-const union = unionWith(is);
+// const unionWith = R.curry(() => {});
+// const union = unionWith(is);
 
-const intersectWith = R.curry(() => {});
-const intersect = intersectWith(is);
+// const intersectWith = R.curry(() => {});
+// const intersect = intersectWith(is);
+
+// const combinations = R.curry(function* combinations() {});
+
+// Number -> Iterable<T> -> Iterator<[T]>
+// const permutations = R.curry(function* permutations(n, iterable) {});
 
 module.exports = {
   accumulate,
   append,
   concat,
-  combinations,
   cycle,
   cycleN,
   drop,
@@ -436,16 +428,17 @@ module.exports = {
   isEmpty,
   iterate,
   join,
+  last,
   length,
   map,
   max,
   min,
   next,
+  nextOr,
   none,
   nth,
   of,
   partition,
-  permutations,
   prepend,
   range,
   rangeStep,
@@ -468,7 +461,7 @@ module.exports = {
   toArray,
   unfold,
   unique,
-  uniqueBy,
+  uniqueWith,
   unnest,
   unzip,
   zip,

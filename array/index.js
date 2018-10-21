@@ -6,6 +6,7 @@ const R = require('ramda');
 // local
 const { random } = require('../number');
 
+// todo: rename to index
 // Array<V> -> Object<K, V>
 const toObj = R.pipe(R.toPairs, R.fromPairs);
 

@@ -5,12 +5,12 @@ const R = require('ramda');
 const sinon = require('sinon');
 const { expect } = require('chai');
 
-const { isGenerator } = require('../../is');
+// local
+const { on } = require('../../function');
+const { is, isGenerator } = require('../../is');
 
 // local
 const {
-  // permutations,
-  // takeWhile,
   accumulate,
   append,
   concat,
@@ -23,23 +23,29 @@ const {
   exhaust,
   filter,
   find,
+  // findIndex,
   flatMap,
   flatten,
   flattenN,
   forEach,
   frame,
   from,
+  // group,
   groupWith,
   includes,
   indexOf,
   intersperse,
-  isEmpty,
+  // isEmpty,
   iterate,
   join,
+  // last,
   length,
   map,
+  // max,
+  // min,
   next,
-  none,
+  // nextOr,
+  // none,
   nth,
   of,
   partition,
@@ -47,22 +53,25 @@ const {
   range,
   rangeStep,
   reduce,
+  // reject,
   repeat,
   reverse,
   scan,
   slice,
   some,
+  // sort,
   splitAt,
   splitEvery,
   StopIteration,
   sum,
   take,
+  // takeWhile,
   tee,
   times,
   toArray,
   unfold,
   unique,
-  uniqueBy,
+  uniqueWith,
   unnest,
   unzip,
   zip,
@@ -1055,6 +1064,31 @@ describe('iterable/sync', () => {
     it('should work with arrays', () => {
       expect(toArray(unique(arr)))
         .to.eql(expected);
+    });
+    
+  });
+  
+  describe('uniqueWith', () => {
+    
+    beforeEach(() => {
+      arr = [1, 2, 3, 3, 3, 2, 1].map((id) => ({ id }));
+      pred = on(is, R.prop('id'));
+      iterator = from(arr);
+    });
+    
+    it('should yield unique items', () => {
+      expect(toArray(uniqueWith(pred, iterator)))
+        .to.eql(R.uniqWith(pred, arr));
+    });
+    
+    it('should work with arrays', () => {
+      expect(toArray(uniqueWith(pred, arr)))
+        .to.eql(R.uniqWith(pred, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(uniqueWith(pred)(iterator)))
+        .to.eql(R.uniqWith(pred, arr));
     });
     
   });

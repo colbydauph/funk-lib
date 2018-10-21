@@ -135,9 +135,9 @@ describe('async lib', () => {
     
     it('should resolve after n ms', async () => {
       const start = Date.now();
-      await delay(20);
+      await delay(50);
       const end = Date.now();
-      expect(end - start).to.be.closeTo(20, 5);
+      expect(end - start).to.be.closeTo(50, 10);
     });
     
   });

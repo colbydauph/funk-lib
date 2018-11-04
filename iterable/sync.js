@@ -59,15 +59,55 @@ const scan = R.curry(function* scan(pred, acc, iterable) {
 // ((A, T) -> A) -> A -> Iterable<T> -> A
 const reduce = pipeC(scan, last);
 
+// ((...A) -> B) -> [Iterable<A>] -> Iterator<B>
+const zipAllWith = R.curry(function* zipAllWith(pred, iterators) {
+  iterators = R.map(from, iterators);
+  while (true) {
+    const { done, values } = R.reduce((out, iterator) => {
+      if (out.done) return R.reduced(out);
+      const { value, done } = iterator.next();
+      return R.evolve({
+        values: R.append(value),
+        done: R.or(done),
+      }, out);
+    }, { done: false, values: [] }, iterators);
+    if (done) return;
+    yield pred(...values);
+  }
+});
+
+// [Iterable<A>] -> Iterator<B>
+const zipAll = zipAllWith(Array.of);
+
+const zipWithN = n => R.curryN(n + 1)((pred, ...iterables) => zipAllWith(pred, iterables));
+
+// ((A, B) -> C) -> Iterable<A> -> Iterable<B> -> Iterator<C>
+const zipWith = zipWithN(2);
+
+// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
+const zip = zipWith(Array.of);
+
+// Number -> Number -> Number -> Iterator<Number>
+const rangeStep = R.curry(function* rangeStep(step, start, stop) {
+  if (step === 0) return;
+  const cont = i => (step > 0 ? i < stop : i > stop);
+  for (let i = start; cont(i); i += step) yield i;
+});
+
+// Number -> Number -> Iterator<Number>
+const range = rangeStep(1);
+
+// Iterable<T> -> Iterator<[Integer, T]>
+const enumerate = iterable => zip(range(0, Infinity), iterable);
+
 // accumulate is to scan, like reduce with no init
 // todo: consider ditching this. scan is more useful
 // ((A, T) -> A) -> Iterable<T> -> Iterator<A>
-const accumulate = R.curry(function* accumulate(pred, iterable) {
-  const INIT = Symbol('INIT');
-  let last = INIT;
-  for (const item of iterable) {
-    yield (last = (last === INIT) ? item : pred(last, item));
-  }
+const accumulate = R.curry((pred, iterable) => {
+  let last;
+  return map(([i, item]) => {
+    return (last = i ? pred(last, item) : item);
+  }, enumerate(iterable));
 });
 
 // Integer -> Integer -> Iterable<T> -> Iterator<T>
@@ -77,6 +117,9 @@ const slice = R.curry(function* slice(start, stop, iterable) {
     if (i >= stop - 1) return;
   }
 });
+
+// Iterable<T> -> Iterator<T>
+const tail = slice(1, Infinity);
 
 // Iterable<T> -> Iterable<T> -> Iterable<T>
 const concat = R.curry(function* concat(iterator1, iterator2) {
@@ -103,32 +146,6 @@ const filter = R.curry(function* filter(pred, Iterable) {
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
 const reject = R.complement(filter);
-
-// ((A, B) -> C) -> Iterable<A> -> Iterable<B> -> Iterator<C>
-const zipWith = R.useWith(function* zipWith(pred, iterator1, iterator2) {
-  while (true) {
-    const { value: value1, done: done1 } = iterator1.next();
-    const { value: value2, done: done2 } = iterator2.next();
-    if (done1 || done2) return;
-    yield pred(value1, value2);
-  }
-}, [R.identity, from, from]);
-
-// Iterable<A> -> Iterable<B> -> Iterator<[A, B]>
-const zip = zipWith(Array.of);
-
-// Number -> Number -> Number -> Iterator<Number>
-const rangeStep = R.curry(function* rangeStep(step, start, stop) {
-  if (step === 0) return;
-  const cont = i => (step > 0 ? i < stop : i > stop);
-  for (let i = start; cont(i); i += step) yield i;
-});
-
-// Number -> Number -> Iterator<Number>
-const range = rangeStep(1);
-
-// Iterable<T> -> Iterator<[Integer, T]>
-const enumerate = iterable => zip(range(0, Infinity), iterable);
 
 // (A -> [B]) -> * -> Iterator<B>
 const unfold = R.curry(function* unfold(pred, item) {
@@ -183,14 +200,26 @@ const times = R.useWith(take, [R.identity, repeat]);
 // Iterable<T> -> Integer
 const length = reduce(R.add(1), 0);
 
-// Iterable<Number> -> Number
-const sum = reduce(R.add, 0);
+// (T -> Boolean) -> Iterable<T> -> Integer
+const count = pipeC(filter, length);
+
+// (T -> Number) -> Iterable<T> -> Number
+const sumBy = pipeC(map, reduce(R.add, 0));
+
+// (T -> Number) -> Iterable<T> -> Number
+const minBy = pipeC(map, reduce(Math.min, Infinity));
+
+// (T -> Number) -> Iterable<T> -> Number
+const maxBy = pipeC(map, reduce(Math.max, -Infinity));
 
 // Iterable<Number> -> Number
-const min = reduce(Math.min, Infinity);
+const sum = sumBy(R.identity);
 
 // Iterable<Number> -> Number
-const max = reduce(Math.max, -Infinity);
+const min = minBy(R.identity);
+
+// Iterable<Number> -> Number
+const max = maxBy(R.identity);
 
 // Iterable<T> -> [T]
 const toArray = reduce(R.flip(R.append), []);
@@ -384,7 +413,37 @@ const join = pipeC(
   reduce((left, right) => `${ left }${ right }`, ''),
 );
 
-const isEmpty = some(R.always(true));
+const isEmpty = some(_ => true);
+
+// ((T, T) -> Boolean) -> Iterable<T> -> Iterable<T> -> Boolean
+const correspondsWith = R.useWith((pred, iterator1, iterator2) => {
+  let done;
+  do {
+    const { done: done1, value: value1 } = iterator1.next();
+    const { done: done2, value: value2 } = iterator2.next();
+    if (done1 !== done2) return false;
+    done = (done1 && done2);
+    if (!done && !pred(value1, value2)) return false;
+  } while (!done);
+  return true;
+}, [R.identity, from, from]);
+
+// todo: is this "equals" or "is"?
+// Iterable<T> -> Iterable<T> -> Boolean
+const corresponds = correspondsWith(is);
+
+// Iterable<T> -> Iterable<Integer>
+const indices = R.pipe(enumerate, map(R.head));
+
+// Integer -> T -> Iterable<T> -> Iterator<T>
+const padTo = R.curry(function* padTo(len, padder, iterable) {
+  let n = 0;
+  yield* forEach((item) => n++, iterable);
+  if (n < len) yield* times(len - n, padder);
+});
+
+// T -> Iterable<T> -> Iterator<T>
+const pad = padTo(Infinity);
 
 // const unionWith = R.curry(() => {});
 // const union = unionWith(is);
@@ -401,6 +460,9 @@ module.exports = {
   accumulate,
   append,
   concat,
+  corresponds,
+  correspondsWith,
+  count,
   cycle,
   cycleN,
   drop,
@@ -421,6 +483,7 @@ module.exports = {
   groupWith,
   includes,
   indexOf,
+  indices,
   intersperse,
   isEmpty,
   iterate,
@@ -429,12 +492,16 @@ module.exports = {
   length,
   map,
   max,
+  maxBy,
   min,
+  minBy,
   next,
   nextOr,
   none,
   nth,
   of,
+  pad,
+  padTo,
   partition,
   prepend,
   range,
@@ -450,7 +517,9 @@ module.exports = {
   splitAt,
   splitEvery,
   StopIteration,
+  sumBy,
   sum,
+  tail,
   take,
   takeWhile,
   tee,
@@ -463,5 +532,8 @@ module.exports = {
   unzip,
   unzipN,
   zip,
+  zipAll,
+  zipAllWith,
+  zipWithN,
   zipWith,
 };

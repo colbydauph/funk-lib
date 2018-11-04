@@ -7,6 +7,7 @@ const { expect } = require('chai');
 
 // local
 const { on } = require('../../function');
+const { random } = require('../../number');
 const { is, isGenerator } = require('../../is');
 
 // local
@@ -14,6 +15,9 @@ const {
   accumulate,
   append,
   concat,
+  // corresponds,
+  correspondsWith,
+  count,
   cycle,
   cycleN,
   drop,
@@ -34,6 +38,7 @@ const {
   groupWith,
   includes,
   indexOf,
+  indices,
   intersperse,
   // isEmpty,
   iterate,
@@ -42,12 +47,16 @@ const {
   length,
   map,
   // max,
+  maxBy,
   // min,
+  minBy,
   next,
   // nextOr,
   // none,
   nth,
   of,
+  pad,
+  padTo,
   partition,
   prepend,
   range,
@@ -63,7 +72,9 @@ const {
   splitAt,
   splitEvery,
   StopIteration,
+  // sumBy,
   sum,
+  // tail,
   take,
   takeWhile,
   tee,
@@ -76,6 +87,9 @@ const {
   unzip,
   // unzipN,
   zip,
+  // zipAll,
+  // zipAllWith,
+  // zipWithN,
   zipWith,
 } = require('../sync');
 
@@ -154,6 +168,65 @@ describe('iterable/sync', () => {
     it('should be curried', () => {
       expect(toArray(concat(iterators[0])(iterators[1])))
         .to.eql(expected);
+    });
+    
+  });
+  
+  describe('correspondWith', () => {
+    
+    let arr1, arr2;
+    let iter1, iter2;
+    beforeEach(() => {
+      arr1 = [
+        { id: 123, saved: true },
+        { id: 456, saved: false },
+        { id: 789, saved: true },
+      ];
+      arr2 = [
+        { id: 123, saved: false },
+        { id: 456, saved: true },
+        { id: 789, saved: false },
+      ];
+      iter1 = from(arr1);
+      iter2 = from(arr2);
+      pred = on(is, R.prop('id'));
+    });
+    
+    it('should return true if elements in same index pass pred', () => {
+      expect(correspondsWith(pred, iter1, iter2))
+        .to.eql(true);
+    });
+    
+    it('should work with arrays', () => {
+      expect(correspondsWith(pred, arr1, arr2))
+        .to.eql(true);
+    });
+    
+    it('should return false if elements in same index do not pass pred', () => {
+      arr1[0].id = 999;
+      expect(correspondsWith(pred, iter1, iter2))
+        .to.eql(false);
+    });
+    
+    it('should return false if iterables are different lengths', () => {
+      arr1.pop();
+      expect(correspondsWith(pred, iter1, iter2))
+        .to.eql(false);
+    });
+    
+    it('should be curried', () => {
+      expect(correspondsWith(pred)(iter1)(iter2))
+        .to.eql(true);
+    });
+    
+  });
+  
+  describe('count', () => {
+    
+    it('should count number of items for which pred returns true', () => {
+      pred = n => !!(n % 3);
+      expect(count(pred, iterator))
+        .to.eql(3);
     });
     
   });
@@ -553,6 +626,15 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('indices', () => {
+    
+    it('should return iterator of indices', () => {
+      expect(toArray(indices(iterator)))
+        .to.eql(R.keys(arr).map(n => +n));
+    });
+    
+  });
+  
   describe('intersperse', () => {
     
     it('should work', () => {
@@ -627,6 +709,42 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('maxBy', () => {
+    
+    beforeEach(() => {
+      arr = R.range(10, 100).map(id => ({ id }));
+      iterator = from(arr);
+      pred = R.prop('id');
+    });
+    
+    it('should return max item after pred', () => {
+      expect(maxBy(pred, iterator)).to.eql(99);
+    });
+    
+    it('should be curried', () => {
+      expect(maxBy(pred)(iterator)).to.eql(99);
+    });
+    
+  });
+  
+  describe('minBy', () => {
+    
+    beforeEach(() => {
+      arr = R.range(10, 100).map(id => ({ id }));
+      iterator = from(arr);
+      pred = R.prop('id');
+    });
+    
+    it('should return max item after pred', () => {
+      expect(minBy(pred, iterator)).to.eql(10);
+    });
+    
+    it('should be curried', () => {
+      expect(minBy(pred)(iterator)).to.eql(10);
+    });
+    
+  });
+  
   describe('next', () => {
     
     it('should return the next value in the iterator', () => {
@@ -663,7 +781,7 @@ describe('iterable/sync', () => {
     
     let index;
     beforeEach(() => {
-      index = 25;
+      index = random(0, 500);
       arr = R.range(100, 1000);
       iterator = from(arr);
       expected = R.nth(index, arr);
@@ -697,6 +815,65 @@ describe('iterable/sync', () => {
     });
     
   });
+  
+  describe('pad', () => {
+    
+    let padItem, n;
+    beforeEach(() => {
+      padItem = 'world';
+      n = 100;
+      arr = ['hello', 'this', 'is', 'my'];
+      iterator = pad(padItem, from(arr));
+      expected = [
+        ...arr,
+        ...R.times(R.always(padItem), n - arr.length),
+      ];
+    });
+  
+    it('should pad to infinity', () => {
+      expect(toArray(take(n, iterator))).to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(take(n)(iterator))).to.eql(expected);
+    });
+  
+  });
+  
+  describe('padTo', () => {
+    
+    let padItem, n;
+    beforeEach(() => {
+      padItem = 'world';
+      n = random(10, 500);
+      arr = ['hello', 'this', 'is', 'my'];
+      iterator = padTo(n, padItem, from(arr));
+      expected = [
+        ...arr,
+        ...R.times(R.always(padItem), n - arr.length),
+      ];
+    });
+    
+    it('should return iterator of length n', () => {
+      expect(length(iterator)).to.eql(n);
+    });
+  
+    it('should pad to length of n', () => {
+      expect(toArray(iterator)).to.eql(expected);
+    });
+    
+    it('should not truncate when n < iterable length', () => {
+      iterator = padTo(2, padItem, from(arr));
+      expect(toArray(iterator)).to.eql(arr);
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(padTo(n)(padItem)(from(arr)))).to.eql(expected);
+    });
+  
+  });
+  
+
   
   describe('partition', () => {
     

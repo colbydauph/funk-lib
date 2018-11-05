@@ -6,12 +6,11 @@ const crypto = require('crypto');
 // module
 const R = require('ramda');
 
-const hashWith = R.curry((algo, str) => (
-  crypto
-    .createHash(algo)
-    .update(str)
-    .digest('hex')
-));
+// string -> string -> string
+const hashWith = R.curry((algo, str) => crypto
+  .createHash(algo)
+  .update(str)
+  .digest('hex'));
 
 // string -> string
 const md5 = hashWith('md5');

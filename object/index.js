@@ -68,6 +68,9 @@ const nestWith = R.curry((pred, obj) => {
   }, {}, R.toPairs(obj));
 });
 
+// * -> string
+const toHumanJSON = obj => JSON.stringify(obj, null, 2);
+
 
 // // recursive R.merge with predicate for custom merging
 // const mergeDeepWith = R.curry((pred, left, right) => {
@@ -89,4 +92,5 @@ module.exports = {
   mapValues,
   nestWith,
   pickAs,
+  toHumanJSON,
 };

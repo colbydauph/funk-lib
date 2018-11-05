@@ -19,6 +19,7 @@ const {
   mapValues,
   nestWith,
   pickAs,
+  toHumanJSON,
 } = require('..');
 
 describe('object lib', () => {
@@ -272,6 +273,20 @@ describe('object lib', () => {
     it('should return the first array pair', () => {
       const arr = [5, 6, 7];
       expect(firstPair(arr)).to.eql(['0', 5]);
+    });
+    
+  });
+
+  describe('toHumanJSON', () => {
+    
+    it('should return json with whitespace', () => {
+      const obj = {
+        a: 1,
+        b: true,
+        c: [2, 3, 4, { 5: 6 }],
+        d: { 7: { 8: [9] } },
+      };
+      expect(toHumanJSON(obj)).to.eql(JSON.stringify(obj, null, 2));
     });
     
   });

@@ -140,12 +140,12 @@ const forEach = R.curry(function* forEach(pred, iterable) {
 });
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const filter = R.curry(function* filter(pred, Iterable) {
-  for (const item of Iterable) if (pred(item)) yield item;
+const filter = R.curry(function* filter(pred, iterable) {
+  for (const item of iterable) if (pred(item)) yield item;
 });
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const reject = R.complement(filter);
+const reject = R.useWith(filter, [R.complement, R.identity]);
 
 // (A -> [B]) -> * -> Iterator<B>
 const unfold = R.curry(function* unfold(pred, item) {
@@ -368,7 +368,7 @@ const partition = R.curry((pred, iterable) => {
   const [pass, fail] = tee(2, iterable);
   return [
     filter(pred, pass),
-    filter(R.complement(pred), fail),
+    reject(pred, fail),
   ];
 });
 
@@ -420,7 +420,7 @@ const joinWith = pipeC(
 const join = joinWith('');
 
 // Iterable<T> -> Boolean
-const isEmpty = some(_ => true);
+const isEmpty = none(_ => true);
 
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterable<T> -> Boolean
 const correspondsWith = R.useWith((pred, iterator1, iterator2) => {
@@ -459,8 +459,6 @@ const pad = padTo(Infinity);
 // const intersect = intersectWith(is);
 
 // const combinations = R.curry(function* combinations() {});
-
-// Number -> Iterable<T> -> Iterator<[T]>
 // const permutations = R.curry(function* permutations(n, iterable) {});
 
 module.exports = {

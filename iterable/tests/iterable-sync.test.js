@@ -41,7 +41,7 @@ const {
   indexOf,
   indices,
   intersperse,
-  // isEmpty,
+  isEmpty,
   iterate,
   join,
   joinWith,
@@ -54,7 +54,7 @@ const {
   minBy,
   next,
   // nextOr,
-  // none,
+  none,
   nth,
   of,
   pad,
@@ -64,7 +64,7 @@ const {
   range,
   rangeStep,
   reduce,
-  // reject,
+  reject,
   repeat,
   reverse,
   scan,
@@ -87,10 +87,10 @@ const {
   uniqueWith,
   unnest,
   unzip,
-  // unzipN,
+  unzipN,
   zip,
   // zipAll,
-  // zipAllWith,
+  zipAllWith,
   // zipWithN,
   zipWith,
 } = require('../sync');
@@ -421,7 +421,7 @@ describe('iterable/sync', () => {
   describe('filter', () => {
     
     beforeEach(() => {
-      pred = num => num < 8;
+      pred = num => num % 2;
       expected = R.filter(pred, arr);
     });
     
@@ -673,6 +673,18 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('isEmpty', () => {
+    
+    it('should return true for empty iterator', () => {
+      expect(isEmpty(of())).to.eql(true);
+    });
+    
+    it('should return false for iterators with > 0 items', () => {
+      expect(isEmpty(of(1))).to.eql(false);
+    });
+    
+  });
+  
   describe('iterate', () => {
     
     let init;
@@ -837,6 +849,31 @@ describe('iterable/sync', () => {
     it('should throw StopIteration if the iterator is exhausted', () => {
       exhaust(iterator);
       expect(() => next(iterator)).to.throw(StopIteration);
+    });
+    
+  });
+  
+  describe('none', () => {
+    
+    beforeEach(() => {
+      pred = n => n < Infinity;
+    });
+    
+    it('should return false if any item passes the predicate', () => {
+      expect(none(pred, iterator)).to.eql(false);
+    });
+    
+    it('should return true if no items pass the predicate', () => {
+      pred = n => n > Infinity;
+      expect(none(pred, iterator)).to.eql(true);
+    });
+    
+    it('should return true for empty iterators', () => {
+      expect(none(pred, of())).to.eql(true);
+    });
+    
+    it('should be curried', () => {
+      expect(none(pred)(iterator)).to.eql(false);
     });
     
   });
@@ -1074,6 +1111,20 @@ describe('iterable/sync', () => {
             
   });
   
+  describe('reject', () => {
+    
+    beforeEach(() => {
+      pred = num => num % 2;
+      expected = R.reject(pred, arr);
+    });
+    
+    it('should yield items that do not pass the predicate', () => {
+      expect(toArray(reject(pred, iterator)))
+        .to.eql(expected);
+    });
+    
+  });
+  
   describe('repeat', () => {
     
     let n;
@@ -1149,12 +1200,12 @@ describe('iterable/sync', () => {
       expected = R.any(pred, arr);
     });
     
-    it('should return true if ay item passes the predicate', () => {
+    it('should return true if any item passes the predicate', () => {
       expect(some(pred, iterator)).to.eql(expected);
     });
     
     it('should return false if any item does not pass the predicate', () => {
-      pred = n => n > 100;
+      pred = n => n > Infinity;
       expect(some(pred, iterator)).to.eql(R.any(pred, arr));
     });
     
@@ -1422,6 +1473,38 @@ describe('iterable/sync', () => {
     
   });
   
+  describe('unzipN', () => {
+    
+    let n;
+    beforeEach(() => {
+      n = random(1, 10);
+      arr = [...Array(random(1, 10))]
+        .map(() => [...Array(n)]
+          .map(() => random(
+            random(0, 10),
+            random(10, 50),
+          )));
+      iterator = from(arr);
+      expected = [...Array(n)]
+        .map((_, i) => arr.map(R.nth(i)));
+    });
+    
+    it('should unzip n-pls', () => {
+      const iterators = unzipN(n, iterator);
+      iterators.forEach((it) => {
+        expect(isGenerator(it)).to.eql(true);
+      });
+      expect(iterators.map(toArray))
+        .to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(unzipN(n)(iterator).map(toArray))
+        .to.eql(expected);
+    });
+    
+  });
+  
   describe('zip', () => {
     
     let range1, range2;
@@ -1446,6 +1529,39 @@ describe('iterable/sync', () => {
     
     it('should be curried', () => {
       expect(toArray(zip(iter1)(iter2)))
+        .to.eql(expected);
+    });
+    
+  });
+  
+  describe('zipAllWith', () => {
+    
+    let arrays, iterables, len, n;
+    beforeEach(() => {
+      n = random(1, 10);
+      len = random(1, 10);
+      pred = R.unapply(R.sum);
+      arrays = [...Array(n)].map(() => {
+        const num = random(0, 100);
+        return R.range(num, num + len);
+      });
+      iterables = arrays.map(from);
+      expected = [...Array(len)]
+        .map((_, i) => pred(...arrays.map(nth(i))));
+    });
+    
+    it('should zip iterables', () => {
+      expect(toArray(zipAllWith(pred, iterables)))
+        .to.eql(expected);
+    });
+    
+    it('should work with arrays', () => {
+      expect(toArray(zipAllWith(pred, arrays)))
+        .to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(zipAllWith(pred)(iterables)))
         .to.eql(expected);
     });
     

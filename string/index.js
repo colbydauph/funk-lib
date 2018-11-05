@@ -5,12 +5,14 @@ const R = require('ramda');
 
 // string -> string -> number
 const localeCompare = R.invoker(1, 'localeCompare');
+
+// todo: deprecate these
 // string -> string
-const toUpperCase = R.invoker(0, 'toUpperCase');
+const toUpperCase = R.toUpper;
+const toLowerCase = R.toLower;
+
 // string -> string
-const toLowerCase = R.invoker(0, 'toLowerCase');
-// string -> string
-const capitalize = (str) => toUpperCase(R.nth(0, str)) + str.slice(1);
+const capitalize = (str) => R.toUpper(R.nth(0, str)) + str.slice(1);
 
 // string -> string
 // eslint-disable-next-line no-useless-escape
@@ -19,7 +21,7 @@ const escapeRegExpStr = R.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
 // reasonably similar to js template literals
 // string -> object -> string
 const template = R.curry((tmpl, variables) => {
-  return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (match, variable) => {
+  return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {
     return variables[variable.trim()] || '';
   });
 });

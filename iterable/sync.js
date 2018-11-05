@@ -413,7 +413,7 @@ const intersperse = R.useWith(flatMap, [
 // String -> Iterable<T> -> String
 const joinWith = pipeC(
   intersperse,
-  reduce((left, right) => `${ left }${ right }`, ''),
+  reduce(R.unapply(R.join('')), ''),
 );
 
 // Iterable<T> -> String

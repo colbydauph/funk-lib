@@ -9,7 +9,7 @@ const { expect } = require('chai');
 const { on } = require('../../function');
 const { random } = require('../../number');
 const { sample } = require('../../array');
-const { is, isGenerator } = require('../../is');
+const { is, isIterator } = require('../../is');
 
 // local
 const {
@@ -574,7 +574,7 @@ describe('iterable/sync', () => {
   describe('from', () => {
     
     it('should return an iterator for an iterable', () => {
-      expect(isGenerator(from(arr))).to.eql(true);
+      expect(isIterator(from(arr))).to.eql(true);
       expect(toArray(from(arr))).to.eql(arr);
     });
     
@@ -908,7 +908,7 @@ describe('iterable/sync', () => {
   describe('of', () => {
     
     it('should yield arguments', () => {
-      expect(isGenerator(of(...arr))).to.eql(true);
+      expect(isIterator(of(...arr))).to.eql(true);
       expect(toArray(of(...arr))).to.eql(arr);
     });
     
@@ -1340,7 +1340,7 @@ describe('iterable/sync', () => {
     it('should return n copies', () => {
       expect(copies.length).to.eql(n);
       copies.forEach((copy) => {
-        expect(isGenerator(copy)).to.eql(true);
+        expect(isIterator(copy)).to.eql(true);
         expect(toArray(copy)).to.eql(arr);
       });
     });
@@ -1492,7 +1492,7 @@ describe('iterable/sync', () => {
     it('should unzip n-pls', () => {
       const iterators = unzipN(n, iterator);
       iterators.forEach((it) => {
-        expect(isGenerator(it)).to.eql(true);
+        expect(isIterator(it)).to.eql(true);
       });
       expect(iterators.map(toArray))
         .to.eql(expected);

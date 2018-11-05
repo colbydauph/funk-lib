@@ -4,9 +4,24 @@
 // modules
 const R = require('ramda');
 
-const { isNaN, isFinite, isInteger } = Number;
-const { isArray } = Array;
-const { isBuffer } = Buffer;
+const {
+  // * -> boolean
+  isFinite,
+  // * -> boolean
+  isInteger,
+  // * -> boolean
+  isNaN,
+} = Number;
+
+const {
+  // * -> boolean
+  isArray,
+} = Array;
+
+const {
+  // * -> boolean
+  isBuffer,
+} = Buffer;
 
 // * -> * -> boolean
 const is = R.curry((left, right) => (left === right));
@@ -67,72 +82,39 @@ const isPojo = R.allPass([
   isObject,
   R.pipe(Object.getPrototypeOf, is(Object.prototype)),
 ]);
-// fixme: this should be isIterator
+
 // * -> boolean
-const isGenerator = R.allPass([
+const isIterator = R.allPass([
   isObject,
   R.propSatisfies(isFunction, 'next'),
-  R.propSatisfies(isFunction, 'throw'),
 ]);
-// * -> boolean
-const isSyncGenerator = R.allPass([
-  isGenerator,
-  // fixme: find a safer way to do this
-  (thing) => (thing[Symbol.toStringTag] === 'Generator'),
-]);
-// * -> boolean
-const isAsyncGenerator = R.allPass([
-  isGenerator,
-  // fixme: find a safer way to do this
-  (thing) => (thing[Symbol.toStringTag] === 'AsyncGenerator'),
-]);
-// * -> boolean
-const isSyncGeneratorFunction = R.allPass([
-  isFunction,
-  // fixme: find a safer way to do this
-  (fn) => (fn.constructor.name === 'GeneratorFunction'),
-]);
-// * -> boolean
-const isAsyncGeneratorFunction = R.allPass([
-  isFunction,
-  // fixme: find a safer way to do this
-  (fn) => (fn.constructor.name === 'AsyncGeneratorFunction'),
-]);
-// * -> boolean
-const isGeneratorFunction = R.anyPass([
-  isSyncGeneratorFunction,
-  isAsyncGeneratorFunction,
-]);
-// fixme: this does not seem to be named correctly
-// * -> boolean
-const isAsyncIterable = R.allPass([
-  isTruthy,
-  R.propSatisfies(isFunction, Symbol.asyncIterator),
-]);
-// fixme: this does not seem to be named correctly
 // * -> boolean
 const isIterable = R.allPass([
   isTruthy,
   R.propSatisfies(isFunction, Symbol.iterator),
 ]);
+// * -> boolean
+const isAsyncIterable = R.allPass([
+  isTruthy,
+  R.propSatisfies(isFunction, Symbol.asyncIterator),
+]);
+
 
 module.exports = {
   is,
   isArray,
-  isAsyncGenerator,
-  isAsyncGeneratorFunction,
   isAsyncIterable,
   isBoolean,
   isBuffer,
   isDate,
   isFalsey,
+  isFinite,
   isFloat,
   isFunction,
-  isGenerator,
-  isGeneratorFunction,
   isInstanceOf,
   isInteger,
   isIterable,
+  isIterator,
   isNaN,
   isNegative,
   isNot,
@@ -146,8 +128,6 @@ module.exports = {
   isStream,
   isString,
   isSymbol,
-  isSyncGenerator,
-  isSyncGeneratorFunction,
   isTruthy,
   isTypeOf,
   isUndefined,

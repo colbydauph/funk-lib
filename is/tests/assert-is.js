@@ -7,8 +7,7 @@ const safeToString = (thing) => ((typeof thing === 'symbol')
   : thing);
 
 /* istanbul ignore next */
-module.exports = ({
-  name,
+module.exports = (name, {
   func,
   pass = [],
   fail = [],

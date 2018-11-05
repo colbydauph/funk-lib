@@ -59,6 +59,18 @@ describe('object lib', () => {
       
     });
     
+    it('should handle empty / falsey object values', () => {
+      obj = {
+        thing: null,
+        other: undefined,
+        deep: { thing: null, other: NaN },
+      };
+      expect(() => deepFreeze(obj)).not.to.throw(Error);
+      expect(() => {
+        obj.thing = 4;
+      }).to.throw(Error);
+    });
+    
   });
   
   describe('flattenWith', () => {

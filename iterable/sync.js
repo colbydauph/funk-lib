@@ -411,11 +411,15 @@ const intersperse = R.useWith(flatMap, [
 ]);
 
 // String -> Iterable<T> -> String
-const join = pipeC(
+const joinWith = pipeC(
   intersperse,
   reduce((left, right) => `${ left }${ right }`, ''),
 );
 
+// Iterable<T> -> String
+const join = joinWith('');
+
+// Iterable<T> -> Boolean
 const isEmpty = some(_ => true);
 
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterable<T> -> Boolean
@@ -491,6 +495,7 @@ module.exports = {
   isEmpty,
   iterate,
   join,
+  joinWith,
   last,
   length,
   map,
@@ -520,8 +525,8 @@ module.exports = {
   splitAt,
   splitEvery,
   StopIteration,
-  sumBy,
   sum,
+  sumBy,
   tail,
   take,
   takeWhile,
@@ -537,6 +542,6 @@ module.exports = {
   zip,
   zipAll,
   zipAllWith,
-  zipWithN,
   zipWith,
+  zipWithN,
 };

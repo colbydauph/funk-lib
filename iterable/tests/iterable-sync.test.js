@@ -44,6 +44,7 @@ const {
   // isEmpty,
   iterate,
   join,
+  joinWith,
   // last,
   length,
   map,
@@ -375,25 +376,25 @@ describe('iterable/sync', () => {
   
   describe('every', () => {
     
-    let lt20;
     beforeEach(() => {
-      lt20 = (num) => num < 20;
-      expected = R.all(lt20, arr);
+      pred = (num) => num < 20;
+      expected = R.all(pred, arr);
     });
     
     it('should return true if all items pass the predicate', () => {
-      expect(every(lt20, iterator)).to.eql(expected);
+      expect(every(pred, iterator)).to.eql(expected);
     });
     
     it('should return false if any item does not pass the predicate', () => {
-      const lt5 = (num) => num < 5;
-      expect(every(lt5, iterator)).to.eql(R.all(lt5, arr));
+      expect(every(R.F, iterator)).to.eql(R.all(R.F, arr));
     });
     
-    it('should return true for empty iterators');
+    it('should return true for empty iterators', () => {
+      expect(every(pred, of())).to.eql(true);
+    });
     
     it('should be curried', () => {
-      expect(every(lt20)(iterator)).to.eql(expected);
+      expect(every(pred)(iterator)).to.eql(expected);
     });
     
   });
@@ -552,7 +553,7 @@ describe('iterable/sync', () => {
     
     let num;
     beforeEach(() => {
-      num = random(1, 20);
+      num = random(1, arr.length - 1);
       expected = R.aperture(num, arr);
     });
     
@@ -695,18 +696,27 @@ describe('iterable/sync', () => {
 
   describe('join', () => {
     
+    it('should join iterator into string', () => {
+      expect(join(iterator))
+        .to.eql(R.join('', arr));
+    });
+    
+  });
+
+  describe('joinWith', () => {
+    
     let sep;
     beforeEach(() => {
       sep = '|';
     });
     
-    it('should join iterator into string', () => {
-      expect(join(sep, iterator))
+    it('should join iterator into string with interspersed separator', () => {
+      expect(joinWith(sep, iterator))
         .to.eql(R.join(sep, arr));
     });
     
     it('should be curried', () => {
-      expect(join(sep)(iterator))
+      expect(joinWith(sep)(iterator))
         .to.eql(R.join(sep, arr));
     });
     
@@ -1149,7 +1159,7 @@ describe('iterable/sync', () => {
     });
     
     it('should return false for empty iterators', () => {
-      expect(some(pred, [])).to.eql(false);
+      expect(some(pred, of())).to.eql(false);
     });
     
     it('should be curried', () => {

@@ -20,7 +20,7 @@ const sample = (arr) => arr[random(0, arr.length - 1)];
 
 // todo
 // Array<T> -> Array<T>
-const shuffle = (arr) => {};
+// const shuffle = (arr) => {};
 
 module.exports = {
   sample,

@@ -27,6 +27,18 @@ describe('number lib', () => {
         .filter((num) => num !== 1);
       expect(nums.length).to.be.greaterThan(1);
     });
+    
+    it('should floor min at MIN_SAFE_INTEGER', () => {
+      expect(random(-Infinity, 0)).to.satisfy((n) => {
+        return Number.isFinite(n) && n <= 0 && n >= Number.MIN_SAFE_INTEGER;
+      });
+    });
+    
+    it('should ceil max at MAX_SAFE_INTEGER', () => {
+      expect(random(0, Infinity)).to.satisfy((n) => {
+        return Number.isFinite(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER;
+      });
+    });
   
   });
   

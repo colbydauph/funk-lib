@@ -185,7 +185,10 @@ const unique = function* unique(iterable) {
 };
 
 // Integer -> Iterable<T> -> Iterator<T>
-const take = slice(0);
+const take = R.curry(function* take(n, iterable) {
+  if (n <= 0) return;
+  yield* slice(0, n, iterable);
+});
 
 // Integer -> Iterable<T> -> Iterator<T>
 const drop = R.curry((n, iterable) => slice(n, Infinity, iterable));

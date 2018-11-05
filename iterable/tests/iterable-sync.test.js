@@ -8,6 +8,7 @@ const { expect } = require('chai');
 // local
 const { on } = require('../../function');
 const { random } = require('../../number');
+const { sample } = require('../../array');
 const { is, isGenerator } = require('../../is');
 
 // local
@@ -100,31 +101,33 @@ describe('iterable/sync', () => {
   
   let pred, arr, iterator, expected;
   beforeEach(() => {
-    pred = R.identity;
-    arr = R.range(0, 5);
+    arr = R.range(random(0, 50), random(55, 150));
     iterator = from(arr);
-    expected = [0, 1, 0, 2, 1, 0, 3, 2, 1, 0];
   });
   
   describe('accumulate', () => {
     
     beforeEach(() => {
       pred = R.add;
+      expected = R.mapAccum((acc, right) => {
+        acc = pred(acc, right);
+        return [acc, acc];
+      }, 0, arr)[1];
     });
     
     it('should yield accumulated items', () => {
       expect(toArray(accumulate(pred, iterator)))
-        .to.eql([0, 1, 3, 6, 10]);
-    });
-    
-    it('should be curried', () => {
-      expect(toArray(accumulate(pred)(iterator)))
-        .to.eql([0, 1, 3, 6, 10]);
+        .to.eql(expected);
     });
     
     it('should work with arrays', () => {
       expect(toArray(accumulate(pred)(arr)))
-        .to.eql([0, 1, 3, 6, 10]);
+        .to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(accumulate(pred)(iterator)))
+        .to.eql(expected);
     });
     
   });
@@ -223,32 +226,42 @@ describe('iterable/sync', () => {
   
   describe('count', () => {
     
-    it('should count number of items for which pred returns true', () => {
+    beforeEach(() => {
       pred = n => !!(n % 3);
+    });
+    
+    it('should count number of items for which pred returns true', () => {
       expect(count(pred, iterator))
-        .to.eql(3);
+        .to.eql(R.filter(pred, arr).length);
+    });
+    
+    it('should be curried', () => {
+      expect(count(pred)(iterator))
+        .to.eql(R.filter(pred, arr).length);
     });
     
   });
   
   describe('cycle', () => {
     
+    let n;
     beforeEach(() => {
-      expected = [
-        ...arr,
-        ...arr,
-        ...arr,
-        ...R.range(0, 2),
-      ];
+      n = random(10, 200);
+      expected = R.pipe(
+        n => Math.ceil(n / arr.length),
+        R.times(() => arr),
+        R.flatten,
+        R.take(n),
+      )(n);
     });
     
     it('should infinitely cycle through the iterator', () => {
-      iterator = R.pipe(cycle, take(17))(iterator);
+      iterator = R.pipe(cycle, take(n))(iterator);
       expect(toArray(iterator)).to.eql(expected);
     });
     
     it('should work with arrays', () => {
-      iterator = R.pipe(cycle, take(17))(arr);
+      iterator = R.pipe(cycle, take(n))(arr);
       expect(toArray(iterator)).to.eql(expected);
     });
     
@@ -291,20 +304,26 @@ describe('iterable/sync', () => {
   
   describe('drop', () => {
     
+    let n;
     beforeEach(() => {
-      expected = R.drop(3, arr);
+      n = random(0, 70);
+      expected = R.drop(n, arr);
     });
     
     it('should drop n items', () => {
-      expect(toArray(drop(3, iterator))).to.eql(expected);
+      expect(toArray(drop(n, iterator))).to.eql(expected);
+    });
+    
+    it('should yield all items if n <= 0', () => {
+      expect(toArray(drop(-1, iterator))).to.eql(arr);
     });
     
     it('should work with arrays', () => {
-      expect(toArray(drop(3, arr))).to.eql(expected);
+      expect(toArray(drop(n, arr))).to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(toArray(drop(3)(iterator))).to.eql(expected);
+      expect(toArray(drop(n)(iterator))).to.eql(expected);
     });
     
   });
@@ -312,8 +331,6 @@ describe('iterable/sync', () => {
   describe('dropWhile', () => {
     
     beforeEach(() => {
-      arr = R.range(0, 100);
-      iterator = from(arr);
       pred = n => (n < 70 || n > 90);
       expected = R.dropWhile(pred, arr);
     });
@@ -338,11 +355,9 @@ describe('iterable/sync', () => {
   describe('enumerate', () => {
     
     beforeEach(() => {
-      arr = R.range(10, 20);
-      iterator = from(arr);
       expected = toArray(zip(
-        range(0, 10),
-        range(10, 20),
+        range(0, arr.length),
+        from(arr),
       ));
     });
     
@@ -363,8 +378,6 @@ describe('iterable/sync', () => {
     let lt20;
     beforeEach(() => {
       lt20 = (num) => num < 20;
-      arr = R.range(0, 10);
-      iterator = from(arr);
       expected = R.all(lt20, arr);
     });
     
@@ -408,9 +421,7 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       pred = num => num < 8;
-      arr = R.range(0, 20);
-      iterator = from(arr);
-      expected = [0, 1, 2, 3, 4, 5, 6, 7];
+      expected = R.filter(pred, arr);
     });
     
     it('should yield items that pass the predicate', async () => {
@@ -434,9 +445,7 @@ describe('iterable/sync', () => {
     
     let toFind;
     beforeEach(() => {
-      arr = R.range(0, 1000);
-      iterator = from(arr);
-      toFind = 50;
+      toFind = sample(arr);
       pred = n => (n === toFind);
       expected = R.find(pred, arr);
     });
@@ -448,7 +457,7 @@ describe('iterable/sync', () => {
     it('should stop iteration at the first predicate match', () => {
       const spy = sinon.spy(pred);
       find(spy, iterator);
-      expect(spy.callCount).to.eql(toFind + 1);
+      expect(spy.callCount).to.eql(R.indexOf(toFind, arr) + 1);
     });
     
     it('should be curried', () => {
@@ -543,9 +552,7 @@ describe('iterable/sync', () => {
     
     let num;
     beforeEach(() => {
-      arr = R.range(0, 100);
-      iterator = from(arr);
-      num = 3;
+      num = random(1, 20);
       expected = R.aperture(num, arr);
     });
     
@@ -604,8 +611,13 @@ describe('iterable/sync', () => {
   
   describe('includes', () => {
     
+    let item;
+    beforeEach(() => {
+      item = sample(arr);
+    });
+    
     it('should return true if a value in the iterable strictly equals', () => {
-      expect(includes(0, iterator)).to.eql(true);
+      expect(includes(item, iterator)).to.eql(true);
     });
     
     it('should return false if no value in the iterable strictly equals', () => {
@@ -616,8 +628,14 @@ describe('iterable/sync', () => {
   
   describe('indexOf', () => {
     
+    let item;
+    beforeEach(() => {
+      item = sample(arr);
+    });
+    
     it('should return the index of the first strictly equal match', () => {
-      expect(indexOf(3, iterator)).to.eql(3);
+      expect(indexOf(item, iterator))
+        .to.eql(R.indexOf(item, arr));
     });
     
     it('should return -1 if no value in the iterable strictly equals', () => {
@@ -637,10 +655,18 @@ describe('iterable/sync', () => {
   
   describe('intersperse', () => {
     
-    it('should work', () => {
-      const sep = '|';
-      const iter = intersperse(sep, iterator);
-      expect(toArray(iter))
+    let sep;
+    beforeEach(() => {
+      sep = '|';
+    });
+    
+    it('should yield seperator between items', () => {
+      expect(toArray(intersperse(sep, iterator)))
+        .to.eql(R.intersperse(sep, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(intersperse(sep)(iterator)))
         .to.eql(R.intersperse(sep, arr));
     });
     
@@ -648,18 +674,20 @@ describe('iterable/sync', () => {
   
   describe('iterate', () => {
     
+    let init;
     beforeEach(() => {
+      init = 15;
       pred = R.add(10);
       expected = [15, 25, 35, 45, 55];
     });
     
     it('should yield initial item and predicate returns', () => {
-      iterator = take(5, iterate(pred, 15));
+      iterator = take(5, iterate(pred, init));
       expect(toArray(iterator)).to.eql(expected);
     });
     
     it('should be curried', () => {
-      iterator = take(5, iterate(pred)(15));
+      iterator = take(5, iterate(pred)(init));
       expect(toArray(iterator)).to.eql(expected);
     });
     
@@ -667,9 +695,18 @@ describe('iterable/sync', () => {
 
   describe('join', () => {
     
+    let sep;
+    beforeEach(() => {
+      sep = '|';
+    });
+    
     it('should join iterator into string', () => {
-      const sep = '|';
       expect(join(sep, iterator))
+        .to.eql(R.join(sep, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(join(sep)(iterator))
         .to.eql(R.join(sep, arr));
     });
     
@@ -678,11 +715,11 @@ describe('iterable/sync', () => {
   describe('length', () => {
     
     it('should return the iterator length', () => {
-      expect(length(iterator)).to.eql(5);
+      expect(length(iterator)).to.eql(arr.length);
     });
     
     it('should work with arrays', () => {
-      expect(length(arr)).to.eql(5);
+      expect(length(arr)).to.eql(arr.length);
     });
     
     it('should exhaust the iterator', () => {
@@ -695,7 +732,7 @@ describe('iterable/sync', () => {
   describe('map', () => {
     
     beforeEach(() => {
-      pred = R.add(10);
+      pred = R.add(random(10, 20));
       expected = R.map(pred, arr);
     });
     
@@ -711,36 +748,48 @@ describe('iterable/sync', () => {
   
   describe('maxBy', () => {
     
+    let objs;
     beforeEach(() => {
-      arr = R.range(10, 100).map(id => ({ id }));
-      iterator = from(arr);
+      objs = arr.map(id => ({ id }));
+      iterator = from(objs);
       pred = R.prop('id');
+      expected = R.reduce(Math.max, -Infinity, arr);
     });
     
     it('should return max item after pred', () => {
-      expect(maxBy(pred, iterator)).to.eql(99);
+      expect(maxBy(pred, iterator)).to.eql(expected);
+    });
+    
+    it('should work on arrays', () => {
+      expect(maxBy(pred, objs)).to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(maxBy(pred)(iterator)).to.eql(99);
+      expect(maxBy(pred)(iterator)).to.eql(expected);
     });
     
   });
   
   describe('minBy', () => {
     
+    let objs;
     beforeEach(() => {
-      arr = R.range(10, 100).map(id => ({ id }));
-      iterator = from(arr);
+      objs = arr.map(id => ({ id }));
+      iterator = from(objs);
       pred = R.prop('id');
+      expected = R.reduce(Math.min, Infinity, arr);
     });
     
     it('should return max item after pred', () => {
-      expect(minBy(pred, iterator)).to.eql(10);
+      expect(minBy(pred, iterator)).to.eql(expected);
+    });
+    
+    it('should work on arrays', () => {
+      expect(minBy(pred, objs)).to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(minBy(pred)(iterator)).to.eql(10);
+      expect(minBy(pred)(iterator)).to.eql(expected);
     });
     
   });
@@ -754,16 +803,21 @@ describe('iterable/sync', () => {
         next(iterator),
         next(iterator),
       ];
-      expect(yields).to.eql([0, 1, 2, 3]);
+      expect(yields).to.eql([
+        arr[0],
+        arr[1],
+        arr[2],
+        arr[3],
+      ]);
     });
     
     it('should return the next value in the iterator', () => {
-      expect(next(iterator)).to.eql(0);
+      expect(next(iterator)).to.eql(R.head(arr));
     });
     
     it('should advance the iterator', () => {
       next(iterator);
-      expect(toArray(iterator)).to.eql([1, 2, 3, 4]);
+      expect(toArray(iterator)).to.eql(arr.slice(1));
     });
     
     xit('should return ? for arrays', () => {
@@ -781,9 +835,7 @@ describe('iterable/sync', () => {
     
     let index;
     beforeEach(() => {
-      index = random(0, 500);
-      arr = R.range(100, 1000);
-      iterator = from(arr);
+      index = random(0, arr.length - 1);
       expected = R.nth(index, arr);
     });
     
@@ -809,9 +861,8 @@ describe('iterable/sync', () => {
   describe('of', () => {
     
     it('should yield arguments', () => {
-      const items = R.range(0, 10);
-      expect(isGenerator(of(...items))).to.eql(true);
-      expect(toArray(of(...items))).to.eql(items);
+      expect(isGenerator(of(...arr))).to.eql(true);
+      expect(toArray(of(...arr))).to.eql(arr);
     });
     
   });
@@ -879,8 +930,6 @@ describe('iterable/sync', () => {
     
     beforeEach(() => {
       pred = n => n % 2;
-      arr = R.range(0, 100);
-      iterator = from(arr);
     });
     
     it('should bifurcate by pred', () => {
@@ -895,20 +944,27 @@ describe('iterable/sync', () => {
     
   });
   
-  xdescribe('permutations', () => {
-    // todo
-  });
-  
   describe('prepend', () => {
     
+    let item;
+    beforeEach(() => {
+      item = 'test';
+      expected = R.prepend(item, arr);
+    });
+    
     it('should prepend an element', () => {
-      expect(toArray(prepend('test', iterator)))
-        .to.eql(R.prepend('test', arr));
+      expect(toArray(prepend(item, iterator)))
+        .to.eql(expected);
+    });
+    
+    it('should work with arrays', () => {
+      expect(toArray(prepend(item, arr)))
+        .to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(toArray(prepend('test')(iterator)))
-        .to.eql(R.prepend('test', arr));
+      expect(toArray(prepend(item)(iterator)))
+        .to.eql(expected);
     });
     
   });
@@ -987,10 +1043,8 @@ describe('iterable/sync', () => {
   describe('reduce', () => {
     
     beforeEach(() => {
-      pred = (acc, num) => acc + num;
-      arr = R.range(0, 200);
-      iterator = from(arr);
-      expected = 19900;
+      pred = R.add;
+      expected = R.reduce(pred, 0, arr);
     });
     
     it('should reduce iterator into accumulator', async () => {
@@ -1012,11 +1066,15 @@ describe('iterable/sync', () => {
   
   describe('repeat', () => {
     
+    let n;
+    beforeEach(() => {
+      n = random(1, 20);
+    });
+    
     it('should repeat the input infinitely', () => {
       const thing = { test: true };
-      const times = 45;
-      const taken = toArray(take(times, repeat(thing)));
-      expect(taken).to.eql(R.times(() => thing, times));
+      const taken = toArray(take(n, repeat(thing)));
+      expect(taken).to.eql(R.times(() => thing, n));
     });
     
   });
@@ -1031,10 +1089,17 @@ describe('iterable/sync', () => {
   
   describe('scan', () => {
     
-    it('should yield intermediate reductions', () => {
+    beforeEach(() => {
       pred = R.add;
-      const it = scan(pred, 1, iterator);
-      expect(toArray(it))
+    });
+    
+    it('should yield intermediate reductions', () => {
+      expect(toArray(scan(pred, 1, iterator)))
+        .to.eql(R.scan(pred, 1, arr));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(scan(pred)(1)(iterator)))
         .to.eql(R.scan(pred, 1, arr));
     });
     
@@ -1044,10 +1109,9 @@ describe('iterable/sync', () => {
     
     let start, end;
     beforeEach(() => {
-      start = 10;
-      end = 20;
-      arr = R.range(0, 100);
-      iterator = from(arr);
+      const mid = Math.ceil(arr.length / 2);
+      start = random(0, mid);
+      end = random(mid, arr.length);
       expected = R.slice(start, end, arr);
     });
     
@@ -1071,9 +1135,7 @@ describe('iterable/sync', () => {
   describe('some', () => {
     
     beforeEach(() => {
-      arr = R.range(0, 10);
       pred = n => n > 5;
-      iterator = from(arr);
       expected = R.any(pred, arr);
     });
     
@@ -1100,9 +1162,7 @@ describe('iterable/sync', () => {
     
     let n;
     beforeEach(() => {
-      n = 42;
-      arr = R.range(0, 100);
-      iterator = from(arr);
+      n = random(0, arr.length - 1);
     });
     
     it('should split iterator at the nth element', () => {
@@ -1114,16 +1174,13 @@ describe('iterable/sync', () => {
         .to.eql(rightArr);
     });
     
-    
   });
   
   describe('splitEvery', () => {
     
     let n;
     beforeEach(() => {
-      n = 3;
-      arr = R.range(0, 20);
-      iterator = from(arr);
+      n = random(1, 10);
     });
     
     it('should split iterator every n yields', () => {
@@ -1140,36 +1197,45 @@ describe('iterable/sync', () => {
   
   describe('sum', () => {
     
+    beforeEach(() => {
+      expected = R.reduce(R.add, 0, arr);
+    });
+    
     it('should sum the iterator', () => {
-      expect(sum(iterator)).to.eql(10);
+      expect(sum(iterator)).to.eql(expected);
     });
     
     it('should with with arrays', () => {
-      expect(sum(arr)).to.eql(10);
+      expect(sum(arr)).to.eql(expected);
     });
     
   });
   
   describe('take', () => {
     
+    let n;
     beforeEach(() => {
-      arr = R.range(50, 500);
-      iterator = from(arr);
-      expected = R.range(50, 120);
+      n = random(0, arr.length - 1);
+      expected = R.take(n, arr);
     });
     
     it('should yield the first n items', () => {
-      expect(toArray(take(70, iterator)))
+      expect(toArray(take(n, iterator)))
         .to.eql(expected);
     });
     
+    it('should yield nothing if n <= 0 ', () => {
+      expect(toArray(take(-1, iterator)))
+        .to.eql([]);
+    });
+    
     it('should work with arrays', () => {
-      expect(toArray(take(70, arr)))
+      expect(toArray(take(n, arr)))
         .to.eql(expected);
     });
     
     it('should be curried', () => {
-      expect(toArray(take(70)(iterator)))
+      expect(toArray(take(n)(iterator)))
         .to.eql(expected);
     });
     
@@ -1205,7 +1271,7 @@ describe('iterable/sync', () => {
     
     let n, copies;
     beforeEach(() => {
-      n = 5;
+      n = random(1, 10);
       copies = tee(n, iterator);
       expected = [...Array(n)].map(() => arr);
     });
@@ -1219,11 +1285,11 @@ describe('iterable/sync', () => {
     });
     
     it('should exhaust the input iterator when one copy is exhausted', () => {
-      tee(5, iterator);
+      tee(n, iterator);
       expect(toArray(iterator)).to.eql(arr);
       
       iterator = from(arr);
-      const [copy] = tee(5, iterator);
+      const [copy] = tee(n, iterator);
       toArray(copy);
       expect(toArray(iterator)).to.eql([]);
     });
@@ -1299,9 +1365,17 @@ describe('iterable/sync', () => {
   
   describe('unfold', () => {
     
-    it('should yield until a falsey value is returned', () => {
+    beforeEach(() => {
       pred = n => (n > 50 ? false : [-n, n + 10]);
+    });
+    
+    it('should yield until a falsey value is returned', () => {
       expect(toArray(unfold(pred, 10)))
+        .to.eql(R.unfold(pred, 10));
+    });
+    
+    it('should be curried', () => {
+      expect(toArray(unfold(pred)(10)))
         .to.eql(R.unfold(pred, 10));
     });
     

@@ -23,6 +23,7 @@ const {
   isBuffer,
 } = Buffer;
 
+// referentially equal
 // * -> * -> boolean
 const is = R.curry((left, right) => (left === right));
 // * -> * -> boolean

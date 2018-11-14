@@ -2,6 +2,8 @@
 
 const R = require('ramda');
 
+// todo: replicate iterable/sync
+
 // ((A, T) -> Promise<A>) -> A -> Iterable<T> -> Promise<A>
 const reduce = R.curry(async (pred, acc, iterable) => {
   for await (const item of iterable) acc = await pred(acc, item);

@@ -33,13 +33,15 @@ const mapKeys = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [pred(key), value], obj);
 });
 
-// todo: deprecate in favor of R.map
 // (V -> M) -> Object<K, V> -> Object<K, M>
 const mapValues = R.curry((pred, obj) => {
+  // eslint-disable-next-line no-console
+  console.warn('[deprecated] funk-lib/object/mapValues -> R.map');
   return mapPairs(([key, value]) => [key, pred(value)], obj);
 });
 
 // recursive + mutating + identity
+// object -> object
 const deepFreeze = (obj) => {
   Object.freeze(obj);
   R.forEach(deepFreeze, R.values(obj));

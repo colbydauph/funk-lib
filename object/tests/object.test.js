@@ -196,19 +196,27 @@ describe('object lib', () => {
   
   describe('mapValues', () => {
     
-    it('should update values by predicate', () => {
-      const input = {
+    let input, pred, expected;
+    beforeEach(() => {
+      input = {
         1: 'one',
         2: 'two',
         3: 'three',
       };
-      const pred = (val) => [...val].reverse().join('');
-      const expected = {
+      pred = (val) => [...val].reverse().join('');
+      expected = {
         1: 'eno',
         2: 'owt',
         3: 'eerht',
       };
+    });
+    
+    it('should update values by predicate', () => {
       expect(mapValues(pred, input)).to.eql(expected);
+    });
+    
+    it('should be curried', () => {
+      expect(mapValues(pred)(input)).to.eql(expected);
     });
     
   });

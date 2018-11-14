@@ -20,6 +20,7 @@ const sha256 = hashWith('sha256');
 const sha512 = hashWith('sha512');
 
 module.exports = {
+  hashWith,
   md5,
   sha256,
   sha512,

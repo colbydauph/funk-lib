@@ -1,5 +1,8 @@
 'use strict';
 
+// core
+const util = require('util');
+
 // modules
 const R = require('ramda');
 
@@ -10,9 +13,12 @@ const { random } = require('../number');
 // Array<V> -> Object<K, V>
 const toObj = R.pipe(R.toPairs, R.fromPairs);
 
-// todo: deprecate
+// @deprecated
 // (A -> B) -> Array<A> -> Object<B, A>
-const toObjBy = R.indexBy;
+const toObjBy = R.curryN(2)(util.deprecate(
+  R.indexBy,
+  'funk-lib/object/toObjBy -> R.indexBy'
+));
 
 // select a random array item
 // Array<T> -> T

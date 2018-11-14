@@ -1,6 +1,7 @@
 'use strict';
 
 // modules
+const util = require('util');
 const R = require('ramda');
 
 // local
@@ -34,11 +35,10 @@ const mapKeys = R.curry((pred, obj) => {
 });
 
 // (V -> M) -> Object<K, V> -> Object<K, M>
-const mapValues = R.curry((pred, obj) => {
-  // eslint-disable-next-line no-console
-  console.warn('[deprecated] funk-lib/object/mapValues -> R.map');
-  return mapPairs(([key, value]) => [key, pred(value)], obj);
-});
+const mapValues = R.curryN(2)(util.deprecate(
+  R.map,
+  'funk-lib/object/mapValues -> R.map'
+));
 
 // recursive + mutating + identity
 // object -> object
@@ -70,6 +70,7 @@ const nestWith = R.curry((pred, obj) => {
   }, {}, R.toPairs(obj));
 });
 
+// serialize to json with indents
 // * -> string
 const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 

@@ -323,6 +323,7 @@ const reverse = R.pipe(toArray, R.reverse);
 const sort = R.useWith(R.sort, [R.identity, toArray]);
 
 // yield a sliding "window" of length n
+// note: caches of n items
 // Integer -> Iterable<T> -> Iterator<[T]>
 const frame = R.curry(function* frame(n, iterable) {
   const cache = [];
@@ -335,6 +336,21 @@ const frame = R.curry(function* frame(n, iterable) {
   }, iterable);
   yield cache;
 });
+
+// yield all but the last n items
+// note: caches n + 1 items
+// Number -> Iterable<T> -> Iterable<T>
+const dropLast = R.curry(function* dropLast(n, iterable) {
+  const done = new StopIteration();
+  for (const group of frame(n + 1, append(done, iterable))) {
+    if (R.last(group) === done) return;
+    yield R.head(group);
+  }
+});
+
+// yield all but the last 1 item
+// Iterable<T> -> Iterable<T>
+const init = dropLast(1);
 
 // T -> Iterable<T> -> Integer
 const indexOf = R.useWith(findIndex, [is, R.identity]);
@@ -520,6 +536,7 @@ module.exports = {
   cycle,
   cycleN,
   drop,
+  dropLast,
   dropWhile,
   enumerate,
   every,
@@ -538,6 +555,7 @@ module.exports = {
   includes,
   indexOf,
   indices,
+  init,
   intersperse,
   isEmpty,
   iterate,

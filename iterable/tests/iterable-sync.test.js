@@ -23,6 +23,7 @@ const {
   cycle,
   cycleN,
   drop,
+  dropLast,
   dropWhile,
   enumerate,
   every,
@@ -41,6 +42,7 @@ const {
   includes,
   indexOf,
   indices,
+  init,
   intersperse,
   isEmpty,
   iterate,
@@ -327,6 +329,24 @@ describe('iterable/sync', () => {
       expect(toArray(drop(n)(iterator))).to.eql(expected);
     });
     
+  });
+  
+  describe('dropLast', () => {
+  
+    it('should drop the last n items', () => {
+      const n = random(0, arr.length);
+      expect(toArray(dropLast(n, iterator))).to.eql(
+        R.dropLast(n, arr),
+      );
+    });
+    
+    it('should be curried', () => {
+      const n = random(0, arr.length);
+      expect(toArray(dropLast(n)(iterator))).to.eql(
+        R.dropLast(n, arr),
+      );
+    });
+  
   });
   
   describe('dropWhile', () => {
@@ -650,6 +670,16 @@ describe('iterable/sync', () => {
     it('should return iterator of indices', () => {
       expect(toArray(indices(iterator)))
         .to.eql(R.keys(arr).map(n => +n));
+    });
+    
+  });
+  
+  describe('init', () => {
+    
+    it('should yield every item, but the last', () => {
+      expect(toArray(init(iterator))).to.eql(
+        R.init(arr)
+      );
     });
     
   });

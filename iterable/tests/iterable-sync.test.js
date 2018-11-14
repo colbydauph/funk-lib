@@ -10,6 +10,7 @@ const { on } = require('../../function');
 const { random } = require('../../number');
 const { sample } = require('../../array');
 const { is, isIterator } = require('../../is');
+const StopIteration = require('../stop-iteration');
 
 // local
 const {
@@ -73,7 +74,6 @@ const {
   // sort,
   splitAt,
   splitEvery,
-  StopIteration,
   // sumBy,
   sum,
   // tail,

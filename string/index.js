@@ -1,5 +1,8 @@
 'use strict';
 
+// core
+const util = require('util');
+
 // modules
 const R = require('ramda');
 
@@ -8,8 +11,14 @@ const localeCompare = R.invoker(1, 'localeCompare');
 
 // todo: deprecate these
 // string -> string
-const toUpperCase = R.toUpper;
-const toLowerCase = R.toLower;
+const toUpperCase = R.unary(util.deprecate(
+  R.toUpper,
+  'funk-lib/string/toUpperCase -> R.toUpper'
+));
+const toLowerCase = R.unary(util.deprecate(
+  R.toLower,
+  'funk-lib/string/toLowerCase -> R.toLower'
+));
 
 // string -> string
 const capitalize = (str) => R.toUpper(R.nth(0, str)) + str.slice(1);

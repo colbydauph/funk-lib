@@ -16,16 +16,16 @@ const complementP = (func) => R.curryN(func.length)(
 // todo: consider replacing "is" with R.equals
 
 // * -> Iterable<T> -> T | *
-const nextOr = R.curry((or, iterable) => {
-  const { value, done } = iterable.next();
+const nextOr = R.curry(async (or, iterable) => {
+  const { value, done } = await iterable.next();
   return done ? or : value;
 });
 
 // returns the first or "next" item. aka head
 // Iterable<T> -> T
-const next = (iterable) => {
+const next = async (iterable) => {
   const err = new StopIteration();
-  const out = nextOr(err, iterable);
+  const out = await nextOr(err, iterable);
   if (out === err) throw err;
   return out;
 };
@@ -184,7 +184,7 @@ const iterate = R.useWith(unfold, [
 
 // yield only items that are unique by their predicate
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterator<T>
-const uniqueWith = R.curry(function* uniqueWith(pred, iterable) {
+const uniqueWith = R.curry(async function* uniqueWith(pred, iterable) {
   const seen = [];
   const add = saw => seen.push(saw);
   const has = item => seen.some((saw) => pred(item, saw));
@@ -197,7 +197,7 @@ const uniqueWith = R.curry(function* uniqueWith(pred, iterable) {
 
 // yield only the unique items in an iterable (using Set)
 // Iterable<T> -> Iterator<T>
-const unique = function* unique(iterable) {
+const unique = async function* unique(iterable) {
   const set = new Set();
   yield* filter((item) => {
     if (set.has(item)) return;
@@ -294,9 +294,9 @@ const find = R.curry(async (pred, iterable) => {
 });
 
 // (T -> Boolean) -> Iterable<T> -> Integer
-const findIndex = R.curry((pred, iterable) => {
-  for (const [i, item] of enumerate(iterable)) {
-    if (pred(item)) return i;
+const findIndex = R.curry(async (pred, iterable) => {
+  for await (const [i, item] of enumerate(iterable)) {
+    if (await pred(item)) return i;
   }
   return -1;
 });
@@ -309,25 +309,27 @@ const exhaust = async (iterable) => {
 };
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const takeWhile = R.curry(function* takeWhile(pred, iterable) {
-  for (const item of iterable) {
-    if (!pred(item)) return;
+const takeWhile = R.curry(async function* takeWhile(pred, iterable) {
+  for await (const item of iterable) {
+    if (!await pred(item)) return;
     yield item;
   }
 });
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const dropWhile = R.curry(function* dropWhile(pred, iterable) {
+const dropWhile = R.curry(async function* dropWhile(pred, iterable) {
   const iterator = from(iterable);
-  for (const item of iterator) {
-    if (!pred(item)) return yield* prepend(item, iterator);
+  for await (const item of iterator) {
+    if (!await pred(item)) return yield* prepend(item, iterator);
   }
 });
 
 // todo: there might be a more efficient strategy for arrays
 // generators are not iterable in reverse
 // Iterable<T> -> Iterator<T>
-const reverse = R.pipe(toArray, R.reverse);
+const reverse = async function* reverse(iterable) {
+  yield* (await toArray(iterable)).reverse();
+};
 
 // ((T, T) -> Number) -> Iterable<T> -> Iterator<T>
 const sort = R.useWith(R.sort, [R.identity, toArray]);
@@ -499,14 +501,14 @@ const join = joinWith('');
 const isEmpty = none(_ => true);
 
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterable<T> -> Boolean
-const correspondsWith = R.useWith((pred, iterator1, iterator2) => {
+const correspondsWith = R.useWith(async (pred, iterator1, iterator2) => {
   let done;
   do {
-    const { done: done1, value: value1 } = iterator1.next();
-    const { done: done2, value: value2 } = iterator2.next();
+    const { done: done1, value: value1 } = await iterator1.next();
+    const { done: done2, value: value2 } = await iterator2.next();
     if (done1 !== done2) return false;
     done = (done1 && done2);
-    if (!done && !pred(value1, value2)) return false;
+    if (!done && !await pred(value1, value2)) return false;
   } while (!done);
   return true;
 }, [R.identity, from, from]);
@@ -520,7 +522,7 @@ const indices = R.pipe(enumerate, map(R.head));
 
 // pad an iterable with with a finite number of items (T)
 // Integer -> T -> Iterable<T> -> Iterator<T>
-const padTo = R.curry(function* padTo(len, padder, iterable) {
+const padTo = R.curry(async function* padTo(len, padder, iterable) {
   let n = 0;
   yield* forEach((item) => n++, iterable);
   if (n < len) yield* times(len - n, padder);
@@ -540,17 +542,17 @@ const pad = padTo(Infinity);
 // const permutations = R.curry(function* permutations(n, iterable) {});
 
 module.exports = {
-  // accumulate,
-  // append,
+  accumulate,
+  append,
   concat,
   // corresponds,
-  // correspondsWith,
+  correspondsWith,
   count,
   cycle,
   cycleN,
   drop,
   dropLast,
-  // dropWhile,
+  dropWhile,
   enumerate,
   every,
   exhaust,
@@ -565,60 +567,60 @@ module.exports = {
   from,
   // group,
   groupWith,
-  // includes,
-  // indexOf,
+  includes,
+  indexOf,
   indices,
   init,
-  // intersperse,
+  intersperse,
   isEmpty,
   iterate,
-  // join,
-  // joinWith,
+  join,
+  joinWith,
   // last,
   length,
   map,
   // max,
-  // maxBy,
+  maxBy,
   // min,
-  // minBy,
-  // next,
+  minBy,
+  next,
   // nextOr,
   none,
   nth,
   of,
-  // pad,
-  // padTo,
+  pad,
+  padTo,
   partition,
-  // prepend,
+  prepend,
   range,
   rangeStep,
   reduce,
-  // reject,
-  // repeat,
-  // reverse,
+  reject,
+  repeat,
+  reverse,
   scan,
   slice,
   some,
   // sort,
   splitAt,
   splitEvery,
-  // sum,
+  sum,
   // sumBy,
   // tail,
   take,
-  // takeWhile,
+  takeWhile,
   tee,
   times,
   toArray,
   unfold,
-  // unique,
-  // uniqueWith,
+  unique,
+  uniqueWith,
   unnest,
-  // unzip,
-  // unzipN,
+  unzip,
+  unzipN,
   zip,
   // zipAll,
   zipAllWith,
-  // zipWith,
+  zipWith,
   // zipWithN,
 };

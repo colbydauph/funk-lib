@@ -7,7 +7,7 @@ const async = require('../async');
 
 describe('iterable', () => {
   
-  xit('should have symetrical sync / async implementations', () => {
+  it('should have symetrical sync / async implementations', () => {
     expect(
       Object.keys(sync).length,
     ).to.eql(

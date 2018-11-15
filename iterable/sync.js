@@ -7,6 +7,7 @@ const R = require('ramda');
 const { pipeC } = require('../function');
 const { is, isIterable } = require('../is');
 const StopIteration = require('./stop-iteration');
+const { yieldWith } = require('./yield-with');
 
 // todo: consider replacing "is" with R.equals
 
@@ -603,6 +604,7 @@ module.exports = {
   unnest,
   unzip,
   unzipN,
+  yieldWith,
   zip,
   zipAll,
   zipAllWith,

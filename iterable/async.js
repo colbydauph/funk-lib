@@ -8,6 +8,7 @@ const { pipeC } = require('../function');
 const { pipeC: asyncPipeC, reduce: reduceP } = require('../async');
 const { is, isIterable } = require('../is');
 const StopIteration = require('./stop-iteration');
+const { yieldWithAsync: yieldWith } = require('./yield-with');
 
 const complementP = (func) => R.curryN(func.length)(
   async (...args) => !await func(...args)
@@ -618,6 +619,7 @@ module.exports = {
   unnest,
   unzip,
   unzipN,
+  yieldWith,
   zip,
   zipAll,
   zipAllWith,

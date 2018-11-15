@@ -5,7 +5,7 @@ const R = require('ramda');
 
 // local
 const { pipeC } = require('../function');
-const { pipeC: asyncPipeC } = require('../async');
+const { pipeC: asyncPipeC, reduce: reduceP } = require('../async');
 const { is, isIterable } = require('../is');
 const StopIteration = require('./stop-iteration');
 
@@ -62,19 +62,20 @@ const scan = R.curry(async function* scan(pred, acc, iterable) {
 const reduce = asyncPipeC(scan, last);
 
 // ((...A) -> B) -> [Iterable<A>] -> Iterator<B>
-const zipAllWith = R.curry(function* zipAllWith(pred, iterators) {
+const zipAllWith = R.curry(async function* zipAllWith(pred, iterators) {
   iterators = R.map(from, iterators);
   while (true) {
-    const { done, values } = R.reduce((out, iterator) => {
-      if (out.done) return R.reduced(out);
-      const { value, done } = iterator.next();
+    const { done, values } = await reduceP(async (out, iterator) => {
+      // todo: make R.reduced(out) work here
+      if (out.done) return out;
+      const { value, done } = await iterator.next();
       return R.evolve({
         values: R.append(value),
         done: R.or(done),
       }, out);
     }, { done: false, values: [] }, iterators);
     if (done) return;
-    yield pred(...values);
+    yield await pred(...values);
   }
 });
 
@@ -120,8 +121,8 @@ const accumulate = R.curry((pred, iterable) => {
 });
 
 // Integer -> Integer -> Iterable<T> -> Iterator<T>
-const slice = R.curry(function* slice(start, stop, iterable) {
-  for (const [i, item] of enumerate(iterable)) {
+const slice = R.curry(async function* slice(start, stop, iterable) {
+  for await (const [i, item] of enumerate(iterable)) {
     if (i >= start) yield item;
     if (i >= stop - 1) return;
   }
@@ -129,7 +130,7 @@ const slice = R.curry(function* slice(start, stop, iterable) {
 
 // yield all items from one iterator, then the other
 // Iterable<T> -> Iterable<T> -> Iterable<T>
-const concat = R.curry(function* concat(iterator1, iterator2) {
+const concat = R.curry(async function* concat(iterator1, iterator2) {
   yield* iterator1;
   yield* iterator2;
 });
@@ -144,15 +145,17 @@ const append = R.useWith(R.flip(concat), [of, R.identity]);
 
 // run a function (side-effect) once for each item
 // (T -> *) -> Iterable<T> -> Iterator<T>
-const forEach = R.curry(function* forEach(pred, iterable) {
+const forEach = R.curry(async function* forEach(pred, iterable) {
   // eslint-disable-next-line no-unused-expressions
-  for (const item of iterable) pred(item), yield item;
+  for await (const item of iterable) await pred(item), yield item;
 });
 
 // yield only items that pass the predicate
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const filter = R.curry(function* filter(pred, iterable) {
-  for (const item of iterable) if (pred(item)) yield item;
+const filter = R.curry(async function* filter(pred, iterable) {
+  for await (const item of iterable) {
+    if (await pred(item)) yield item;
+  }
 });
 
 // yield only items that do not pass the predicate
@@ -160,11 +163,11 @@ const filter = R.curry(function* filter(pred, iterable) {
 const reject = R.useWith(filter, [R.complement, R.identity]);
 
 // (A -> [B]) -> * -> Iterator<B>
-const unfold = R.curry(function* unfold(pred, item) {
-  let pair = pred(item);
+const unfold = R.curry(async function* unfold(pred, item) {
+  let pair = await pred(item);
   while (pair && pair.length) {
     yield pair[0];
-    pair = pred(pair[1]);
+    pair = await pred(pair[1]);
   }
 });
 
@@ -201,7 +204,7 @@ const unique = function* unique(iterable) {
 
 // yield only the first n items of an iterable
 // Integer -> Iterable<T> -> Iterator<T>
-const take = R.curry(function* take(n, iterable) {
+const take = R.curry(async function* take(n, iterable) {
   if (n <= 0) return;
   yield* slice(0, n, iterable);
 });
@@ -254,8 +257,8 @@ const toArray = reduce(R.flip(R.append), []);
 
 // returns the item at the nth index
 // Integer -> Iterable<T> -> T | Undefined
-const nth = R.curry((n, iterable) => {
-  for (const [i, item] of enumerate(iterable)) {
+const nth = R.curry(async (n, iterable) => {
+  for await (const [i, item] of enumerate(iterable)) {
     if (i === n) return item;
   }
 });
@@ -263,8 +266,8 @@ const nth = R.curry((n, iterable) => {
 // todo: consider calling this any
 // does any item pass its predicate?
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const some = R.curry((pred, iterable) => {
-  for (const item of iterable) if (pred(item)) return true;
+const some = R.curry(async (pred, iterable) => {
+  for await (const item of iterable) if (await pred(item)) return true;
   return false;
 });
 
@@ -280,8 +283,8 @@ const every = R.curry((pred, iterable) => {
 });
 
 // (T -> Boolean) -> Iterable<T> -> T | Undefined
-const find = R.curry((pred, iterable) => {
-  for (const item of iterable) if (pred(item)) return item;
+const find = R.curry(async (pred, iterable) => {
+  for await (const item of iterable) if (await pred(item)) return item;
 });
 
 // (T -> Boolean) -> Iterable<T> -> Integer
@@ -294,9 +297,9 @@ const findIndex = R.curry((pred, iterable) => {
 
 // yield all items
 // Iterable<T> -> Undefined
-const exhaust = (iterable) => {
+const exhaust = async (iterable) => {
   // eslint-disable-next-line no-unused-vars
-  for (const item of iterable);
+  for await (const item of iterable);
 };
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
@@ -326,9 +329,9 @@ const sort = R.useWith(R.sort, [R.identity, toArray]);
 // yield a sliding "window" of length n
 // note: caches of n items
 // Integer -> Iterable<T> -> Iterator<[T]>
-const frame = R.curry(function* frame(n, iterable) {
+const frame = R.curry(async function* frame(n, iterable) {
   const cache = [];
-  yield* flatMap(function* fmap(item) {
+  yield* flatMap(async function* fmap(item) {
     if (cache.length === n) {
       yield [...cache];
       cache.shift();
@@ -383,11 +386,14 @@ const tee = R.curry((n, iterable) => {
   const iterator = from(iterable);
   return [...Array(n)]
     .map(() => [])
-    .map(function* gen(cache, _, caches) {
+    .map(async function* gen(cache, i, caches) {
       while (true) {
         if (!cache.length) {
-          const { done, value } = iterator.next();
-          if (done) return;
+          const { done, value } = await iterator.next();
+          if (done) {
+            if (cache.length) yield* cache;
+            return;
+          }
           for (const cache of caches) cache.push(value);
         }
         yield cache.shift();
@@ -445,7 +451,7 @@ const flatten = flattenN(Infinity);
 
 // yield all items from an iterator, n times
 // Integer -> Iterable<T> -> Iterator<T>
-const cycleN = R.curry(function* cycleN(n, iterable) {
+const cycleN = R.curry(async function* cycleN(n, iterable) {
   if (n < 1) return;
   const buffer = [];
   yield* forEach((item) => buffer.push(item), iterable);
@@ -530,26 +536,26 @@ const pad = padTo(Infinity);
 module.exports = {
   // accumulate,
   // append,
-  // concat,
+  concat,
   // corresponds,
   // correspondsWith,
   // count,
   // cycle,
-  // cycleN,
+  cycleN,
   // drop,
   // dropLast,
   // dropWhile,
-  // enumerate,
+  enumerate,
   // every,
-  // exhaust,
-  // filter,
-  // find,
+  exhaust,
+  filter,
+  find,
   // findIndex,
   flatMap,
   // flatten,
   // flattenN,
-  // forEach,
-  // frame,
+  forEach,
+  frame,
   from,
   // group,
   // groupWith,
@@ -559,7 +565,7 @@ module.exports = {
   // init,
   // intersperse,
   // isEmpty,
-  // iterate,
+  iterate,
   // join,
   // joinWith,
   // last,
@@ -572,41 +578,41 @@ module.exports = {
   // next,
   // nextOr,
   // none,
-  // nth,
+  nth,
   of,
   // pad,
   // padTo,
   // partition,
   // prepend,
-  // range,
+  range,
   rangeStep,
   reduce,
   // reject,
   // repeat,
   // reverse,
   scan,
-  // slice,
-  // some,
+  slice,
+  some,
   // sort,
   // splitAt,
   // splitEvery,
   // sum,
   // sumBy,
   // tail,
-  // take,
+  take,
   // takeWhile,
-  // tee,
+  tee,
   // times,
   toArray,
-  // unfold,
+  unfold,
   // unique,
   // uniqueWith,
   // unnest,
   // unzip,
   // unzipN,
-  // zip,
+  zip,
   // zipAll,
-  // zipAllWith,
+  zipAllWith,
   // zipWith,
   // zipWithN,
 };

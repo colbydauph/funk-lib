@@ -10,9 +10,7 @@ const { is, isIterable } = require('../is');
 const StopIteration = require('./stop-iteration');
 const { yieldWithAsync: yieldWith } = require('./yield-with');
 
-const complementP = (func) => R.curryN(func.length)(
-  async (...args) => !await func(...args)
-);
+const complementP = (func) => R.curryN(func.length)(async (...args) => !await func(...args));
 
 // todo: consider replacing "is" with R.equals
 

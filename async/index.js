@@ -3,13 +3,19 @@
 // modules
 const R = require('ramda');
 
+// local
+const { map: mapIterable } = require('../iterable/sync');
+
+// @async parallel resolve promises
+const all = Promise.all.bind(Promise);
+
 // @async array<promise> -> *
 const race = Promise.race.bind(Promise);
 
 // @async number -> undefined
 const delay = async (ms) => new Promise((res) => setTimeout(res, ms));
 
-// wraps a function to always resolve / reject a promise
+// wraps a function to always return a promise
 // (* -> *) -> * -> *
 const toAsync = (func) => async (...args) => func(...args);
 
@@ -33,9 +39,7 @@ const promisify = (func) => async (...args) => {
 // inverse of promisify
 const callbackify = (func) => (...args) => {
   const cb = args.pop();
-  Promise
-    .resolve(args)
-    .then((args) => func(...args))
+  toAsync(func)(...args)
     .then((res) => cb(null, res))
     .catch((err) => cb(err));
 };
@@ -60,13 +64,18 @@ const reduce = R.curry(async (pred, init, iterable) => {
   return result;
 });
 
+// serial + async R.pipe
+// works with sync or async functions
+const pipe = (fn, ...fns) => async (...args) => {
+  return reduce(R.applyTo, await fn(...args), fns);
+};
+// curried async pipe
+const pipeC = (...funcs) => R.curryN(funcs[0].length, pipe(...funcs));
+
 // @async (parallel)
-// predicate -> iterable -> iterable
-const map = R.curry(async (pred, iterable) => {
-  const output = [];
-  for (const item of iterable) output.push(pred(item));
-  return Promise.all(output);
-});
+// (A -> B) -> Iterable<A> -> Iterable<B>
+const map = pipeC(mapIterable, all);
+
 
 // @async (series)
 // predicate -> iterable -> iterable
@@ -133,22 +142,14 @@ const findSeries = R.curry(async (pred, iterable) => {
   }
 });
 
-// @async (series)
-// left-to-right function composition
-const pipe = (...funcs) => async (...args) => {
-  return reduce(async (args, func) => [
-    await func(...args),
-  ], args, funcs).then(R.head);
-};
-const curryPipe = (...funcs) => R.curryN(funcs[0].length)(pipe(...funcs));
 
 // @async (parallel)
 // predicate -> iterable -> iterable
-const flatMap = curryPipe(map, R.chain(R.identity));
+const flatMap = pipeC(map, R.chain(R.identity));
 
 // @async (series)
 // predicate -> iterable -> iterable
-const flatMapSeries = curryPipe(mapSeries, R.chain(R.identity));
+const flatMapSeries = pipeC(mapSeries, R.chain(R.identity));
 
 // @async (parallel)
 // predicate -> iterable -> iterable
@@ -202,6 +203,7 @@ module.exports = {
   map,
   mapSeries,
   pipe,
+  pipeC,
   promisify,
   props,
   race,

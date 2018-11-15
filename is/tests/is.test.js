@@ -4,51 +4,134 @@
 const { fromString } = require('../../stream');
 const assert = require('./assert-is');
 const {
-  isAsyncGenerator,
-  isAsyncGeneratorFunction,
+  is,
+  isArray,
+  isAsyncIterable,
   isBoolean,
+  isBuffer,
   isDate,
+  isFalsey,
+  // isFinite,
+  isFloat,
   isFunction,
-  isGenerator,
-  isGeneratorFunction,
   isInstanceOf,
+  isInteger,
   isIterable,
+  isIterator,
+  isNaN,
   isNegative,
+  isNot,
   isNull,
+  isNumber,
   isObject,
   isPojo,
   isPositive,
   isPromise,
   isRegExp,
   isStream,
+  isString,
   isSymbol,
-  isSyncGenerator,
-  isSyncGeneratorFunction,
+  isTruthy,
   isTypeOf,
   isUndefined,
-  isAsyncIterable,
 } = require('..');
 
 describe('is', () => {
   
-  assert({
+  assert('is', {
+    func: is,
+    spread: true,
+    pass: [
+      [1, 1],
+      [true, true],
+      (() => {
+        const prop = [1, 2, 3];
+        return [prop, prop];
+      })(),
+      (() => {
+        const prop = { prop: true };
+        return [prop, prop];
+      })(),
+    ],
+    fail: [
+      [1, 2],
+      [true, false],
+      [{}, []],
+      [0, undefined],
+      [null, undefined],
+      [null, NaN],
+      [NaN, NaN],
+      [[1, 2, 3], [1, 2, 3]],
+      [{ prop: true }, { prop: true }],
+    ],
+  });
+  
+  assert('isArray', {
+    func: isArray,
+    pass: [[], Array(1)],
+    fail: [1, {}, 0, () => {}, undefined, null],
+  });
+  
+  assert('isAsyncIterable', {
+    func: isAsyncIterable,
+    pass: [
+      { * [Symbol.asyncIterator]() {} },
+      (async function* gen() {})(),
+    ],
+    fail: [
+      {}, [],
+      true, null, undefined, 1,
+      (function* gen() {})(),
+      { * [Symbol.iterator]() {} },
+      () => {},
+    ],
+  });
+  
+  assert('isBoolean', {
     func: isBoolean,
-    name: 'isBoolean',
-    fail: [1, {}, 0, () => {}, [], undefined, null],
-    pass: [true, false],
+    pass: [true, false, Boolean(true)],
+    fail: [
+      1, 0,
+      () => {}, {}, [],
+      undefined, null,
+      // eslint-disable-next-line no-new-wrappers
+      new Boolean(true),
+    ],
   });
   
-  assert({
+  assert('isBuffer', {
+    func: isBuffer,
+    pass: [Buffer.from('test', 'utf8')],
+    fail: [
+      {}, [], () => {},
+      null, undefined, 1, false,
+      Date(), 'test',
+    ],
+  });
+  
+  assert('isDate', {
     func: isDate,
-    name: 'isDate',
     pass: [new Date()],
-    fail: [{}, [], null, undefined, 1, false, () => {}],
+    fail: [
+      {}, [], Date(), () => {},
+      null, undefined, 1, false,
+    ],
   });
   
-  assert({
+  assert('isFalsey', {
+    func: isFalsey,
+    pass: [null, undefined, false, 0, -0, 0x0, 0.0, '', NaN],
+    fail: [1, true, [], {}, () => {}, 'test'],
+  });
+  
+  assert('isFloat', {
+    func: isFloat,
+    pass: [1.1, 10.99999999, 1 / 3],
+    fail: [1, 2, 10.0, Infinity, -Infinity, NaN, 0, -0],
+  });
+  
+  assert('isFunction', {
     func: isFunction,
-    name: 'isFunction',
-    fail: [1, {}, 0, true, [], undefined, null],
     pass: [
       () => {},
       async () => {},
@@ -56,109 +139,13 @@ describe('is', () => {
       function* gen() {},
       // async function* gen() {},
     ],
-  });
-
-  assert({
-    func: isGenerator,
-    name: 'isGenerator',
-    fail: [
-      () => {},
-      async () => {},
-      // async function* gen() {},
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      (function* gen() {})(),
-      // (async function* asyncGen() {})(),
-    ],
+    fail: [1, {}, 0, true, [], undefined, null],
   });
   
-  assert({
-    func: isSyncGenerator,
-    name: 'isSyncGenerator',
-    fail: [
-      () => {},
-      async () => {},
-      // async function* gen() {},
-      // (async function* asyncGen() {})(),
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      (function* gen() {})(),
-    ],
-  });
-  
-  assert({
-    func: isAsyncGenerator,
-    name: 'isAsyncGenerator',
-    fail: [
-      () => {},
-      async () => {},
-      function* gen() {},
-      (function* gen() {})(),
-      // async function* gen() {},
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      // (async function* asyncGen() {})(),
-    ],
-  });
-  
-  assert({
-    func: isGeneratorFunction,
-    name: 'isGeneratorFunction',
-    fail: [
-      () => {},
-      async () => {},
-      function GeneratorFunction() {},
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      function* gen() {},
-      // async function* asyncGen() {},
-    ],
-  });
-  
-  assert({
-    func: isSyncGeneratorFunction,
-    name: 'isSyncGeneratorFunction',
-    fail: [
-      () => {},
-      async () => {},
-      function GeneratorFunction() {},
-      // async function* asyncGen() {},
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      function* gen() {},
-    ],
-  });
-  
-  assert({
-    func: isAsyncGeneratorFunction,
-    name: 'isAsyncGeneratorFunction',
-    fail: [
-      () => {},
-      async () => {},
-      function AsyncGeneratorFunction() {},
-      function* gen() {},
-      {}, [], 1, true, null,
-    ],
-    pass: [
-      // async function* asyncGen() {},
-    ],
-  });
-  
-  assert({
+  assert('isInstanceOf', {
     /* eslint-disable no-new-wrappers, no-array-constructor */
     func: isInstanceOf,
-    name: 'isInstanceOf',
-    fail: [
-      [Array, {}],
-      [Number, 1],
-      [Boolean, false],
-      [String, ''],
-    ],
+    spread: true,
     pass: [
       [Object, {}],
       [Object, []],
@@ -169,55 +156,105 @@ describe('is', () => {
       [Array, Array()],
       [Object, Object()],
     ],
-    spread: true,
+    fail: [
+      [Array, {}],
+      [Number, 1],
+      [Boolean, false],
+      [String, ''],
+    ],
     /* eslint-enable no-new-wrappers */
   });
   
-  assert({
+  assert('isIterable', {
     func: isIterable,
-    name: 'isIterable',
-    fail: [{}, true, null, undefined, 1],
     pass: [
       [],
       { * [Symbol.iterator]() {} },
-      (function* iterator() {})(),
+      (function* gen() {})(),
     ],
-  });
-  
-  assert({
-    func: isAsyncIterable,
-    name: 'isAsyncIterable',
-    fail: [{}, true, null, undefined, 1, { * [Symbol.iterator]() {} }],
-    pass: [
+    fail: [
+      {}, true, null, undefined, 1,
       { * [Symbol.asyncIterator]() {} },
-      // (async function* ayncIterable() {})(),
+      (async function* gen() {})(),
+      () => {},
     ],
   });
   
-  assert({
+  assert('isIterator', {
+    func: isIterator,
+    pass: [
+      (function* gen() {})(),
+      (async function* asyncGen() {})(),
+      { next: () => {} },
+    ],
+    fail: [
+      {}, [],
+      true, null, undefined, 1,
+      () => {},
+    ],
+  });
+  
+  assert('isNaN', {
+    func: isNaN,
+    pass: [NaN],
+    fail: [
+      {}, [],
+      true, null, undefined, 1,
+      () => {},
+    ],
+  });
+    
+  assert('isNegative', {
     func: isNegative,
-    name: 'isNegative',
-    fail: [0, -0, 1, 1000000, Infinity, NaN, undefined, [], {}, true, null],
     pass: [-1, -100000, -Infinity],
+    fail: [
+      0, -0, 1, 1000000, Infinity, NaN,
+      undefined, [], {}, true, null,
+    ],
   });
   
-  assert({
+  assert('isNot', {
+    func: isNot,
+    spread: true,
+    pass: [
+      [1, 2],
+      [true, false],
+      [{}, []],
+      [0, undefined],
+      [null, undefined],
+      [null, NaN],
+      [NaN, NaN],
+      [[1, 2, 3], [1, 2, 3]],
+      [{ prop: true }, { prop: true }],
+    ],
+    fail: [
+      [1, 1],
+      [true, true],
+      (() => {
+        const prop = [1, 2, 3];
+        return [prop, prop];
+      })(),
+      (() => {
+        const prop = { prop: true };
+        return [prop, prop];
+      })(),
+    ],
+  });
+  
+  assert('isNull', {
     func: isNull,
-    name: 'isNull',
-    fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined, () => {}],
     pass: [null],
+    fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined, () => {}],
   });
   
-  assert({
+  assert('isObject', {
     func: isObject,
-    name: 'isObject',
     pass: [{}],
     fail: [[], null, undefined, 1, false, () => {}],
   });
   
-  assert({
+  assert('isPojo', {
     func: isPojo,
-    name: 'isPojo',
     pass: [
       {},
       Object.create(Object.prototype),
@@ -244,69 +281,92 @@ describe('is', () => {
     ],
   });
   
-  assert({
+  assert('isNumber', {
+    func: isNumber,
+    pass: [
+      -Infinity, -100, -10.10, -0, 0, 10.10, 100, Infinity,
+      Number(10),
+    ],
+    fail: [
+      NaN,
+      [], {}, () => {},
+      true, false,
+      // eslint-disable-next-line no-new-wrappers
+      new Number(10),
+    ],
+  });
+  
+  assert('isInteger', {
+    func: isInteger,
+    pass: [-100, -0, 0, 100],
+    fail: [
+      -Infinity, Infinity, -10.10, 10.10, NaN,
+      [], {}, true, false, () => {},
+    ],
+  });
+  
+  assert('isPositive', {
     func: isPositive,
-    name: 'isPositive',
     pass: [0, -0, 1, 1000000, Infinity, null],
     fail: [-1, -100000, -Infinity, NaN, undefined],
   });
   
-  assert({
+  assert('isPromise', {
     func: isPromise,
-    name: 'isPromise',
     pass: [
       Promise.resolve(1),
-      { then() {} },
-    ],
-    fail: [-1, -100000, -Infinity, NaN, undefined, {}, [], null, { catch() {} }],
-  });
-  
-  assert({
-    func: isRegExp,
-    name: 'isRegExp',
-    pass: [
-      /a/,
-      new RegExp('test'),
+      { then() {}, catch() {} },
     ],
     fail: [
-      {},
-      () => {},
-      true,
-      [],
-      1,
+      -1, -100000, -Infinity, NaN, undefined,
+      {}, [], null,
+      { then() {} },
+      { catch() {} },
+    ],
+  });
+  
+  assert('isRegExp', {
+    func: isRegExp,
+    pass: [/a/, new RegExp('test')],
+    fail: [
+      {}, [], () => {},
+      true, 1,
       new Date(),
     ],
   });
   
-  assert({
+  assert('isStream', {
     func: isStream,
-    name: 'isStream',
-    fail: [{}, () => {}, true, [], 1],
-    pass: [
-      fromString('test string'),
-    ],
+    pass: [fromString('test string')],
+    fail: [{}, () => {}, true, [], 1, ''],
   });
   
-  assert({
-    func: isSymbol,
-    name: 'isSymbol',
-    pass: [
-      Symbol('test'),
-    ],
-    fail: [{}, () => {}, true, [], 1],
-  });
-  
-  assert({
-    func: isTypeOf,
-    name: 'isTypeOf',
+  assert('isString', {
+    func: isString,
+    pass: ['', 'test', String('test')],
     fail: [
-      ['string', true],
-      ['object', false],
-      ['number', []],
-      ['array', []],
-      ['null', null],
-      ['undefined', null],
+      {}, [], () => {},
+      true, 1,
+      // eslint-disable-next-line no-new-wrappers
+      new String('test'),
     ],
+  });
+  
+  assert('isSymbol', {
+    func: isSymbol,
+    pass: [Symbol('test')],
+    fail: [{}, () => {}, true, [], 1],
+  });
+  
+  assert('isTruthy', {
+    func: isTruthy,
+    pass: [1, true, [], {}, () => {}, 'test'],
+    fail: [null, undefined, false, 0, -0, 0x0, 0.0, '', NaN],
+  });
+  
+  assert('isTypeOf', {
+    func: isTypeOf,
+    spread: true,
     pass: [
       ['number', 1],
       ['object', {}],
@@ -320,14 +380,20 @@ describe('is', () => {
       ['string', 'test'],
       ['undefined', undefined],
     ],
-    spread: true,
+    fail: [
+      ['string', true],
+      ['object', false],
+      ['number', []],
+      ['array', []],
+      ['null', null],
+      ['undefined', null],
+    ],
   });
   
-  assert({
+  assert('isUndefined', {
     func: isUndefined,
-    name: 'isUndefined',
-    fail: [0, -0, Infinity, NaN, {}, [], false, true, null, () => {}],
     pass: [undefined],
+    fail: [0, -0, Infinity, NaN, {}, [], false, true, null, () => {}],
   });
     
 });

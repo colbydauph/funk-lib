@@ -1,13 +1,27 @@
 'use strict';
 
+// core
+const util = require('util');
+
 // modules
 const R = require('ramda');
 
+// string -> string -> number
 const localeCompare = R.invoker(1, 'localeCompare');
-const toUpperCase = R.invoker(0, 'toUpperCase');
-const toLowerCase = R.invoker(0, 'toLowerCase');
-const charAt = R.invoker(1, 'charAt');
-const capitalize = (str) => toUpperCase(charAt(0, str)) + str.slice(1);
+
+// todo: deprecate these
+// string -> string
+const toUpperCase = R.unary(util.deprecate(
+  R.toUpper,
+  'funk-lib/string/toUpperCase -> R.toUpper'
+));
+const toLowerCase = R.unary(util.deprecate(
+  R.toLower,
+  'funk-lib/string/toLowerCase -> R.toLower'
+));
+
+// string -> string
+const capitalize = (str) => R.toUpper(R.nth(0, str)) + str.slice(1);
 
 // string -> string
 // eslint-disable-next-line no-useless-escape
@@ -16,7 +30,7 @@ const escapeRegExpStr = R.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
 // reasonably similar to js template literals
 // string -> object -> string
 const template = R.curry((tmpl, variables) => {
-  return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (match, variable) => {
+  return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {
     return variables[variable.trim()] || '';
   });
 });
@@ -37,7 +51,6 @@ const parseBase64 = encodeFrom('base64', 'utf8');
 
 module.exports = {
   capitalize,
-  charAt,
   escapeRegExpStr,
   localeCompare,
   parseBase64,

@@ -8,6 +8,7 @@ const R = require('ramda');
 // local
 const { isPromise } = require('../../is');
 const { random } = require('../../number');
+const { from } = require('../../iterable/sync');
 
 // local
 const {
@@ -56,10 +57,6 @@ const assertIsParallel = async (isParallel, func) => {
   
 };
 
-const iterOf = (items) => (function* iter() {
-  for (const item of items) yield item;
-})();
-
 // it('should work with sync functions');
 
 describe('async lib', () => {
@@ -68,6 +65,15 @@ describe('async lib', () => {
     
     it('should return a function', () => {
       expect(callbackify(() => {})).to.be.a('function');
+    });
+    
+    it('should call the wrapped function with the input args', (cb) => {
+      const args = [1, 2, 3];
+      const pred = sinon.stub().resolves();
+      callbackify(pred)(...args, (err, res) => {
+        expect(pred.args[0]).to.eql(args);
+        cb(err);
+      });
     });
         
     describe('async', () => {
@@ -104,7 +110,7 @@ describe('async lib', () => {
       
       it('should call the callback with the rejected promise error', (cb) => {
         const error = Error('oops');
-        callbackify(() => {
+        callbackify(async () => {
           throw error;
         })(1, 2, 3, (err) => {
           expect(err).to.equal(error);
@@ -137,9 +143,9 @@ describe('async lib', () => {
     
     it('should resolve after n ms', async () => {
       const start = Date.now();
-      await delay(100);
+      await delay(50);
       const end = Date.now();
-      expect(end - start).to.be.closeTo(100, 10);
+      expect(end - start).to.be.closeTo(50, 10);
     });
     
   });
@@ -151,14 +157,14 @@ describe('async lib', () => {
       ({ promise, resolve, reject } = deferred());
     });
     
-    it('should create an externally resolved promise', async () => {
-      const res = {};
+    it('should create an externally resolvable promise', async () => {
+      const res = { obj: true };
       resolve(res);
       const out = await promise;
       expect(out).to.equal(res);
     });
     
-    it('should create an externally rejected promise', async () => {
+    it('should create an externally rejectable promise', async () => {
       const err = Error('oops');
       reject(err);
       await expect(promise).to.be.rejectedWith(err);
@@ -265,7 +271,7 @@ describe('async lib', () => {
     
     // fixme
     xit('should work with iterables', async () => {
-      iterable = iterOf(iterable);
+      iterable = from(iterable);
       await expect(filter(pred, iterable))
         .to.eventually.eql([]);
     });
@@ -345,7 +351,7 @@ describe('async lib', () => {
     });
 
     it('should work with iterables', async () => {
-      await flatMap(pred, iterOf(iterable));
+      await flatMap(pred, from(iterable));
       expect(pred.callCount).to.eql(5);
     });
 
@@ -387,7 +393,7 @@ describe('async lib', () => {
     });
 
     it('should work with iterables', async () => {
-      await flatMapSeries(pred, iterOf(iterable));
+      await flatMapSeries(pred, from(iterable));
       expect(pred.callCount).to.eql(5);
     });
 
@@ -419,7 +425,7 @@ describe('async lib', () => {
     });
     
     it('should should work with iterables', async () => {
-      await expect(find(pred, iterOf(iterable)))
+      await expect(find(pred, from(iterable)))
         .to.eventually.eql(result);
     });
     
@@ -460,7 +466,7 @@ describe('async lib', () => {
     });
     
     it('should should work with iterables', async () => {
-      await expect(findSeries(pred, iterOf(iterable)))
+      await expect(findSeries(pred, from(iterable)))
         .to.eventually.eql(result);
     });
     
@@ -507,7 +513,7 @@ describe('async lib', () => {
     });
     
     it('should work with iterables', async () => {
-      await forEach(pred, iterOf(iterable));
+      await forEach(pred, from(iterable));
       expect(pred.args.map(R.head)).to.eql(iterable);
     });
     
@@ -548,7 +554,7 @@ describe('async lib', () => {
     });
     
     it('should work with iterables', async () => {
-      await forEachSeries(pred, iterOf(iterable));
+      await forEachSeries(pred, from(iterable));
       expect(pred.args.map(R.head)).to.eql(iterable);
     });
     
@@ -605,7 +611,7 @@ describe('async lib', () => {
     });
     
     it('should work with iterables', async () => {
-      await expect(map(pred, iterOf(iterable)))
+      await expect(map(pred, from(iterable)))
         .to.eventually.eql(result);
     });
     
@@ -648,7 +654,7 @@ describe('async lib', () => {
     });
     
     it('should work with iterables', async () => {
-      await expect(mapSeries(pred, iterOf(iterable)))
+      await expect(mapSeries(pred, from(iterable)))
         .to.eventually.eql(result);
     });
     
@@ -795,7 +801,7 @@ describe('async lib', () => {
     });
     
     it('should work with iterables', async () => {
-      await expect(reduce(pred, init, iterOf(iterable)))
+      await expect(reduce(pred, init, from(iterable)))
         .to.eventually.eql(25);
     });
     
@@ -811,19 +817,19 @@ describe('async lib', () => {
   describe('timeout', () => {
     
     it('should resolve if promise is resolved before timeout', async () => {
-      const promise = delay(100).then(() => 'done');
+      const promise = delay(10).then(() => 'done');
       await expect(timeout(500, promise)).to.eventually.eql('done');
     });
     
     it('should be rejected with a TimeoutError if promise does not resolve before timeout', async () => {
       const promise = delay(500);
-      await expect(timeout(100, promise))
-        .to.be.rejectedWith(TimeoutError, 'timed out after 100ms');
+      await expect(timeout(10, promise))
+        .to.be.rejectedWith(TimeoutError, 'timed out after 10ms');
     });
     
     it('should propagate promise errors', async () => {
       const error = Error('woops');
-      const promise = delay(100).then(() => {
+      const promise = delay(10).then(() => {
         throw error;
       });
       await expect(timeout(100, promise))

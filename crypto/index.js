@@ -3,18 +3,20 @@
 // core
 const crypto = require('crypto');
 
+// module
 const R = require('ramda');
 
-// calculates the hash of a string, by type name
-const hashWith = R.curry((type, str) => crypto
-  .createHash(type)
+// string -> string -> string
+const hashWith = R.curry((algo, str) => crypto
+  .createHash(algo)
   .update(str)
   .digest('hex'));
 
-// calculates the hash of a string
 // string -> string
 const md5 = hashWith('md5');
+// string -> string
 const sha256 = hashWith('sha256');
+// string -> string
 const sha512 = hashWith('sha512');
 
 module.exports = {

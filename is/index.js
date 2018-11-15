@@ -1,113 +1,124 @@
+/* eslint-disable no-underscore-dangle */
 'use strict';
 
 // modules
 const R = require('ramda');
 
-const { isNaN } = Number;
-const { isArray } = Array;
-const { isBuffer } = Buffer;
+const {
+  // * -> boolean
+  isFinite,
+  // * -> boolean
+  isInteger,
+  // * -> boolean
+  isNaN,
+} = Number;
 
-const isInstanceOf = R.curry((constructor, thing) => (thing instanceof constructor));
-const isTypeOf = R.curry((type, thing) => (typeof thing === type));
+const {
+  // * -> boolean
+  isArray,
+} = Array;
 
+const {
+  // * -> boolean
+  isBuffer,
+} = Buffer;
+
+// referentially equal
+// * -> * -> boolean
+const is = R.curry((left, right) => (left === right));
+// * -> * -> boolean
+const isNot = R.complement(is);
+// string -> * -> boolean
+const isInstanceOf = R.curry((type, thing) => thing instanceof type);
+// string -> * -> boolean
+const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
+// * -> boolean
 const isBoolean = isTypeOf('boolean');
+// * -> boolean
 const isDate = isInstanceOf(Date);
+// * -> boolean
 const isRegExp = isInstanceOf(RegExp);
+// * -> boolean
 const isFunction = isTypeOf('function');
-const isNull = R.equals(null);
+// * -> boolean
+const isNull = is(null);
+// * -> boolean
 const isString = isTypeOf('string');
+// * -> boolean
 const isSymbol = isTypeOf('symbol');
+// * -> boolean
 const isUndefined = isTypeOf('undefined');
-
+// * -> boolean
+const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
+// * -> boolean
+const isNegative = R.lt(R.__, 0);
+// * -> boolean
+const isPositive = R.gte(R.__, 0);
+// * -> boolean
+const isFloat = R.allPass([isFinite, R.complement(isInteger)]);
+// * -> boolean
+const isTruthy = R.pipe(R.not, R.not);
+// * -> boolean
+const isFalsey = R.not;
 // * -> boolean
 const isObject = R.allPass([
   isTypeOf('object'),
   R.complement(isNull),
   R.complement(isArray),
 ]);
-
+// * -> boolean
+const isPromise = R.allPass([
+  isObject,
+  R.propSatisfies(isFunction, 'then'),
+  R.propSatisfies(isFunction, 'catch'),
+]);
+// * -> boolean
+const isStream = R.allPass([
+  isObject,
+  R.propSatisfies(isFunction, 'pipe'),
+]);
 // is "plain old javascript object"
 // * -> boolean
 const isPojo = R.allPass([
   isObject,
-  R.pipe(Object.getPrototypeOf, (proto) => {
-    return (proto === Object.prototype);
-  }),
+  R.pipe(Object.getPrototypeOf, is(Object.prototype)),
 ]);
-
-const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
-const isNegative = R.flip(R.lt)(0);
-const isPositive = R.flip(R.gte)(0);
-
-const isTruthy = R.pipe(R.not, R.not);
-const isFalsey = R.not;
-
-const isPromise = R.allPass([isObject, R.pipe(R.prop('then'), isFunction)]);
-const isStream = R.allPass([isObject, R.pipe(R.prop('pipe'), isFunction)]);
 
 // * -> boolean
-const isGenerator = R.allPass([
+const isIterator = R.allPass([
   isObject,
-  R.pipe(R.prop('next'), isFunction),
-  R.pipe(R.prop('throw'), isFunction),
+  R.propSatisfies(isFunction, 'next'),
 ]);
-
-
-const isSyncGenerator = R.allPass([
-  isGenerator,
-  // fixme: find a safer way to do this
-  (thing) => (thing[Symbol.toStringTag] === 'Generator'),
-]);
-
-const isAsyncGenerator = R.allPass([
-  isGenerator,
-  // fixme: find a safer way to do this
-  (thing) => (thing[Symbol.toStringTag] === 'AsyncGenerator'),
-]);
-
-const isSyncGeneratorFunction = R.allPass([
-  isFunction,
-  // fixme: find a safer way to do this
-  (fn) => (fn.constructor.name === 'GeneratorFunction'),
-]);
-
-const isAsyncGeneratorFunction = R.allPass([
-  isFunction,
-  // fixme: find a safer way to do this
-  (fn) => (fn.constructor.name === 'AsyncGeneratorFunction'),
-]);
-
-const isGeneratorFunction = R.anyPass([
-  isSyncGeneratorFunction,
-  isAsyncGeneratorFunction,
-]);
-
+// * -> boolean
 const isIterable = R.allPass([
   isTruthy,
-  R.pipe(R.prop(Symbol.iterator), isFunction),
+  R.propSatisfies(isFunction, Symbol.iterator),
 ]);
+// * -> boolean
 const isAsyncIterable = R.allPass([
   isTruthy,
-  R.pipe(R.prop(Symbol.asyncIterator), isFunction),
+  R.propSatisfies(isFunction, Symbol.asyncIterator),
 ]);
 
 
 module.exports = {
+  is,
   isArray,
-  isAsyncGenerator,
-  isAsyncGeneratorFunction,
   isAsyncIterable,
   isBoolean,
   isBuffer,
   isDate,
   isFalsey,
+  isFinite,
+  isFloat,
   isFunction,
-  isGenerator,
-  isGeneratorFunction,
   isInstanceOf,
+  isInteger,
   isIterable,
+  isIterator,
   isNaN,
   isNegative,
+  isNot,
   isNull,
   isNumber,
   isObject,
@@ -118,8 +129,6 @@ module.exports = {
   isStream,
   isString,
   isSymbol,
-  isSyncGenerator,
-  isSyncGeneratorFunction,
   isTruthy,
   isTypeOf,
   isUndefined,

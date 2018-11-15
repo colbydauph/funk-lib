@@ -1,10 +1,11 @@
 'use strict';
 
 // modules
-const  R = require('ramda');
+const R = require('ramda');
 
 const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 
+// * -> boolean
 const isDataUrl = R.test(DATA_URL_REGEXP);
 
 // dataurl -> { mediatype, data, base64 }

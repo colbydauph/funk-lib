@@ -5,7 +5,7 @@ machine:
 
   node:
     version:
-      8.9.1
+      10.9.0
       
 test:
   override:

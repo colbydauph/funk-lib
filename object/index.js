@@ -1,14 +1,18 @@
 'use strict';
 
 // modules
+const util = require('util');
 const R = require('ramda');
 
 // local
 const { isObject } = require('../is');
 
-const firstKey = (obj) => Object.keys(obj)[0];
-const firstPair = (obj) => Object.entries(obj)[0];
-const firstValue = (obj) => Object.values(obj)[0];
+// Object<K, V> -> [K, V]
+const firstPair = R.pipe(R.toPairs, R.nth(0));
+// Object<K, V> -> K
+const firstKey = R.pipe(firstPair, R.nth(0));
+// Object<K, V> -> V
+const firstValue = R.pipe(firstPair, R.nth(1));
 
 // todo: pickAsDeep (recursive)
 // pick the keys from the first argument, renaming by the values in the second arg
@@ -22,10 +26,7 @@ const pickAs = R.curry((keyVals, obj) => {
 
 // ([K, V] -> [L, M]) -> Object<K, V> -> Object<L, M>
 const mapPairs = R.curry((pred, obj) => {
-  const pairs = R
-    .toPairs(obj)
-    .map(pred);
-  return R.fromPairs(pairs);
+  return R.fromPairs(R.map(pred, R.toPairs(obj)));
 });
 
 // (K -> M) -> Object<K, V> -> Object<M, V>
@@ -34,9 +35,13 @@ const mapKeys = R.curry((pred, obj) => {
 });
 
 // (V -> M) -> Object<K, V> -> Object<K, M>
-const mapValues = R.map;
+const mapValues = R.curryN(2)(util.deprecate(
+  R.map,
+  'funk-lib/object/mapValues -> R.map'
+));
 
 // recursive + mutating + identity
+// object -> object
 const deepFreeze = (obj) => {
   Object.freeze(obj);
   R.forEach(deepFreeze, R.values(obj));
@@ -66,7 +71,9 @@ const nestWith = R.curry((pred, obj) => {
 });
 
 // serialize to json with indents
-const toHumanJson = (obj) => JSON.stringify(obj, null, 2);
+// * -> string
+const toHumanJSON = obj => JSON.stringify(obj, null, 2);
+
 
 // // recursive R.merge with predicate for custom merging
 // const mergeDeepWith = R.curry((pred, left, right) => {
@@ -87,6 +94,6 @@ module.exports = {
   mapPairs,
   mapValues,
   nestWith,
-  toHumanJson,
   pickAs,
+  toHumanJSON,
 };

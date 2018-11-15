@@ -19,7 +19,7 @@ const {
   mapValues,
   nestWith,
   pickAs,
-  toHumanJson,
+  toHumanJSON,
 } = require('..');
 
 describe('object lib', () => {
@@ -58,6 +58,18 @@ describe('object lib', () => {
         obj.d.e = 5;
       }).to.throw(Error);
       
+    });
+    
+    it('should handle empty / falsey object values', () => {
+      obj = {
+        thing: null,
+        other: undefined,
+        deep: { thing: null, other: NaN },
+      };
+      expect(() => deepFreeze(obj)).not.to.throw(Error);
+      expect(() => {
+        obj.thing = 4;
+      }).to.throw(Error);
     });
     
   });
@@ -273,15 +285,16 @@ describe('object lib', () => {
     
   });
 
-  describe('toHumanJson', () => {
+  describe('toHumanJSON', () => {
     
-    it('should serialize json with 2 spaces', () => {
+    it('should return json with whitespace', () => {
       const obj = {
-        one: { three: 3, four: 4 },
-        two: { five: { six: 6 } },
-        seven: [8, 9, { ten: 10 }],
+        a: 1,
+        b: true,
+        c: [2, 3, 4, { 5: 6 }],
+        d: { 7: { 8: [9] } },
       };
-      expect(toHumanJson(obj)).to.eql(JSON.stringify(obj, null, 2));
+      expect(toHumanJSON(obj)).to.eql(JSON.stringify(obj, null, 2));
     });
     
   });

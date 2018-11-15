@@ -9,6 +9,10 @@ const { pipeC: asyncPipeC, reduce: reduceP } = require('../async');
 const { is, isIterable } = require('../is');
 const StopIteration = require('./stop-iteration');
 
+const complementP = (func) => R.curryN(func.length)(
+  async (...args) => !await func(...args)
+);
+
 // todo: consider replacing "is" with R.equals
 
 // * -> Iterable<T> -> T | *
@@ -160,7 +164,7 @@ const filter = R.curry(async function* filter(pred, iterable) {
 
 // yield only items that do not pass the predicate
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-const reject = R.useWith(filter, [R.complement, R.identity]);
+const reject = R.useWith(filter, [complementP, R.identity]);
 
 // (A -> [B]) -> * -> Iterator<B>
 const unfold = R.curry(async function* unfold(pred, item) {
@@ -273,12 +277,14 @@ const some = R.curry(async (pred, iterable) => {
 
 // do all items fail their predicate?
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const none = R.complement(some);
+const none = complementP(some);
 
 // do all items pass their predicate?
 // (T -> Boolean) -> Iterable<T> -> Boolean
-const every = R.curry((pred, iterable) => {
-  for (const item of iterable) if (!pred(item)) return false;
+const every = R.curry(async (pred, iterable) => {
+  for await (const item of iterable) {
+    if (!await pred(item)) return false;
+  }
   return true;
 });
 
@@ -344,9 +350,9 @@ const frame = R.curry(async function* frame(n, iterable) {
 // yield all but the last n items
 // note: caches n + 1 items
 // Number -> Iterable<T> -> Iterable<T>
-const dropLast = R.curry(function* dropLast(n, iterable) {
+const dropLast = R.curry(async function* dropLast(n, iterable) {
   const done = new StopIteration();
-  for (const group of frame(n + 1, append(done, iterable))) {
+  for await (const group of frame(n + 1, append(done, iterable))) {
     if (R.last(group) === done) return;
     yield R.head(group);
   }
@@ -365,9 +371,9 @@ const includes = R.useWith(some, [is, R.identity]);
 // yield groups of items where the predicate returns truthy
 // for all adjacent items
 // ((T , T) -> Boolean) -> Iterable<T> -> Iterator<[T]>
-const groupWith = R.curry(function* groupWith(pred, iterable) {
+const groupWith = R.curry(async function* groupWith(pred, iterable) {
   let last, group = [];
-  yield* flatMap(function* fmap([i, item]) {
+  yield* flatMap(async function* fmap([i, item]) {
     if (i && !pred(last, item)) {
       yield group;
       group = [];
@@ -403,9 +409,9 @@ const tee = R.curry((n, iterable) => {
 
 // yield groups of length n
 // Integer -> Iterable<T> -> Iterator<[T]>
-const splitEvery = R.curry(function* splitEvery(n, iterable) {
+const splitEvery = R.curry(async function* splitEvery(n, iterable) {
   let group = [];
-  yield* flatMap(function* fmap(item) {
+  yield* flatMap(async function* fmap(item) {
     group.push(item);
     if (group.length < n) return;
     yield group;
@@ -435,7 +441,7 @@ const partition = R.curry((pred, iterable) => {
 // Number -> Iterable<Iterable<T>> -> Iterator<T>
 const flattenN = R.curry((n, iterable) => {
   if (n < 1) return iterable;
-  return flatMap(function* fmap(item) {
+  return flatMap(async function* fmap(item) {
     if (!isIterable(item)) return yield item;
     yield* flattenN(n - 1, item);
   }, iterable);
@@ -539,37 +545,37 @@ module.exports = {
   concat,
   // corresponds,
   // correspondsWith,
-  // count,
-  // cycle,
+  count,
+  cycle,
   cycleN,
-  // drop,
-  // dropLast,
+  drop,
+  dropLast,
   // dropWhile,
   enumerate,
-  // every,
+  every,
   exhaust,
   filter,
   find,
   // findIndex,
   flatMap,
-  // flatten,
-  // flattenN,
+  flatten,
+  flattenN,
   forEach,
   frame,
   from,
   // group,
-  // groupWith,
+  groupWith,
   // includes,
   // indexOf,
-  // indices,
-  // init,
+  indices,
+  init,
   // intersperse,
-  // isEmpty,
+  isEmpty,
   iterate,
   // join,
   // joinWith,
   // last,
-  // length,
+  length,
   map,
   // max,
   // maxBy,
@@ -577,12 +583,12 @@ module.exports = {
   // minBy,
   // next,
   // nextOr,
-  // none,
+  none,
   nth,
   of,
   // pad,
   // padTo,
-  // partition,
+  partition,
   // prepend,
   range,
   rangeStep,
@@ -594,20 +600,20 @@ module.exports = {
   slice,
   some,
   // sort,
-  // splitAt,
-  // splitEvery,
+  splitAt,
+  splitEvery,
   // sum,
   // sumBy,
   // tail,
   take,
   // takeWhile,
   tee,
-  // times,
+  times,
   toArray,
   unfold,
   // unique,
   // uniqueWith,
-  // unnest,
+  unnest,
   // unzip,
   // unzipN,
   zip,

@@ -232,49 +232,49 @@ describe.only('iterable/async', () => {
   //   });
   //
   // });
-  //
-  // describe('count', () => {
-  //
-  //   beforeEach(() => {
-  //     pred = n => !!(n % 3);
-  //   });
-  //
-  //   it('should count number of items for which pred returns true', () => {
-  //     expect(count(pred, iterator))
-  //       .to.eql(R.filter(pred, arr).length);
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(count(pred)(iterator))
-  //       .to.eql(R.filter(pred, arr).length);
-  //   });
-  //
-  // });
-  //
-  // describe('cycle', () => {
-  //
-  //   let n;
-  //   beforeEach(() => {
-  //     n = random(10, 200);
-  //     expected = R.pipe(
-  //       n => Math.ceil(n / arr.length),
-  //       R.times(() => arr),
-  //       R.flatten,
-  //       R.take(n),
-  //     )(n);
-  //   });
-  //
-  //   it('should infinitely cycle through the iterator', () => {
-  //     iterator = R.pipe(cycle, take(n))(iterator);
-  //     expect(toArray(iterator)).to.eql(expected);
-  //   });
-  //
-  //   it('should work with arrays', () => {
-  //     iterator = R.pipe(cycle, take(n))(arr);
-  //     expect(toArray(iterator)).to.eql(expected);
-  //   });
-  //
-  // });
+  
+  describe('count', () => {
+  
+    beforeEach(() => {
+      pred = n => !!(n % 3);
+    });
+  
+    it('should count number of items for which pred returns true', async () => {
+      await expect(count(pred, iterator))
+        .to.eventually.eql(R.filter(pred, arr).length);
+    });
+  
+    it('should be curried', async () => {
+      await expect(count(pred)(iterator))
+        .to.eventually.eql(R.filter(pred, arr).length);
+    });
+  
+  });
+  
+  describe('cycle', () => {
+  
+    let n;
+    beforeEach(() => {
+      n = random(10, 200);
+      expected = R.pipe(
+        n => Math.ceil(n / arr.length),
+        R.times(() => arr),
+        R.flatten,
+        R.take(n),
+      )(n);
+    });
+  
+    it('should infinitely cycle through the iterator', async () => {
+      iterator = R.pipe(cycle, take(n))(iterator);
+      await expect(toArray(iterator)).to.eventually.eql(expected);
+    });
+  
+    it('should work with arrays', async () => {
+      iterator = R.pipe(cycle, take(n))(arr);
+      await expect(toArray(iterator)).to.eventually.eql(expected);
+    });
+  
+  });
   
   describe('cycleN', () => {
   
@@ -316,50 +316,54 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('drop', () => {
-  //
-  //   let n;
-  //   beforeEach(() => {
-  //     n = random(0, 70);
-  //     expected = R.drop(n, arr);
-  //   });
-  //
-  //   it('should drop n items', () => {
-  //     expect(toArray(drop(n, iterator))).to.eql(expected);
-  //   });
-  //
-  //   it('should yield all items if n <= 0', () => {
-  //     expect(toArray(drop(-1, iterator))).to.eql(arr);
-  //   });
-  //
-  //   it('should work with arrays', () => {
-  //     expect(toArray(drop(n, arr))).to.eql(expected);
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(toArray(drop(n)(iterator))).to.eql(expected);
-  //   });
-  //
-  // });
-  //
-  // describe('dropLast', () => {
-  //
-  //   it('should drop the last n items', () => {
-  //     const n = random(0, arr.length);
-  //     expect(toArray(dropLast(n, iterator))).to.eql(
-  //       R.dropLast(n, arr),
-  //     );
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     const n = random(0, arr.length);
-  //     expect(toArray(dropLast(n)(iterator))).to.eql(
-  //       R.dropLast(n, arr),
-  //     );
-  //   });
-  //
-  // });
-  //
+  describe('drop', () => {
+  
+    let n;
+    beforeEach(() => {
+      n = random(0, 70);
+      expected = R.drop(n, arr);
+    });
+  
+    it('should drop n items', async () => {
+      await expect(toArray(drop(n, iterator)))
+        .to.eventually.eql(expected);
+    });
+  
+    it('should yield all items if n <= 0', async () => {
+      await expect(toArray(drop(-1, iterator)))
+        .to.eventually.eql(arr);
+    });
+  
+    it('should work with arrays', async () => {
+      await expect(toArray(drop(n, arr)))
+        .to.eventually.eql(expected);
+    });
+  
+    it('should be curried', async () => {
+      await expect(toArray(drop(n)(iterator)))
+        .to.eventually.eql(expected);
+    });
+  
+  });
+  
+  describe('dropLast', () => {
+  
+    it('should drop the last n items', async () => {
+      const n = random(0, arr.length);
+      await expect(toArray(dropLast(n, iterator))).to.eventually.eql(
+        R.dropLast(n, arr),
+      );
+    });
+  
+    it('should be curried', async () => {
+      const n = random(0, arr.length);
+      await expect(toArray(dropLast(n)(iterator))).to.eventually.eql(
+        R.dropLast(n, arr),
+      );
+    });
+  
+  });
+  
   // describe('dropWhile', () => {
   //
   //   beforeEach(() => {
@@ -405,30 +409,34 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('every', () => {
-  //
-  //   beforeEach(() => {
-  //     pred = (num) => num < 20;
-  //     expected = R.all(pred, arr);
-  //   });
-  //
-  //   it('should return true if all items pass the predicate', () => {
-  //     expect(every(pred, iterator)).to.eql(expected);
-  //   });
-  //
-  //   it('should return false if any item does not pass the predicate', () => {
-  //     expect(every(R.F, iterator)).to.eql(R.all(R.F, arr));
-  //   });
-  //
-  //   it('should return true for empty iterators', () => {
-  //     expect(every(pred, of())).to.eql(true);
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(every(pred)(iterator)).to.eql(expected);
-  //   });
-  //
-  // });
+  describe('every', () => {
+  
+    beforeEach(() => {
+      pred = (num) => num < 20;
+      expected = R.all(pred, arr);
+    });
+  
+    it('should return true if all items pass the predicate', async () => {
+      await expect(every(toAsync(pred), iterator))
+        .eventually.to.eql(expected);
+    });
+  
+    it('should return false if any item does not pass the predicate', async () => {
+      await expect(every(toAsync(R.F), iterator))
+        .eventually.to.eql(R.all(R.F, arr));
+    });
+  
+    it('should return true for empty iterators', async () => {
+      await expect(every(toAsync(pred), of()))
+        .eventually.to.eql(true);
+    });
+  
+    it('should be curried', async () => {
+      await expect(every(toAsync(pred))(iterator))
+        .eventually.to.eql(expected);
+    });
+  
+  });
   
   describe('exhaust', () => {
   
@@ -503,36 +511,37 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('flatten', () => {
-  //
-  //   it('should flatten recursively', () => {
-  //     arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
-  //     iterator = from(arr);
-  //     expect(toArray(flatten(iterator)))
-  //       .to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11]);
-  //   });
-  //
-  // });
-  //
-  // describe('flattenN', () => {
-  //
-  //   const input = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
-  //   const outputs = {
-  //     0: [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]],
-  //     1: [1, 2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]], 9, 10, 11],
-  //     2: [1, 2, 3, 4, 5, 6, 7, 8, 9, [12, 13, 14], 9, 10, 11],
-  //     3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
-  //     4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
-  //   };
-  //
-  //   it('should flatten n levels of depth', () => {
-  //     Object.entries(outputs).forEach(([n, output]) => {
-  //       iterator = from(input);
-  //       expect(toArray(flattenN(+n, iterator))).to.eql(output);
-  //     });
-  //   });
-  //
-  // });
+  describe('flatten', () => {
+  
+    it('should flatten recursively', async () => {
+      arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+      iterator = from(arr);
+      await expect(toArray(flatten(iterator)))
+        .to.eventually.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11]);
+    });
+  
+  });
+  
+  describe('flattenN', () => {
+  
+    const input = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+    const outputs = {
+      0: [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]],
+      1: [1, 2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]], 9, 10, 11],
+      2: [1, 2, 3, 4, 5, 6, 7, 8, 9, [12, 13, 14], 9, 10, 11],
+      3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
+      4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 9, 10, 11],
+    };
+  
+    it('should flatten n levels of depth', async () => {
+      for (const [n, output] of Object.entries(outputs)) {
+        iterator = from(input);
+        await expect(toArray(flattenN(+n, iterator)))
+          .to.eventually.eql(output);
+      }
+    });
+  
+  });
   
   describe('flatMap', () => {
   
@@ -620,36 +629,35 @@ describe.only('iterable/async', () => {
     });
   
   });
-  //
-  // describe('groupWith', () => {
-  //
-  //   it('should', () => {
-  //     const preds = [
-  //       (left, right) => (left === right),
-  //       (left, right) => (left !== right),
-  //       (left, right) => (left >= right),
-  //       (left, right) => (left <= right),
-  //       (left, right) => (left + 1 === right),
-  //       (left, right) => (left % 2 === right % 2),
-  //     ];
-  //     [
-  //       [0, 1, 1, 2, 2, 3, 4, 5, 5],
-  //       [],
-  //       [0, 0, 0, 0],
-  //       [9, 8, 7, 6, 5, 4, 3, 2, 1],
-  //       [2, 2, 1, 2, 3, 4, 4, 6, 8, 7, 1, 2, 9, 9],
-  //     ].forEach((arr) => {
-  //
-  //       preds.forEach((pred) => {
-  //         expect(toArray(groupWith(pred, from(arr))))
-  //           .to.eql(R.groupWith(pred, arr));
-  //       });
-  //
-  //     });
-  //
-  //   });
-  //
-  // });
+  
+  describe('groupWith', () => {
+  
+    it('should', async () => {
+      const preds = [
+        (left, right) => (left === right),
+        (left, right) => (left !== right),
+        (left, right) => (left >= right),
+        (left, right) => (left <= right),
+        (left, right) => (left + 1 === right),
+        (left, right) => (left % 2 === right % 2),
+      ];
+      
+      for (const arr of [
+        [0, 1, 1, 2, 2, 3, 4, 5, 5],
+        [],
+        [0, 0, 0, 0],
+        [9, 8, 7, 6, 5, 4, 3, 2, 1],
+        [2, 2, 1, 2, 3, 4, 4, 6, 8, 7, 1, 2, 9, 9],
+      ]) {
+        for (const pred of preds) {
+          await expect(toArray(groupWith(pred, from(arr))))
+            .to.eventually.eql(R.groupWith(pred, arr));
+        }
+      }
+  
+    });
+  
+  });
   //
   // describe('includes', () => {
   //
@@ -686,25 +694,25 @@ describe.only('iterable/async', () => {
   //
   // });
   //
-  // describe('indices', () => {
-  //
-  //   it('should return iterator of indices', () => {
-  //     expect(toArray(indices(iterator)))
-  //       .to.eql(R.keys(arr).map(n => +n));
-  //   });
-  //
-  // });
-  //
-  // describe('init', () => {
-  //
-  //   it('should yield every item, but the last', () => {
-  //     expect(toArray(init(iterator))).to.eql(
-  //       R.init(arr)
-  //     );
-  //   });
-  //
-  // });
-  //
+  describe('indices', () => {
+  
+    it('should return iterator of indices', async () => {
+      await expect(toArray(indices(iterator)))
+        .to.eventually.eql(R.keys(arr).map(n => +n));
+    });
+  
+  });
+  
+  describe('init', () => {
+  
+    it('should yield every item, but the last', async () => {
+      await expect(toArray(init(iterator))).to.eventually.eql(
+        R.init(arr)
+      );
+    });
+  
+  });
+  
   // describe('intersperse', () => {
   //
   //   let sep;
@@ -723,18 +731,18 @@ describe.only('iterable/async', () => {
   //   });
   //
   // });
-  //
-  // describe('isEmpty', () => {
-  //
-  //   it('should return true for empty iterator', () => {
-  //     expect(isEmpty(of())).to.eql(true);
-  //   });
-  //
-  //   it('should return false for iterators with > 0 items', () => {
-  //     expect(isEmpty(of(1))).to.eql(false);
-  //   });
-  //
-  // });
+  
+  describe('isEmpty', () => {
+  
+    it('should return true for empty iterator', async () => {
+      await expect(isEmpty(of())).to.eventually.eql(true);
+    });
+  
+    it('should return false for iterators with > 0 items', async () => {
+      await expect(isEmpty(of(1))).to.eventually.eql(false);
+    });
+  
+  });
   
   describe('iterate', () => {
   
@@ -784,23 +792,23 @@ describe.only('iterable/async', () => {
   //   });
   //
   // });
-  //
-  // describe('length', () => {
-  //
-  //   it('should return the iterator length', () => {
-  //     expect(length(iterator)).to.eql(arr.length);
-  //   });
-  //
-  //   it('should work with arrays', () => {
-  //     expect(length(arr)).to.eql(arr.length);
-  //   });
-  //
-  //   it('should exhaust the iterator', () => {
-  //     length(iterator);
-  //     expect(toArray(iterator)).to.eql([]);
-  //   });
-  //
-  // });
+  
+  describe('length', () => {
+  
+    it('should return the iterator length', async () => {
+      await expect(length(iterator)).to.eventually.eql(arr.length);
+    });
+  
+    it('should work with arrays', async () => {
+      await expect(length(arr)).to.eventually.eql(arr.length);
+    });
+  
+    it('should exhaust the iterator', async () => {
+      await length(iterator);
+      await expect(toArray(iterator)).to.eventually.eql([]);
+    });
+  
+  });
   
   describe('map', () => {
   
@@ -903,31 +911,31 @@ describe.only('iterable/async', () => {
   //   });
   //
   // });
-  //
-  // describe('none', () => {
-  //
-  //   beforeEach(() => {
-  //     pred = n => n < Infinity;
-  //   });
-  //
-  //   it('should return false if any item passes the predicate', () => {
-  //     expect(none(pred, iterator)).to.eql(false);
-  //   });
-  //
-  //   it('should return true if no items pass the predicate', () => {
-  //     pred = n => n > Infinity;
-  //     expect(none(pred, iterator)).to.eql(true);
-  //   });
-  //
-  //   it('should return true for empty iterators', () => {
-  //     expect(none(pred, of())).to.eql(true);
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(none(pred)(iterator)).to.eql(false);
-  //   });
-  //
-  // });
+  
+  describe('none', () => {
+  
+    beforeEach(() => {
+      pred = n => n < Infinity;
+    });
+  
+    it('should return false if any item passes the predicate', async () => {
+      await expect(none(toAsync(pred), iterator)).to.eventually.eql(false);
+    });
+  
+    it('should return true if no items pass the predicate', async () => {
+      pred = n => n > Infinity;
+      await expect(none(toAsync(pred), iterator)).to.eventually.eql(true);
+    });
+  
+    it('should return true for empty iterators', async () => {
+      await expect(none(toAsync(pred), of())).to.eventually.eql(true);
+    });
+  
+    it('should be curried', async () => {
+      await expect(none(toAsync(pred))(iterator)).to.eventually.eql(false);
+    });
+  
+  });
   
   describe('nth', () => {
   
@@ -1025,27 +1033,25 @@ describe.only('iterable/async', () => {
   //   });
   //
   // });
-  //
-  //
-  //
-  // describe('partition', () => {
-  //
-  //   beforeEach(() => {
-  //     pred = n => n % 2;
-  //   });
-  //
-  //   it('should bifurcate by pred', () => {
-  //     expect(partition(pred, iterator).map(toArray))
-  //       .to.eql(R.partition(pred, arr));
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(partition(pred)(iterator).map(toArray))
-  //       .to.eql(R.partition(pred, arr));
-  //   });
-  //
-  // });
-  //
+  
+  describe('partition', () => {
+  
+    beforeEach(() => {
+      pred = n => n % 2;
+    });
+  
+    it('should bifurcate by pred', async () => {
+      await expect(mapP(toArray, partition(toAsync(pred), iterator)))
+        .to.eventually.eql(R.partition(pred, arr));
+    });
+  
+    it('should be curried', async () => {
+      await expect(mapP(toArray, partition(toAsync(pred))(iterator)))
+        .to.eventually.eql(R.partition(pred, arr));
+    });
+  
+  });
+  
   // describe('prepend', () => {
   //
   //   let item;
@@ -1278,43 +1284,43 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('splitAt', () => {
-  //
-  //   let n;
-  //   beforeEach(() => {
-  //     n = random(0, arr.length - 1);
-  //   });
-  //
-  //   it('should split iterator at the nth element', () => {
-  //     const [left, right] = splitAt(n, iterator);
-  //     const [leftArr, rightArr] = R.splitAt(n, arr);
-  //     expect(toArray(left))
-  //       .to.eql(leftArr);
-  //     expect(toArray(right))
-  //       .to.eql(rightArr);
-  //   });
-  //
-  // });
-  //
-  // describe('splitEvery', () => {
-  //
-  //   let n;
-  //   beforeEach(() => {
-  //     n = random(1, 10);
-  //   });
-  //
-  //   it('should split iterator every n yields', () => {
-  //     expect(toArray(splitEvery(n, iterator)))
-  //       .to.eql(R.splitEvery(n, arr));
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(toArray(splitEvery(n)(iterator)))
-  //       .to.eql(R.splitEvery(n, arr));
-  //   });
-  //
-  // });
-  //
+  describe('splitAt', () => {
+  
+    let n;
+    beforeEach(() => {
+      n = random(0, arr.length - 1);
+    });
+  
+    it('should split iterator at the nth element', async () => {
+      const [left, right] = splitAt(n, iterator);
+      const [leftArr, rightArr] = R.splitAt(n, arr);
+      await expect(toArray(left))
+        .to.eventually.eql(leftArr);
+      await expect(toArray(right))
+        .to.eventually.eql(rightArr);
+    });
+  
+  });
+  
+  describe('splitEvery', () => {
+  
+    let n;
+    beforeEach(() => {
+      n = random(1, 10);
+    });
+  
+    it('should split iterator every n yields', async () => {
+      await expect(toArray(splitEvery(n, iterator)))
+        .to.eventually.eql(R.splitEvery(n, arr));
+    });
+  
+    it('should be curried', async () => {
+      await expect(toArray(splitEvery(n)(iterator)))
+        .to.eventually.eql(R.splitEvery(n, arr));
+    });
+  
+  });
+  
   // describe('sum', () => {
   //
   //   beforeEach(() => {
@@ -1425,24 +1431,24 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('times', () => {
-  //
-  //   beforeEach(() => {
-  //     expected = R.times(R.always('test'), 10);
-  //   });
-  //
-  //   it('should yield the item n times', () => {
-  //     expect(toArray(times(10, 'test')))
-  //       .to.eql(expected);
-  //   });
-  //
-  //   it('should be curried', () => {
-  //     expect(toArray(times(10)('test')))
-  //       .to.eql(expected);
-  //   });
-  //
-  // });
-  //
+  describe('times', () => {
+  
+    beforeEach(() => {
+      expected = R.times(R.always('test'), 10);
+    });
+  
+    it('should yield the item n times', async () => {
+      await expect(toArray(times(10, 'test')))
+        .to.eventually.eql(expected);
+    });
+  
+    it('should be curried', async () => {
+      await expect(toArray(times(10)('test')))
+        .to.eventually.eql(expected);
+    });
+  
+  });
+  
   // describe('unique', () => {
   //
   //   beforeEach(() => {
@@ -1506,16 +1512,16 @@ describe.only('iterable/async', () => {
   
   });
   
-  // describe('unnest', () => {
-  //
-  //   it('should flatten one level', () => {
-  //     arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
-  //     iterator = from(arr);
-  //     expect(toArray(unnest(iterator)))
-  //       .to.eql(R.unnest(arr));
-  //   });
-  //
-  // });
+  describe('unnest', () => {
+  
+    it('should flatten one level', async () => {
+      arr = [1, [2, 3, [4, 5, 6], [7, 8, 9, [12, 13, 14]]], [9, 10, 11]];
+      iterator = from(arr);
+      await expect(toArray(unnest(iterator)))
+        .to.eventually.eql(R.unnest(arr));
+    });
+  
+  });
   //
   // describe('unzip', () => {
   //

@@ -124,17 +124,17 @@ describe('iterable/async', () => {
     });
   
     it('should yield accumulated items', async () => {
-      await expect(toArray(accumulate(pred, iterator)))
+      await expect(toArray(accumulate(toAsync(pred), iterator)))
         .to.eventually.eql(expected);
     });
   
     it('should work with arrays', async () => {
-      await expect(toArray(accumulate(pred)(arr)))
+      await expect(toArray(accumulate(toAsync(pred))(arr)))
         .to.eventually.eql(expected);
     });
   
     it('should be curried', async () => {
-      await expect(toArray(accumulate(pred)(iterator)))
+      await expect(toArray(accumulate(toAsync(pred))(iterator)))
         .to.eventually.eql(expected);
     });
   
@@ -753,12 +753,12 @@ describe('iterable/async', () => {
     });
   
     it('should yield initial item and predicate returns', async () => {
-      iterator = take(5, iterate(pred, init));
+      iterator = take(5, iterate(toAsync(pred), init));
       await expect(toArray(iterator)).to.eventually.eql(expected);
     });
   
     it('should be curried', async () => {
-      iterator = take(5, iterate(pred)(init));
+      iterator = take(5, iterate(toAsync(pred))(init));
       await expect(toArray(iterator)).to.eventually.eql(expected);
     });
   

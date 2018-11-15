@@ -445,12 +445,12 @@ describe('iterable/sync', () => {
       expected = R.filter(pred, arr);
     });
     
-    it('should yield items that pass the predicate', async () => {
+    it('should yield items that pass the predicate', () => {
       expect(toArray(filter(pred, iterator)))
         .to.eql(expected);
     });
     
-    it('should work with arrays', async () => {
+    it('should work with arrays', () => {
       expect(toArray(filter(pred, arr)))
         .to.eql(expected);
     });
@@ -529,7 +529,7 @@ describe('iterable/sync', () => {
       expected = [0, 1, 0, 2, 1, 0, 3, 2, 1, 0];
     });
     
-    it('should yield all yielded items from predicate', async () => {
+    it('should yield all yielded items from predicate', () => {
       expect(toArray(flatMap(pred, iterator)))
         .to.eql(expected);
     });
@@ -1124,12 +1124,12 @@ describe('iterable/sync', () => {
       expected = R.reduce(pred, 0, arr);
     });
     
-    it('should reduce iterator into accumulator', async () => {
+    it('should reduce iterator into accumulator', () => {
       expect(reduce(pred, 0, iterator))
         .to.eql(expected);
     });
     
-    it('should work with arrays', async () => {
+    it('should work with arrays', () => {
       expect(reduce(pred, 0, arr))
         .to.eql(expected);
     });

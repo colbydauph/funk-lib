@@ -128,7 +128,7 @@ const slice = R.curry(function* slice(start, stop, iterable) {
 });
 
 // yield all items from one iterator, then the other
-// Iterable<T> -> Iterable<T> -> Iterable<T>
+// Iterable<T> -> Iterable<T> -> Iterator<T>
 const concat = R.curry(function* concat(iterator1, iterator2) {
   yield* iterator1;
   yield* iterator2;
@@ -340,7 +340,7 @@ const frame = R.curry(function* frame(n, iterable) {
 
 // yield all but the last n items
 // note: caches n + 1 items
-// Number -> Iterable<T> -> Iterable<T>
+// Number -> Iterable<T> -> Iterator<T>
 const dropLast = R.curry(function* dropLast(n, iterable) {
   const done = new StopIteration();
   for (const group of frame(n + 1, append(done, iterable))) {
@@ -350,7 +350,7 @@ const dropLast = R.curry(function* dropLast(n, iterable) {
 });
 
 // yield all but the last 1 item
-// Iterable<T> -> Iterable<T>
+// Iterable<T> -> Iterator<T>
 const init = dropLast(1);
 
 // T -> Iterable<T> -> Integer
@@ -416,7 +416,7 @@ const splitAt = R.curry((n, iterable) => {
 });
 
 // split an iterable into a pair of iterables based on the truthiness of their predicate
-// (T -> Boolean) -> Iterable<T> -> [Iterable<T>, Iterable<T>]
+// (T -> Boolean) -> Iterable<T> -> [Iterator<T>, Iterator<T>]
 const partition = R.curry((pred, iterable) => {
   const [pass, fail] = tee(2, iterable);
   return [
@@ -502,8 +502,8 @@ const correspondsWith = R.useWith((pred, iterator1, iterator2) => {
 // Iterable<T> -> Iterable<T> -> Boolean
 const corresponds = correspondsWith(is);
 
-// get an iterable of indices (0 to length - 1)
-// Iterable<T> -> Iterable<Integer>
+// get an iterator of indices (0 to length - 1)
+// Iterable<T> -> Iterator<Integer>
 const indices = R.pipe(enumerate, map(R.head));
 
 // pad an iterable with with a finite number of items (T)

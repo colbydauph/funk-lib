@@ -181,14 +181,26 @@ const iterate = R.useWith(unfold, [
   R.identity,
 ]);
 
+// todo: consider calling this any
+// does any item pass its predicate?
+// (T -> Promise<Boolean>) -> Iterable<T> -> Promise<Boolean>
+const some = R.curry(async (pred, iterable) => {
+  for await (const item of iterable) if (await pred(item)) return true;
+  return false;
+});
+
+// do all items fail their predicate?
+// (T -> Promise<Boolean>) -> Iterable<T> -> Promise<Boolean>
+const none = complementP(some);
+
 // yield only items that are unique by their predicate
 // ((T, T) -> Promise<Boolean>) -> Iterable<T> -> AsyncIterator<T>
 const uniqueWith = R.curry(async function* uniqueWith(pred, iterable) {
   const seen = [];
   const add = saw => seen.push(saw);
-  const has = item => seen.some((saw) => pred(item, saw));
-  yield* filter((item) => {
-    if (has(item)) return false;
+  const has = async item => some((saw) => pred(item, saw), seen);
+  yield* filter(async (item) => {
+    if (await has(item)) return false;
     add(item);
     return true;
   }, iterable);
@@ -265,18 +277,6 @@ const nth = R.curry(async (n, iterable) => {
     if (i === n) return item;
   }
 });
-
-// todo: consider calling this any
-// does any item pass its predicate?
-// (T -> Promise<Boolean>) -> Iterable<T> -> Promise<Boolean>
-const some = R.curry(async (pred, iterable) => {
-  for await (const item of iterable) if (await pred(item)) return true;
-  return false;
-});
-
-// do all items fail their predicate?
-// (T -> Promise<Boolean>) -> Iterable<T> -> Promise<Boolean>
-const none = complementP(some);
 
 // do all items pass their predicate?
 // (T -> Promise<Boolean>) -> Iterable<T> -> Promise<Boolean>
@@ -376,7 +376,7 @@ const includes = R.useWith(some, [is, R.identity]);
 const groupWith = R.curry(async function* groupWith(pred, iterable) {
   let last, group = [];
   yield* flatMap(async function* fmap([i, item]) {
-    if (i && !pred(last, item)) {
+    if (i && !await pred(last, item)) {
       yield group;
       group = [];
     }
@@ -538,8 +538,8 @@ const pad = padTo(Infinity);
 // const intersectWith = R.curry(() => {});
 // const intersect = intersectWith(is);
 
-// const combinations = R.curry(function* combinations() {});
-// const permutations = R.curry(function* permutations(n, iterable) {});
+// const combinations = R.curry(async function* combinations() {});
+// const permutations = R.curry(async function* permutations(n, iterable) {});
 
 module.exports = {
   accumulate,

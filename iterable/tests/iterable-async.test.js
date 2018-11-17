@@ -204,29 +204,29 @@ describe('iterable/async', () => {
     });
   
     it('should return true if elements in same index pass pred', async () => {
-      await expect(correspondsWith(pred, iter1, iter2))
+      await expect(correspondsWith(toAsync(pred), iter1, iter2))
         .to.eventually.eql(true);
     });
   
     it('should work with arrays', async () => {
-      await expect(correspondsWith(pred, arr1, arr2))
+      await expect(correspondsWith(toAsync(pred), arr1, arr2))
         .to.eventually.eql(true);
     });
   
     it('should return false if elements in same index do not pass pred', async () => {
       arr1[0].id = 999;
-      await expect(correspondsWith(pred, iter1, iter2))
+      await expect(correspondsWith(toAsync(pred), iter1, iter2))
         .to.eventually.eql(false);
     });
   
     it('should return false if iterables are different lengths', async () => {
       arr1.pop();
-      await expect(correspondsWith(pred, iter1, iter2))
+      await expect(correspondsWith(toAsync(pred), iter1, iter2))
         .to.eventually.eql(false);
     });
   
     it('should be curried', async () => {
-      await expect(correspondsWith(pred)(iter1)(iter2))
+      await expect(correspondsWith(toAsync(pred))(iter1)(iter2))
         .to.eventually.eql(true);
     });
   
@@ -239,12 +239,12 @@ describe('iterable/async', () => {
     });
   
     it('should count number of items for which pred returns true', async () => {
-      await expect(count(pred, iterator))
+      await expect(count(toAsync(pred), iterator))
         .to.eventually.eql(R.filter(pred, arr).length);
     });
   
     it('should be curried', async () => {
-      await expect(count(pred)(iterator))
+      await expect(count(toAsync(pred))(iterator))
         .to.eventually.eql(R.filter(pred, arr).length);
     });
   
@@ -371,17 +371,17 @@ describe('iterable/async', () => {
     });
   
     it('should drop items while the predicate is satisfied', async () => {
-      await expect(toArray(dropWhile(pred, iterator)))
+      await expect(toArray(dropWhile(toAsync(pred), iterator)))
         .to.eventually.eql(expected);
     });
   
     it('work with arrays', async () => {
-      await expect(toArray(dropWhile(pred, arr)))
+      await expect(toArray(dropWhile(toAsync(pred), arr)))
         .to.eventually.eql(expected);
     });
   
     it('should be curried', async () => {
-      await expect(toArray(dropWhile(pred)(iterator)))
+      await expect(toArray(dropWhile(toAsync(pred))(iterator)))
         .to.eventually.eql(expected);
     });
   
@@ -649,7 +649,7 @@ describe('iterable/async', () => {
         [2, 2, 1, 2, 3, 4, 4, 6, 8, 7, 1, 2, 9, 9],
       ]) {
         for (const pred of preds) {
-          await expect(toArray(groupWith(pred, from(arr))))
+          await expect(toArray(groupWith(toAsync(pred), from(arr))))
             .to.eventually.eql(R.groupWith(pred, arr));
         }
       }
@@ -812,16 +812,16 @@ describe('iterable/async', () => {
   describe('map', () => {
   
     beforeEach(async () => {
-      pred = toAsync(R.add(random(10, 20)));
-      expected = await mapP(pred, arr);
+      pred = R.add(random(10, 20));
+      expected = R.map(pred, arr);
     });
   
     it('should transform yielded items with predicate', async () => {
-      expect(await toArray(map(pred, iterator))).to.eql(expected);
+      expect(await toArray(map(toAsync(pred), iterator))).to.eql(expected);
     });
   
     it('should be curried', async () => {
-      expect(await toArray(map(pred)(iterator))).to.eql(expected);
+      expect(await toArray(map(toAsync(pred))(iterator))).to.eql(expected);
     });
   
   });
@@ -837,15 +837,15 @@ describe('iterable/async', () => {
     });
   
     it('should return max item after pred', async () => {
-      await expect(maxBy(pred, iterator)).to.eventually.eql(expected);
+      await expect(maxBy(toAsync(pred), iterator)).to.eventually.eql(expected);
     });
   
     it('should work on arrays', async () => {
-      await expect(maxBy(pred, objs)).to.eventually.eql(expected);
+      await expect(maxBy(toAsync(pred), objs)).to.eventually.eql(expected);
     });
   
     it('should be curried', async () => {
-      await expect(maxBy(pred)(iterator)).to.eventually.eql(expected);
+      await expect(maxBy(toAsync(pred))(iterator)).to.eventually.eql(expected);
     });
   
   });
@@ -861,15 +861,18 @@ describe('iterable/async', () => {
     });
   
     it('should return max item after pred', async () => {
-      await expect(minBy(pred, iterator)).to.eventually.eql(expected);
+      await expect(minBy(toAsync(pred), iterator))
+        .to.eventually.eql(expected);
     });
   
     it('should work on arrays', async () => {
-      await expect(minBy(pred, objs)).to.eventually.eql(expected);
+      await expect(minBy(toAsync(pred), objs))
+        .to.eventually.eql(expected);
     });
   
     it('should be curried', async () => {
-      await expect(minBy(pred)(iterator)).to.eventually.eql(expected);
+      await expect(minBy(toAsync(pred))(iterator))
+        .to.eventually.eql(expected);
     });
   
   });
@@ -1485,17 +1488,17 @@ describe('iterable/async', () => {
     });
   
     it('should yield unique items', async () => {
-      await expect(toArray(uniqueWith(pred, iterator)))
+      await expect(toArray(uniqueWith(toAsync(pred), iterator)))
         .to.eventually.eql(R.uniqWith(pred, arr));
     });
   
     it('should work with arrays', async () => {
-      await expect(toArray(uniqueWith(pred, arr)))
+      await expect(toArray(uniqueWith(toAsync(pred), arr)))
         .to.eventually.eql(R.uniqWith(pred, arr));
     });
   
     it('should be curried', async () => {
-      await expect(toArray(uniqueWith(pred)(iterator)))
+      await expect(toArray(uniqueWith(toAsync(pred))(iterator)))
         .to.eventually.eql(R.uniqWith(pred, arr));
     });
   
@@ -1659,7 +1662,7 @@ describe('iterable/async', () => {
     });
   
     it('should yield items returned from predicate', async () => {
-      await expect(toArray(zipWith(pred, iter1, iter2)))
+      await expect(toArray(zipWith(toAsync(pred), iter1, iter2)))
         .to.eventually.eql(R.zipWith(pred, range1, range2));
     });
   

@@ -5,6 +5,7 @@ const R = require('ramda');
 
 // local
 const { map: mapIterable } = require('../iterable/sync');
+const { isObject, isIterable } = require('../is');
 
 // @async parallel resolve promises
 const all = Promise.all.bind(Promise);
@@ -73,9 +74,23 @@ const pipe = (fn, ...fns) => async (...args) => {
 const pipeC = (...funcs) => R.curryN(funcs[0].length, pipe(...funcs));
 
 // @async (parallel)
-// (A -> B) -> Iterable<A> -> Iterable<B>
-const map = pipeC(mapIterable, all);
+// (v -> w) -> object<k,v> -> object<k,w>
+const mapPairs = R.curry(async (pred, object) => {
+  return R.fromPairs(await all(mapIterable(pred, R.toPairs(object))));
+});
 
+// @async (parallel)
+// object -> object
+const props = mapPairs(async ([key, val]) => [key, await val]);
+
+// @async (parallel)
+// Functor f => (a -> b) -> f a -> f b
+const map = R.curry(async (pred, iterable) => {
+  if (isIterable(iterable)) return all(mapIterable(pred, iterable));
+  if (isObject(iterable)) return props(R.map(pred, iterable));
+  // todo: support other mapables here
+  throw Error(`unable to map ${ iterable }`);
+});
 
 // @async (series)
 // predicate -> iterable -> iterable
@@ -167,14 +182,6 @@ const filterSeries = R.curry(async (pred, iterable) => {
   }, iterable);
 });
 
-// @async (parallel)
-// object -> object
-const props = pipe(
-  R.toPairs,
-  map(async ([key, val]) => [key, await val]),
-  R.fromPairs,
-);
-
 // timeout a promise. timeout throws TimeoutError
 class TimeoutError extends Error {}
 // number -> promise -> promise
@@ -201,6 +208,7 @@ module.exports = {
   forEachSeries,
   fromCallback,
   map,
+  mapPairs,
   mapSeries,
   pipe,
   pipeC,

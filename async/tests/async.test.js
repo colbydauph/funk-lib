@@ -615,9 +615,22 @@ describe('async lib', () => {
         .to.eventually.eql(result);
     });
     
-    xit('should work with async iterables');
+    xit('should work with async iterables?');
     
-    it('should work on objects?');
+    it('should work on functions?');
+    
+    it('should work on objects', async () => {
+      const obj = {
+        a: 1,
+        b: 2,
+      };
+      const expected = {
+        a: 11,
+        b: 12,
+      };
+      await expect(map(pred, obj))
+        .to.eventually.eql(expected);
+    });
     
   });
   

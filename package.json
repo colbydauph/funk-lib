@@ -1,6 +1,6 @@
 {
   "name": "funk-lib",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "engines": {
     "node": "8.9.1"
   },
@@ -22,8 +22,8 @@
     "sinon": "~7.1.1"
   },
   "scripts": {
-    "init": "rm -rf node_modules && npm install",
-    "init:hard": "rm -f package-lock.json && npm run init",
+    "init": "rm -rf node_modules && npm ci",
+    "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "mocha --reporter=list --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "mocha --watch --reporter=min --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "lint": "eslint --max-warnings=5 $(find . ! -path '*node_modules*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",

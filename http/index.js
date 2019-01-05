@@ -3,7 +3,8 @@
 const R = require('ramda');
 
 // parse a content-type http header into its parts
-// 'multipart/form-data; boundary=something; charset=utf-8' -> { mimeType, charset, boundary }
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+// content-type -> { mimeType, charset, boundary }
 // string -> object
 const parseContentType = R.pipe(
   R.defaultTo(''),

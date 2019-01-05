@@ -673,6 +673,20 @@ describe('async lib', () => {
     
     it('should work with async iterables');
     
+    it('should work on objects', async () => {
+      const obj = {
+        a: 1,
+        b: 2,
+      };
+      const expected = {
+        a: 11,
+        b: 12,
+      };
+      await expect(mapSeries(pred, obj))
+        .to.eventually.eql(expected);
+    });
+    
+    
   });
   
   describe('pipe', () => {

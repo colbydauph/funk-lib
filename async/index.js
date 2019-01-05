@@ -95,9 +95,18 @@ const map = R.curry(async (pred, iterable) => {
 // @async (series)
 // predicate -> iterable -> iterable
 const mapSeries = R.curry(async (pred, iterable) => {
-  return reduce(async (out, item) => {
-    return [...out, await pred(item)];
-  }, [], iterable);
+  if (isIterable(iterable)) {
+    return reduce(async (out, item) => {
+      return [...out, await pred(item)];
+    }, [], iterable);
+  }
+  if (isObject(iterable)) {
+    return reduce(async (out, [key, item]) => {
+      return R.assoc(key, await pred(item), out);
+    }, {}, Object.entries(iterable));
+  }
+  // todo: support other mapables here
+  throw Error(`unable to mapSeries ${ iterable }`);
 });
 
 // @async (parallel)

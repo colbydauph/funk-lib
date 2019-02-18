@@ -2,6 +2,7 @@
 
 // modules
 const { expect } = require('chai');
+const R = require('ramda');
 
 // local
 const {
@@ -11,6 +12,9 @@ const {
   hslToHex,
   hslToRgb,
   hexToHsl,
+  randomHex,
+  randomHsl,
+  randomRgb,
 } = require('..');
 
 const RGB_TO_HSL = [
@@ -120,6 +124,58 @@ describe('color lib', () => {
     it('should be the inverse of hslToHex', () => {
       HSL_TO_HEX.forEach(([_, hex]) => {
         expect(hslToHex(hexToHsl(hex))).to.eql(hex);
+      });
+    });
+    
+  });
+  
+  describe('randomRgb', () => {
+    
+    it('should generate a random valid rgb', () => {
+      [...Array(250)].forEach(() => {
+        const { r, g, b } = randomRgb();
+        [r, g, b].forEach(val => {
+          expect(val >= 0).to.eql(true);
+          expect(val <= 255).to.eql(true);
+        });
+        
+      });
+    });
+    
+  });
+  
+  describe('randomHex', () => {
+    
+    const isValidHex = R.test(/[0-9A-Fa-f]{6}/g);
+    
+    it('should generate a random valid hex', () => {
+      [...Array(250)].forEach(() => {
+        const hex = randomHex();
+        expect(hex).to.satisfy(isValidHex);
+      });
+    });
+    
+  });
+  
+  describe('randomHsl', () => {
+    
+    const isValidHsl = ({ h, s, l }) => {
+      if (h < 0) return false;
+      if (h > 360) return false;
+      
+      if (s < 0) return false;
+      if (s > 1) return false;
+      
+      if (l < 0) return false;
+      if (l > 1) return false;
+      
+      return true;
+    };
+    
+    it('should generate a random valid hsl', () => {
+      [...Array(250)].forEach(() => {
+        const hsl = randomHsl();
+        expect(hsl).to.satisfy(isValidHsl);
       });
     });
     

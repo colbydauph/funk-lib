@@ -14,7 +14,7 @@ const parseContentType = R.pipe(
     if (!left && !right) return [];
     return right ? [[left, right]] : [['mimeType', left]];
   }),
-  R.fromPairs
+  R.fromPairs,
 );
 
 module.exports = {

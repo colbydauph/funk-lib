@@ -22,14 +22,28 @@ const toObjBy = R.curryN(2)(util.deprecate(
 
 // select a random array item
 // Array<T> -> T
-const sample = (arr) => arr[random(0, arr.length - 1)];
+const sample = arr => arr[random(0, arr.length - 1)];
 
-// todo
+// immutably randomize array element order
+// Fisher-Yates shuffle
 // Array<T> -> Array<T>
-// const shuffle = (arr) => {};
+const shuffle = (arr) => {
+  arr = [...arr];
+  
+  // eslint-disable-next-line id-length
+  let j, x, i;
+  for (i = arr.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    x = arr[i];
+    arr[i] = arr[j];
+    arr[j] = x;
+  }
+  return arr;
+};
 
 module.exports = {
   sample,
+  shuffle,
   toObj,
   toObjBy,
 };

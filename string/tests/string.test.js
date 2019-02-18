@@ -9,6 +9,7 @@ const {
   parseBase64,
   template,
   toBase64,
+  slugify,
 } = require('..');
 
 describe('string lib', () => {
@@ -50,6 +51,15 @@ describe('string lib', () => {
     
     it('should be curried', () => {
       expect(template('Hello, ${ name }')({ name: 'Sally' })).to.eql('Hello, Sally');
+    });
+    
+  });
+  
+  describe('slugify', () => {
+    
+    it('should slugify a string', () => {
+      expect(slugify('! SOME 0reall1y W-ei...rd string  999*    '))
+        .to.eql('some-0reall1y-w-ei-rd-string-999');
     });
     
   });

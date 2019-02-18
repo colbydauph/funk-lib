@@ -2,9 +2,10 @@
 
 // modules
 const { expect } = require('chai');
+const R = require('ramda');
 
 // local
-const { toObjBy, toObj, sample } = require('..');
+const { toObjBy, toObj, sample, shuffle } = require('..');
 
 describe('array lib', () => {
   
@@ -48,6 +49,31 @@ describe('array lib', () => {
       arr.forEach((item) => {
         expect(choices).to.include(item);
       });
+    });
+    
+  });
+  
+  describe('shuffle', () => {
+    
+    it('should shuffle the array values', () => {
+      const arr = [...Array(100)].map((_, i) => i);
+      const shuffled = shuffle(arr);
+      
+      const sorted = R.sortBy(R.identity, shuffled);
+      const sameOrder = shuffled.every((val, i) => {
+        return (val === arr[i]);
+      });
+      
+      expect(sameOrder).to.eql(false);
+      expect(sorted).to.eql(arr);
+    });
+    
+    it('should not mutate the input array', () => {
+      const arr = [1, 2, 3, 4, 5];
+      const copy = [...arr];
+      shuffle(arr);
+      
+      expect(arr).to.eql(copy);
     });
     
   });

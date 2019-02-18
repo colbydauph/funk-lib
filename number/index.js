@@ -12,7 +12,6 @@ const random = R.useWith((min, max) => {
 ]);
 
 
-
 module.exports = {
   random,
 };

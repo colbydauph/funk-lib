@@ -46,7 +46,13 @@ const encodeFrom = R.curry((from, to, string) => Buffer
 const toBase64 = encodeFrom('utf8', 'base64');
 const parseBase64 = encodeFrom('base64', 'utf8');
 
-// const slugify =
+// string -> string
+const slugify = R.pipe(
+  R.toLower,
+  R.replace(/[^a-z0-9]/gi, '-'),
+  R.replace(/-+/gi, '-'),
+  R.replace(/^-|-$/gi, ''),
+);
 
 
 module.exports = {
@@ -58,4 +64,5 @@ module.exports = {
   toBase64,
   toLowerCase,
   toUpperCase,
+  slugify,
 };

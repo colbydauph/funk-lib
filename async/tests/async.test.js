@@ -27,6 +27,8 @@ const {
   forEachSeries,
   fromCallback,
   map,
+  mapLimit,
+  mapPairsSeries,
   mapSeries,
   pipe,
   promisify,
@@ -634,6 +636,30 @@ describe('async lib', () => {
     
   });
   
+  describe('mapLimit', () => {
+        
+    it('should map iterables', async () => {
+      const pred = async (n) => n + 1;
+      const arr = [...Array(10)].map((_, i) => i);
+      return expect(mapLimit(2, pred, arr))
+        .to.eventually.eql(arr.map(n => n + 1));
+    });
+    
+    it('should map objects', async () => {
+      const pred = async (n) => n + 1;
+      const obj = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+        e: 5,
+      };
+      return expect(mapLimit(2, pred, obj))
+        .to.eventually.eql(R.map(n => n + 1, obj));
+    });
+    
+  });
+  
   describe('mapSeries', () => {
     
     let pred, iterable, result;
@@ -685,7 +711,6 @@ describe('async lib', () => {
       await expect(mapSeries(pred, obj))
         .to.eventually.eql(expected);
     });
-    
     
   });
   

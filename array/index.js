@@ -10,26 +10,40 @@ const R = require('ramda');
 const { random } = require('../number');
 
 // todo: rename to index
-// Array<V> -> Object<K, V>
+// [v] -> object<k, v>
 const toObj = R.pipe(R.toPairs, R.fromPairs);
 
 // @deprecated
-// (A -> B) -> Array<A> -> Object<B, A>
+// (a -> b) -> [a] -> object<b, a>
 const toObjBy = R.curryN(2)(util.deprecate(
   R.indexBy,
   'funk-lib/object/toObjBy -> R.indexBy'
 ));
 
 // select a random array item
-// Array<T> -> T
-const sample = (arr) => arr[random(0, arr.length - 1)];
+// [t] -> t
+const sample = arr => arr[random(0, arr.length - 1)];
 
-// todo
-// Array<T> -> Array<T>
-// const shuffle = (arr) => {};
+// immutably randomize array element order
+// Fisher-Yates shuffle
+// [t] -> [t]
+const shuffle = (arr) => {
+  arr = [...arr];
+  
+  // eslint-disable-next-line id-length
+  let j, x, i;
+  for (i = arr.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    x = arr[i];
+    arr[i] = arr[j];
+    arr[j] = x;
+  }
+  return arr;
+};
 
 module.exports = {
   sample,
+  shuffle,
   toObj,
   toObjBy,
 };

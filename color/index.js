@@ -4,6 +4,9 @@
 // modules
 const R = require('ramda');
 
+// local
+const { random } = require('../number');
+
 
 // { r, g, b } -> { h, s, l }
 const rgbToHsl = ({ r, g, b }) => {
@@ -94,11 +97,24 @@ const rgbToHex = R.pipe(
   ({ r, g, b }) => `#${ r }${ g }${ b }`,
 );
 
-// { h, s, l } => string
+// { h, s, l } -> string
 const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
 // string -> { h, s, l }
 const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
+
+// * -> { r, g, b }
+const randomRgb = () => ({
+  r: random(0, 255),
+  g: random(0, 255),
+  b: random(0, 255),
+});
+
+// * -> string
+const randomHex = R.pipe(randomRgb, rgbToHex);
+
+// * -> { h, s, l }
+const randomHsl = R.pipe(randomRgb, rgbToHsl);
 
 
 module.exports = {
@@ -106,6 +122,9 @@ module.exports = {
   hexToRgb,
   hslToHex,
   hslToRgb,
+  randomHex,
+  randomHsl,
+  randomRgb,
   rgbToHex,
   rgbToHsl,
 };

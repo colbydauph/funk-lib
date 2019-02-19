@@ -12,27 +12,44 @@ const { from } = require('../../iterable/sync');
 
 // local
 const {
+  // all,
+  allSettled,
+  // allSettledLimit,
+  // allSettledSeries,
   callbackify,
   deferred,
   delay,
   every,
+  // everyLimit,
   everySeries,
   filter,
+  // filterLimit,
   filterSeries,
   find,
+  // findLimit,
   findSeries,
   flatMap,
+  // flatMapLimit,
   flatMapSeries,
   forEach,
+  // forEachLimit,
   forEachSeries,
   fromCallback,
   map,
+  mapLimit,
+  mapPairs,
+  // mapPairsLimit,
+  // mapPairsSeries,
   mapSeries,
   pipe,
+  // pipeC,
   promisify,
   props,
   race,
   reduce,
+  some,
+  // someLimit,
+  // someSeries,
   timeout,
   TimeoutError,
   toAsync,
@@ -60,6 +77,23 @@ const assertIsParallel = async (isParallel, func) => {
 // it('should work with sync functions');
 
 describe('async lib', () => {
+  
+  describe('allSettled', () => {
+    
+    it('should resolve with promise status details', async () => {
+      const reason = Error('oops');
+      
+      await expect(allSettled([
+        Promise.resolve(123),
+        Promise.reject(reason),
+      ])).to.eventually.eql([
+        { status: 'fulfilled', value: 123 },
+        { status: 'rejected', reason },
+      ]);
+      
+    });
+    
+  });
   
   describe('callbackify', () => {
     
@@ -634,6 +668,47 @@ describe('async lib', () => {
     
   });
   
+  describe('mapLimit', () => {
+        
+    it('should map iterables', async () => {
+      const pred = async (n) => n + 1;
+      const arr = [...Array(10)].map((_, i) => i);
+      return expect(mapLimit(2, pred, arr))
+        .to.eventually.eql(arr.map(n => n + 1));
+    });
+    
+    it('should map objects', async () => {
+      const pred = async (n) => n + 1;
+      const obj = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+        e: 5,
+      };
+      return expect(mapLimit(2, pred, obj))
+        .to.eventually.eql(R.map(n => n + 1, obj));
+    });
+    
+  });
+  
+  describe('mapPairs', () => {
+    
+    it('should transform key:value pairs', async () => {
+      
+      const obj = { a: 1, b: 2, c: 3 };
+      const pred = R.reverse;
+      
+      await expect(mapPairs(pred, obj)).to.eventually.eql({
+        1: 'a',
+        2: 'b',
+        3: 'c',
+      });
+      
+    });
+    
+  });
+  
   describe('mapSeries', () => {
     
     let pred, iterable, result;
@@ -685,7 +760,6 @@ describe('async lib', () => {
       await expect(mapSeries(pred, obj))
         .to.eventually.eql(expected);
     });
-    
     
   });
   
@@ -841,6 +915,20 @@ describe('async lib', () => {
     
   });
     
+  describe('some', () => {
+    
+    it('should return the correct boolean', async () => {
+      const arr = R.range(0, 10);
+      
+      let pred = n => n > 5;
+      await expect(some(pred, arr)).to.eventually.eql(true);
+      
+      pred = n => n > 50;
+      await expect(some(pred, arr)).to.eventually.eql(false);
+    });
+    
+  });
+  
   describe('timeout', () => {
     
     it('should resolve if promise is resolved before timeout', async () => {

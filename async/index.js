@@ -215,6 +215,7 @@ const find = findLimit(Infinity);
 // predicate -> iterable<a> -> a
 const findSeries = findLimit(1);
 
+
 // @async (parallel)
 // (a -> [a]) -> [a] -> [a]
 const flatMap = flatMapLimit(Infinity);

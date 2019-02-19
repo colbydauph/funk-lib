@@ -39,7 +39,7 @@ const promisify = func => async (...args) => {
 
 // make a promise-returning function errback-yielding
 // inverse of promisify
-const callbackify = (func) => (...args) => {
+const callbackify = func => (...args) => {
   const cb = args.pop();
   toAsync(func)(...args)
     .then((res) => cb(null, res))
@@ -81,17 +81,23 @@ const pipeC = (...funcs) => R.curryN(funcs[0].length, pipe(...funcs));
 const mapLimit = R.curry(async (limit, pred, iterable) => {
   if (isIterator(iterable)) iterable = [...iterable];
   
-  const isObj = isObject(iterable);
-  if (isObj) iterable = R.toPairs(iterable);
+  let before = R.identity;
+  let after = R.identity;
+  let asyncPred = pred;
       
-  if (isObj) {
-    return promisify(mapLimitCallback)(iterable, limit, callbackify(async item => {
+  if (isObject(iterable)) {
+    before = R.toPairs;
+    after = R.fromPairs;
+    asyncPred = async item => {
       const res = await pred(item[1]);
       return [item[0], res];
-    }))
-      .then(R.fromPairs);
+    };
   }
-  return promisify(mapLimitCallback)(iterable, limit, callbackify(pred));
+  return promisify(mapLimitCallback)(
+    before(iterable),
+    limit,
+    callbackify(asyncPred),
+  ).then(after);
 });
 
 // number -> (v -> w) -> object<k,v> -> object<k,w>
@@ -112,6 +118,16 @@ const everyLimit = R.curry(async (limit, pred, iterable) => {
       if (!await pred(item)) resolve(false);
     }, iterable);
     resolve(true);
+  });
+});
+
+// number -> (a -> boolean) -> [a] -> boolean
+const someLimit = R.curry(async (limit, pred, iterable) => {
+  return new Promise(async (resolve) => {
+    await forEachLimit(limit, async (item) => {
+      if (await pred(item)) resolve(true);
+    }, iterable);
+    resolve(false);
   });
 });
 
@@ -137,6 +153,17 @@ const filterLimit = R.curry(async (limit, pred, iterable) => {
   return flatMapLimit(limit, async (item) => {
     return await pred(item) ? [item] : [];
   }, iterable);
+});
+
+// @async (parallel)
+// number -> [promise] -> [object]
+const allSettledLimit = R.curry((limit, promises) => {
+  return mapLimit(limit, promise => {
+    return Promise
+      .resolve(promise)
+      .then(value => ({ status: 'fulfilled', value }))
+      .catch(reason => ({ status: 'rejected', reason }));
+  }, promises);
 });
 
 
@@ -174,6 +201,14 @@ const everySeries = everyLimit(1);
 
 
 // @async (parallel)
+// (a -> boolean) -> [a] -> boolean
+const some = someLimit(Infinity);
+// @async (series)
+// (a -> boolean) -> [a] -> boolean
+const someSeries = someLimit(1);
+
+
+// @async (parallel)
 // predicate -> iterable<a> -> a
 const find = findLimit(Infinity);
 // @async (series)
@@ -196,10 +231,16 @@ const filter = filterLimit(Infinity);
 const filterSeries = filterLimit(1);
 
 
+// @async array<promise> -> array<object>
+const allSettled = allSettledLimit(Infinity);
+
+// @async array<promise> -> array<object>
+const allSettledSeries = allSettledLimit(1);
+
+
 // @async (parallel)
 // object -> object
 const props = mapPairs(async ([key, val]) => [key, await val]);
-
 
 // timeout a promise. timeout throws TimeoutError
 class TimeoutError extends Error {}
@@ -213,6 +254,9 @@ const timeout = R.curry((ms, promise) => race([
 
 module.exports = {
   all,
+  allSettled,
+  allSettledLimit,
+  allSettledSeries,
   callbackify,
   deferred,
   delay,
@@ -244,6 +288,9 @@ module.exports = {
   props,
   race,
   reduce,
+  some,
+  someLimit,
+  someSeries,
   timeout,
   TimeoutError,
   toAsync,

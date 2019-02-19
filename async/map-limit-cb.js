@@ -1,42 +1,43 @@
 'use strict';
 
-// https://github.com/hughsk/map-limit
-// eslint-disable-next-line max-statements
+// originally from: https://github.com/hughsk/map-limit
 module.exports = (arr, limit, iterator, callback) => {
-  let complete = 0;
-  let aborted = false;
-  const results = [];
-  let queued = 0;
-  const len = arr.length;
-  let index = 0;
 
-
-  const abort = err => {
-    aborted = true;
+  const abort = (err, state) => {
+    state.aborted = true;
     return callback(err);
   };
   
-  flush();
-  
-  function flush() {
-    if (complete === len) return callback(null, results);
+  const flush = (push, state) => {
+    if (state.complete === state.len) return callback(null, state.results);
 
-    while (queued < limit) {
-      if (aborted || (index === len)) break;
-      push();
+    while (state.queued < limit) {
+      if (state.aborted || (state.index === state.len)) break;
+      push(flush, state);
     }
-  }
+  };
+  
+  function push(flush, state) {
+    const { index: i } = state;
+    
+    state.index++;
+    state.queued++;
 
-  function push() {
-    const idx = index++;
-    queued++;
-
-    iterator(arr[idx], (err, result) => {
-      if (err) return abort(err);
-      results[idx] = result;
-      complete += 1;
-      queued -= 1;
-      flush();
+    iterator(arr[i], (err, result) => {
+      if (err) return abort(err, state);
+      state.results[i] = result;
+      state.complete += 1;
+      state.queued -= 1;
+      flush(push, state);
     });
   }
+    
+  flush(push, {
+    complete: 0,
+    aborted: false,
+    results: [],
+    queued: 0,
+    len: arr.length,
+    index: 0,
+  });
 };

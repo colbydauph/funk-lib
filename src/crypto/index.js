@@ -2,10 +2,11 @@
 import crypto from 'crypto';
 
 // module
-import * as R from 'ramda';
+import { curry } from 'ramda';
+
 
 // string -> string -> string
-export const hashWith = R.curry((algo, str) => crypto
+export const hashWith = curry((algo, str) => crypto
   .createHash(algo)
   .update(str)
   .digest('hex'));

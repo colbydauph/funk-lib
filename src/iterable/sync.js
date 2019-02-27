@@ -1,9 +1,11 @@
 // modules
 import * as R from 'ramda';
 
+// aliased
+import { pipeC } from 'funk-lib/function';
+import { is, isIterable } from 'funk-lib/is';
+
 // local
-import { pipeC } from '../function';
-import { is, isIterable } from '../is';
 import StopIteration from './stop-iteration';
 
 export { yieldWith } from './yield-with';

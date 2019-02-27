@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { test } from 'ramda';
 
 
 // * -> string
@@ -10,4 +10,4 @@ export const uuid = () => {
 };
 
 // * -> boolean
-export const isUuid = R.test(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+export const isUuid = test(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

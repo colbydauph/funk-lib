@@ -1,10 +1,13 @@
 // modules
 import * as R from 'ramda';
 
+// aliased
+import { isObject, isIterator } from 'funk-lib/is';
+// import { map: mapIterable } from 'funk-lib/iterable/sync';
+
 // local
-// import { map: mapIterable } from '../iterable/sync';
-import { isObject, isIterator } from '../is';
 import mapLimitCallback from './map-limit-cb';
+
 
 // @async parallel resolve promises
 export const all = Promise.all.bind(Promise);

@@ -1,10 +1,11 @@
-import * as R from 'ramda';
+import { curry, curryN, pipe } from 'ramda';
 
-// curried R.pipe
-export const pipeC = (...funcs) => R.curryN(funcs[0].length, R.pipe(...funcs));
+
+// curried pipe
+export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
 // (b -> b -> c) -> (a -> b) -> a -> a -> c
-export const on = R.curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
+export const on = curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 
 // (a -> b) -> (a -> b)
 export const once = fn => {

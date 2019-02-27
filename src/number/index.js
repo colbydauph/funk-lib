@@ -1,10 +1,10 @@
-import * as R from 'ramda';
+import { max, min, useWith } from 'ramda';
 
 // inclusive bounds
 // int -> int -> int
-export const random = R.useWith((min, max) => {
+export const random = useWith((min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }, [
-  R.max(Number.MIN_SAFE_INTEGER),
-  R.min(Number.MAX_SAFE_INTEGER),
+  max(Number.MIN_SAFE_INTEGER),
+  min(Number.MAX_SAFE_INTEGER),
 ]);

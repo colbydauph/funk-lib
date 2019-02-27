@@ -1,9 +1,11 @@
+// core
+import { deprecate } from 'util';
+
 // modules
-import util from  'util';
 import * as R from 'ramda';
 
-// local
-import { isObject } from '../is';
+// aliased
+import { isObject } from 'funk-lib/is';
 
 
 // Object<K, V> -> [K, V]
@@ -34,7 +36,7 @@ export const mapKeys = R.curry((pred, obj) => {
 });
 
 // (V -> M) -> Object<K, V> -> Object<K, M>
-export const mapValues = R.curryN(2)(util.deprecate(
+export const mapValues = R.curryN(2)(deprecate(
   R.map,
   'funk-lib/object/mapValues -> R.map'
 ));

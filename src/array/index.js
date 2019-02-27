@@ -4,8 +4,8 @@ import util from 'util';
 // modules
 import * as R from 'ramda';
 
-// local
-import { random } from '../number';
+// aliased
+import { random } from 'funk-lib/number';
 
 
 // todo: rename to index

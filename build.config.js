@@ -19,6 +19,11 @@ module.exports = ({
     ],
     plugins: [
       '@babel/plugin-proposal-export-namespace-from',
+      ['module-resolver', {
+        alias: {
+          'funk-lib': (env === 'test') ? './src' : '..',
+        },
+      }],
     ],
   };
 };

@@ -1,10 +1,11 @@
 // modules
-import * as R from 'ramda';
+import { test } from 'ramda';
+
 
 const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 
 // * -> boolean
-export const isDataUrl = R.test(DATA_URL_REGEXP);
+export const isDataUrl = test(DATA_URL_REGEXP);
 
 // dataurl -> { mediatype, data, base64 }
 export const parseDataUrl = (url) => {

@@ -1,11 +1,14 @@
 // modules
 import * as R from 'ramda';
 
+// aliased
+import { pipeC } from 'funk-lib/function';
+import { pipeC as asyncPipeC, reduce as reduceP } from 'funk-lib/async';
+import { is, isIterable } from 'funk-lib/is';
+
 // local
-import { pipeC } from '../function';
-import { pipeC as asyncPipeC, reduce as reduceP } from '../async';
-import { is, isIterable } from '../is';
 import StopIteration from './stop-iteration';
+
 
 export { yieldWithAsync as yieldWith } from './yield-with';
 

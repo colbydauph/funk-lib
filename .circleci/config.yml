@@ -51,8 +51,8 @@ jobs:
                 command: |
                   echo "//registry.npmjs.org/:_authToken=\${NPM_ACCESS_TOKEN}" > .npmrc
                   
-                  npm publish dist/cjs --dry-run
-                  npm publish dist/es --dry-run
+                  npm publish ./dist/cjs --dry-run
+                  npm publish ./dist/es --dry-run
                   
 workflows:
     version: 2

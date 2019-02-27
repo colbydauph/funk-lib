@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 // modules
+const R = require('ramda');
 const babel = require('@babel/core');
 const {
   isDir,
@@ -17,7 +18,8 @@ const {
 } = require('funk-fs');
 
 // local
-const config = require('./babel-config.js');
+const config = require('../build.config');
+
 
 const transpileFile = async (src, dist, opts) => {
   if (!isFile(src, fs)) throw Error(`${ src } is not a file`);
@@ -30,7 +32,7 @@ const transpileFile = async (src, dist, opts) => {
   await writeFile(output, dist, fs);
 };
 
-// eslint-disable-next-line
+
 const transpileDir = async (src, dist, opts) => {
   
   if (!await isDir(src)) throw Error(`${ src } is not a dir`);
@@ -56,26 +58,38 @@ const transpileDir = async (src, dist, opts) => {
 
 (async () => {
   
+  const pkg = require('../package.json');
+  
   const ignore = [
     /[.]test[.]js$/,
     /^[.]/,
   ];
   const env = 'production';
-  const src = 'src';
+  const src = '../src';
+  const dist = '../dist';
+  
+  const esDist = path.join(__dirname, path.join(dist, 'es'));
+  const cjsDist = path.join(__dirname, path.join(dist, 'cjs'));
   
   await Promise.all([
     transpileDir(
       path.join(__dirname, src),
-      path.join(__dirname, 'dist/es'),
+      esDist,
       { env, ignore, node: false },
-    ),
+    ).then(_ => {
+      const pack = R.omit(['devDependencies', 'nyc'], pkg);
+      return writeFile(JSON.stringify(pack, null, 2), path.join(esDist, 'package.json'), fs);
+    }),
     transpileDir(
       path.join(__dirname, src),
-      path.join(__dirname, 'dist/cjs'),
-      { env, ignore, node: true },
-    ),
+      cjsDist,
+      { env, ignore, node: pkg.engines.node },
+    ).then(_ => {
+      const pack = R.omit(['devDependencies', 'nyc'], pkg);
+      pack.name = `${ pack.name }-cjs`;
+      return writeFile(JSON.stringify(pack, null, 2), path.join(cjsDist, 'package.json'), fs);
+    }),
   ]);
   
+  
 })();
-
-

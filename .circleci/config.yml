@@ -1,0 +1,75 @@
+version: 2
+
+job_defaults: &job_defaults
+    working_directory: ~/project
+    docker:
+        - image: colbydauph/circleci-node-job-image:latest
+
+jobs:  
+    install:
+        <<: *job_defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/project
+            - run:
+                name: Install Dependencies
+                command: NODE_ENV=test npm run init
+            - persist_to_workspace:
+                root: .
+                paths:
+                    - node_modules
+
+    build:
+        <<: *job_defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/project
+            - run:
+                name: Build
+                command: npm run build
+
+    test:
+        <<: *job_defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/project
+            - run:
+                name: Run Tests
+                command: npm run verify
+        
+    publish:
+        <<: *job_defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ~/project
+            - run:
+                name: Publish packages
+                command: |
+                  echo "publishing"
+                  
+workflows:
+    version: 2
+    primary:
+        jobs:
+            - install:
+                context: org-global
+            - build:
+                context: org-global
+                requires:
+                    - install
+            - test:
+                context: org-global
+                requires:
+                    - build
+            - publish:
+                context: org-global
+                requires:
+                    - test
+                filters:
+                    branches:
+                        only: master
+              

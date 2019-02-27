@@ -29,7 +29,7 @@
   },
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
-    "build": "rm -rf dist && node build.js",
+    "build": "rm -rf dist && node scripts/build",
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "mocha --reporter=list --require=./tests/register.js --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "mocha --watch --reporter=min --require=./tests/register.js --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",

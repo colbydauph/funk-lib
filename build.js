@@ -16,7 +16,7 @@ const {
 } = require('funk-fs');
 
 // local
-const config = require('./babelconf.js');
+const config = require('./babel-config.js');
 
 const transpileFile = async (src, dist, opts) => {
   if (!isFile(src, fs)) throw Error(`${ src } is not a file`);

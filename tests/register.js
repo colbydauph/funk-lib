@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../babelconf.js');
+const config = require('../babel-config.js');
 
 /* eslint-disable no-process-env */
 const { NODE_ENV: env } = process.env;

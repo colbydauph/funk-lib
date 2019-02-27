@@ -2,7 +2,7 @@
 import path from 'path';
 
 // modules
-import R from 'ramda';
+import * as R from 'ramda';
 import { expect } from 'chai';
 
 // local

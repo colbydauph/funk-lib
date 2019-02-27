@@ -1,5 +1,5 @@
 // modules
-import R from 'ramda';
+import * as R from 'ramda';
 
 // (A -> B) -> Iterator<A> -> *
 const yieldWith = R.curry((onYield, iterator) => {

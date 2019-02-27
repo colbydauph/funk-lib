@@ -1,1 +1,3 @@
 extends: defaults/node-test
+parserOptions:
+  sourceType: module

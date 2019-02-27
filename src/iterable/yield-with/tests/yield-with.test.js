@@ -1,14 +1,12 @@
-'use strict';
-
 // modules
-const sinon = require('sinon');
-const { expect } = require('chai');
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 // local
-const {
+import {
   yieldWith,
   yieldWithAsync,
-} = require('..');
+} from '..';
 
 describe('yield-With', () => {
       

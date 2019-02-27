@@ -1,9 +1,9 @@
-'use strict';
+// modules
+import { expect } from 'chai';
 
-const { expect } = require('chai');
-
-const sync = require('../sync');
-const async = require('../async');
+// local
+import sync from '../sync';
+import async from '../async';
 
 describe('iterable', () => {
   

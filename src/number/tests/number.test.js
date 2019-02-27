@@ -1,12 +1,10 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const {
+import {
   random,
-} = require('..');
+} from '..';
 
 describe('number lib', () => {
   

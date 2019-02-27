@@ -1,13 +1,11 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const {
+import {
   isDataUrl,
   parseDataUrl,
-} = require('..');
+} from '..';
 
 describe('url lib', () => {
 

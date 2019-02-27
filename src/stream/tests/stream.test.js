@@ -1,13 +1,12 @@
-'use strict';
-
 // core
-const stream = require('stream');
+import stream from 'stream';
 
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const { fromString, toString } = require('..');
+import { fromString, toString } from '..';
+
 
 const { Readable: ReadableStream } = stream;
 

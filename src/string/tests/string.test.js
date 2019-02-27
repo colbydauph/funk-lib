@@ -1,16 +1,14 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const {
+import {
   capitalize,
   parseBase64,
   template,
   toBase64,
   slugify,
-} = require('..');
+} from '..';
 
 describe('string lib', () => {
 

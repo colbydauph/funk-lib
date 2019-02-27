@@ -2,10 +2,11 @@
 import util from 'util';
 
 // modules
-import R from 'ramda';
+import * as R from 'ramda';
 
 // local
 import { random } from '../number';
+
 
 // todo: rename to index
 // [v] -> object<k, v>

@@ -1,5 +1,5 @@
-/* eslint-disable no-sync */
 'use strict';
+/* eslint-disable no-sync */
 
 // core
 const fs = require('fs');

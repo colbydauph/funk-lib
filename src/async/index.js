@@ -2,7 +2,7 @@
 import * as R from 'ramda';
 
 // local
-// const { map: mapIterable } = require('../iterable/sync');
+// import { map: mapIterable } from '../iterable/sync';
 import { isObject, isIterator } from '../is';
 import mapLimitCallback from './map-limit-cb';
 

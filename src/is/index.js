@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 // modules
 import * as R from 'ramda';
 

@@ -1,7 +1,5 @@
-'use strict';
-
 // originally from: https://github.com/hughsk/map-limit
-module.exports = (arr, limit, iterator, callback) => {
+export default (arr, limit, iterator, callback) => {
 
   const abort = (err, state) => {
     state.aborted = true;

@@ -1,15 +1,13 @@
-'use strict';
-
 // modules
-const R = require('ramda');
-const sinon = require('sinon');
-const { expect } = require('chai');
+import * as R from 'ramda';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 // local
-const {
+import {
   on,
   once,
-} = require('..');
+} from '..';
 
 describe('function lib', () => {
   

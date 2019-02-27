@@ -1,11 +1,9 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
-const R = require('ramda');
+import { expect } from 'chai';
+import * as R from 'ramda';
 
 // local
-const { toObjBy, toObj, sample, shuffle } = require('..');
+import { toObjBy, toObj, sample, shuffle } from '..';
 
 describe('array lib', () => {
   

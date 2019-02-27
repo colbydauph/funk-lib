@@ -1,4 +1,4 @@
-'use strict';
+
 
 // modules
 import * as R from 'ramda';
@@ -13,7 +13,7 @@ import { is, isIterator } from '../../is';
 import StopIteration from '../stop-iteration';
 
 // local
-const {
+import {
   accumulate,
   append,
   concat,
@@ -95,7 +95,7 @@ const {
   zipAllWith,
   // zipWithN,
   zipWith,
-} = require('../sync');
+} from '../sync';
 
 const noop = () => {};
 

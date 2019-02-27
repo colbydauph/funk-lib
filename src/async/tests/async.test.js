@@ -1,17 +1,15 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
-const sinon = require('sinon');
-const R = require('ramda');
+import { expect } from 'chai';
+import sinon from 'sinon';
+import * as R from 'ramda';
 
 // local
-const { isPromise } = require('../../is');
-const { random } = require('../../number');
-const { from } = require('../../iterable/sync');
+import { isPromise } from '../../is';
+import { random } from '../../number';
+import { from } from '../../iterable/sync';
 
 // local
-const {
+import {
   // all,
   allSettled,
   // allSettledLimit,
@@ -53,7 +51,7 @@ const {
   timeout,
   TimeoutError,
   toAsync,
-} = require('..');
+} from '..';
 
 const assertIsParallel = async (isParallel, func) => {
   const iterable = R.range(0, 20);

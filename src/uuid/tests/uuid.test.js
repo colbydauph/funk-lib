@@ -1,10 +1,9 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const { uuid, isUuid } = require('..');
+import { uuid, isUuid } from '..';
+
 
 describe('uuid lib', () => {
   

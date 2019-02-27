@@ -1,9 +1,9 @@
-'use strict';
+
 
 // local
-const { fromString } = require('../../stream');
-const assert = require('./assert-is');
-const {
+import { fromString } from '../../stream';
+import assert from './assert-is';
+import {
   is,
   isArray,
   isAsyncIterable,
@@ -34,7 +34,7 @@ const {
   isTruthy,
   isTypeOf,
   isUndefined,
-} = require('..');
+} from '..';
 
 describe('is', () => {
   

@@ -1,7 +1,5 @@
-'use strict';
-
 // modules
-const R = require('ramda');
+import R from 'ramda';
 
 // (A -> B) -> Iterator<A> -> *
 const yieldWith = R.curry((onYield, iterator) => {

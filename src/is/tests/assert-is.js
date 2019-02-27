@@ -1,6 +1,8 @@
-'use strict';
 
-const { expect } = require('chai');
+
+// modules
+import { expect } from 'chai';
+
 
 const safeToString = (thing) => ((typeof thing === 'symbol')
   ? thing.toString()

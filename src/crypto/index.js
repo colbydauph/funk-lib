@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 
 // module
-import R from 'ramda';
+import * as R from 'ramda';
 
 // string -> string -> string
 export const hashWith = R.curry((algo, str) => crypto

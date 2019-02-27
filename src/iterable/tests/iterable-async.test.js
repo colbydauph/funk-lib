@@ -1,25 +1,23 @@
-'use strict';
-
 // modules
-const R = require('ramda');
-const sinon = require('sinon');
-const { expect } = require('chai');
+import * as R from 'ramda';
+import sinon from 'sinon';
+import { expect } from 'chai';
 
 // local
-const { on } = require('../../function');
-const {
+import { on } from '../../function';
+import {
   toAsync,
-  map: mapP,
-  reduce: reduceP,
+  map as mapP,
+  reduce as reduceP,
   delay,
-} = require('../../async');
-const { random } = require('../../number');
-const { sample } = require('../../array');
-const { is, isIterator, isAsyncIterable } = require('../../is');
-const StopIteration = require('../stop-iteration');
+} from '../../async';
+import { random } from '../../number';
+import { sample } from '../../array';
+import { is, isIterator, isAsyncIterable } from '../../is';
+import StopIteration from '../stop-iteration';
 
 // local
-const {
+import {
   accumulate,
   append,
   concat,
@@ -102,7 +100,7 @@ const {
   zipAllWith,
   // zipWithN,
   zipWith,
-} = require('../async');
+} from '../async';
 
 const noop = () => {};
 

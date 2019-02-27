@@ -1,11 +1,9 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
-const R = require('ramda');
+import { expect } from 'chai';
+import * as R from 'ramda';
 
 // local
-const {
+import {
   hexToRgb,
   rgbToHex,
   rgbToHsl,
@@ -15,7 +13,7 @@ const {
   randomHex,
   randomHsl,
   randomRgb,
-} = require('..');
+} from '..';
 
 const RGB_TO_HSL = [
   [{ r: 0, g: 51, b: 255 }, { h: 228, s: 1, l: 0.5 }],

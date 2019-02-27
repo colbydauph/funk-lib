@@ -1,15 +1,14 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const {
+import {
   md5,
   hashWith,
   sha256,
   sha512,
-} = require('..');
+} from '..';
+
 
 const ALGOS = {
   password: {

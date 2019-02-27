@@ -1,10 +1,8 @@
-'use strict';
-
 // modules
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 // local
-const { now } = require('..');
+import { now } from '..';
 
 describe('datetime lib', () => {
   

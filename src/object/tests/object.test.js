@@ -1,14 +1,12 @@
-'use strict';
-
 // core
-const path = require('path');
+import path from 'path';
 
 // modules
-const R = require('ramda');
-const { expect } = require('chai');
+import R from 'ramda';
+import { expect } from 'chai';
 
 // local
-const {
+import {
   deepFreeze,
   firstKey,
   firstPair,
@@ -20,7 +18,7 @@ const {
   nestWith,
   pickAs,
   toHumanJSON,
-} = require('..');
+} from '..';
 
 describe('object lib', () => {
   

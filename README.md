@@ -4,7 +4,7 @@ Functional JavaScript Utilities
 
 ## Install
 ```shell
-$ npm i -P github:colbydauph/funk-lib#0.10.0
+$ npm i -P github:colbydauph/funk-lib#0.14.0
 ```
 
 ## Import

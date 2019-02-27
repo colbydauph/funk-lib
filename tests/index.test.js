@@ -10,10 +10,10 @@ const { expect } = require('chai');
 const R = require('ramda');
 
 // local
-const index = require('..');
+const index = require('../src');
 
 const IGNORE = R.test(/^\.|coverage|test|node_modules/);
-const SRC = path.resolve(__dirname, '..');
+const SRC = path.resolve(__dirname, '../src');
 
 const MODULES = fs
   .readdirSync(SRC)
@@ -28,7 +28,7 @@ describe('index', () => {
   
   MODULES.forEach((module) => {
     it(`should export the ${ module } module`, () => {
-      expect(index[module]).to.eql(require(`../${ module }`));
+      expect(index[module]).to.eql(require(`../src/${ module }`));
     });
   });
     

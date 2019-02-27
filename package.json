@@ -13,18 +13,25 @@
     "ramda": "~0.25.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "~7.3.4",
+    "@babel/plugin-proposal-export-namespace-from": "~7.2.0",
+    "@babel/preset-env": "~7.3.4",
+    "@babel/register": "^7.0.0",
     "chai": "~4.2.0",
     "chai-as-promised": "~7.1.1",
     "eslint": "~5.9.0",
-    "eslint-config-defaults": "github:colbydauph/eslint-config-defaults#1.2.0",
+    "eslint-config-defaults": "github:colbydauph/eslint-config-defaults#1.3.0",
+    "funk-fs": "github:colbydauph/funk-fs#0.5.2",
     "mocha": "~5.2.0",
     "nyc": "~13.1.0",
     "sinon": "~7.1.1"
   },
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
+    "build": "rm -rf dist && node build.js",
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
-    "test": "mocha --reporter=list --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
+    "test": "mocha --reporter=list --require ./tests/register.js --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "mocha --watch --reporter=min --require=./tests/bootstrap-test.js $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "lint": "eslint --max-warnings=5 $(find . ! -path '*node_modules*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",
     "cover": "nyc --check-coverage npm test",

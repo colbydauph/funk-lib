@@ -2,7 +2,7 @@
   "name": "funk-lib",
   "version": "0.14.0",
   "engines": {
-    "node": "8.9.1"
+    "node": "8.10"
   },
   "description": "Functional JavaScript Utilities",
   "author": "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)",
@@ -18,10 +18,10 @@
     "@babel/plugin-proposal-export-namespace-from": "~7.2.0",
     "@babel/preset-env": "~7.3.4",
     "@babel/register": "~7.0.0",
-    "chai": "~4.2.0",
     "chai-as-promised": "~7.1.1",
-    "eslint": "~5.9.0",
+    "chai": "~4.2.0",
     "eslint-config-defaults": "github:colbydauph/eslint-config-defaults#1.3.0",
+    "eslint": "~5.9.0",
     "funk-fs": "github:colbydauph/funk-fs#0.5.2",
     "mocha": "~5.2.0",
     "nyc": "~13.1.0",

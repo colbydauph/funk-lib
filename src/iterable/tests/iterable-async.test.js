@@ -9,7 +9,7 @@ import {
   toAsync,
   map as mapP,
   reduce as reduceP,
-  delay,
+  // delay,
 } from '../../async';
 import { random } from '../../number';
 import { sample } from '../../array';

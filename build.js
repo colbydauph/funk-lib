@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+'use strict';
 
 // core
 const fs = require('fs');

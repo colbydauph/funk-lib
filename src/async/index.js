@@ -32,7 +32,7 @@ export const fromCallback = async func => {
 // make an errback-calling function promise-returning
 // inverse of callbackify
 export const promisify = func => async (...args) => {
-  return fromCallback((cb) => func(...args, cb));
+  return fromCallback(cb => func(...args, cb));
 };
 
 // make a promise-returning function errback-yielding
@@ -40,8 +40,8 @@ export const promisify = func => async (...args) => {
 export const callbackify = func => (...args) => {
   const cb = args.pop();
   toAsync(func)(...args)
-    .then((res) => cb(null, res))
-    .catch((err) => cb(err));
+    .then(res => cb(null, res))
+    .catch(err => cb(err));
 };
 
 // creates an externally controlled promise
@@ -111,8 +111,8 @@ export const forEachLimit = R.curry(async (limit, pred, iterable) => {
 
 // number -> (a -> boolean) -> [a] -> boolean
 export const everyLimit = R.curry(async (limit, pred, iterable) => {
-  return new Promise(async (resolve) => {
-    await forEachLimit(limit, async (item) => {
+  return new Promise(async resolve => {
+    await forEachLimit(limit, async item => {
       if (!await pred(item)) resolve(false);
     }, iterable);
     resolve(true);
@@ -121,8 +121,8 @@ export const everyLimit = R.curry(async (limit, pred, iterable) => {
 
 // number -> (a -> boolean) -> [a] -> boolean
 export const someLimit = R.curry(async (limit, pred, iterable) => {
-  return new Promise(async (resolve) => {
-    await forEachLimit(limit, async (item) => {
+  return new Promise(async resolve => {
+    await forEachLimit(limit, async item => {
       if (await pred(item)) resolve(true);
     }, iterable);
     resolve(false);
@@ -133,7 +133,7 @@ export const someLimit = R.curry(async (limit, pred, iterable) => {
 // number -> (a -> boolean) -> [a]
 export const findLimit = R.curry(async (limit, pred, iterable) => {
   return new Promise(async (resolve, reject) => {
-    await forEachLimit(limit, async (item) => {
+    await forEachLimit(limit, async item => {
       if (await pred(item)) resolve(item);
     }, iterable)
       // resolve undefined if none found
@@ -148,7 +148,7 @@ export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 // @async (parallel)
 // number -> (a -> boolean) -> [a] -> [a]
 export const filterLimit = R.curry(async (limit, pred, iterable) => {
-  return flatMapLimit(limit, async (item) => {
+  return flatMapLimit(limit, async item => {
     return await pred(item) ? [item] : [];
   }, iterable);
 });

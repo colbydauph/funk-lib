@@ -19,7 +19,12 @@ const {
 
 // local
 const config = require('../build.config');
+const pkg = require('../package.json');
 
+
+/* eslint-disable no-process-env */
+const { NODE_ENV } = process.env;
+/* eslint-enable no-process-env */
 
 const transpileFile = async (src, dist, opts) => {
   if (!isFile(src, fs)) throw Error(`${ src } is not a file`);
@@ -45,10 +50,12 @@ const transpileDir = async (src, dist, opts) => {
   
   for (const file of files) {
     const absPath = path.join(src, file);
+    const absDist = path.join(dist, file);
+    
     if (await isDir(absPath, fs)) {
-      await transpileDir(absPath, path.join(dist, file), opts);
+      await transpileDir(absPath, absDist, opts);
     } else if (/\.js$/.test(absPath)) {
-      await transpileFile(absPath, path.join(dist, file), opts);
+      await transpileFile(absPath, absDist, opts);
     } else {
       console.log('not transpiling', file);
     }
@@ -56,40 +63,39 @@ const transpileDir = async (src, dist, opts) => {
   
 };
 
+const stripPkg = R.omit(['devDependencies', 'nyc']);
+const toHumanJSON = json => JSON.stringify(json, null, 2);
+
+
 (async () => {
   
-  const pkg = require('../package.json');
-  
   const ignore = [
+    // test files
     /[.]test[.]js$/,
+    // hidden files
     /^[.]/,
   ];
-  const env = 'production';
-  const src = '../src';
+  const env = NODE_ENV;
+  const src = path.join(__dirname, '../src');
   const dist = '../dist';
   
   const esDist = path.join(__dirname, path.join(dist, 'es'));
   const cjsDist = path.join(__dirname, path.join(dist, 'cjs'));
   
-  await Promise.all([
-    transpileDir(
-      path.join(__dirname, src),
-      esDist,
-      { env, ignore, node: false },
-    ).then(_ => {
-      const pack = R.omit(['devDependencies', 'nyc'], pkg);
-      return writeFile(JSON.stringify(pack, null, 2), path.join(esDist, 'package.json'), fs);
-    }),
-    transpileDir(
-      path.join(__dirname, src),
-      cjsDist,
-      { env, ignore, node: pkg.engines.node },
-    ).then(_ => {
-      const pack = R.omit(['devDependencies', 'nyc'], pkg);
-      pack.name = `${ pack.name }-cjs`;
-      return writeFile(JSON.stringify(pack, null, 2), path.join(cjsDist, 'package.json'), fs);
-    }),
-  ]);
+  const opts = { env, ignore };
   
+  await Promise.all([
+    transpileDir(src, esDist, { ...opts, node: false })
+      .then(_ => {
+        const pack = stripPkg(pkg);
+        return writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs);
+      }),
+    transpileDir(src, cjsDist, { ...opts, node: pkg.engines.node })
+      .then(_ => {
+        const pack = stripPkg(pkg);
+        pack.name = `${ pack.name }-cjs`;
+        return writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs);
+      }),
+  ]);
   
 })();

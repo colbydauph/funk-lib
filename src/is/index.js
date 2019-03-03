@@ -2,6 +2,11 @@
 // modules
 import * as R from 'ramda';
 
+// fixme: polyfill Symbol.asyncIterator
+// https://github.com/babel/babel/issues/8450
+// https://github.com/babel/babel/issues/7467
+import 'core-js/modules/es7.symbol.async-iterator';
+
 export const {
   // * -> boolean
   isFinite,

@@ -55,7 +55,7 @@ jobs:
                 command: |
                   echo "//registry.npmjs.org/:_authToken=\${NPM_ACCESS_TOKEN}" > .npmrc
                   
-                  for DIST in `find ./dist -type d -depth 1`
+                  for DIST in `find -type d -depth 1 ./dist`
                   do
                       npm publish $DIST --dry-run
                   done

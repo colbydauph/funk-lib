@@ -10,6 +10,7 @@
     "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)"
   ],
   "dependencies": {
+    "core-js": "~2.6.5",
     "ramda": "~0.26.1"
   },
   "devDependencies": {
@@ -30,7 +31,7 @@
   },
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
-    "build": "rm -rf dist && node scripts/build",
+    "build": "NODE_ENV=production rm -rf dist && node scripts/build",
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "NODE_ENV=test mocha --reporter=list --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "NODE_ENV=test mocha --watch --reporter=min --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",

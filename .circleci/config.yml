@@ -55,10 +55,8 @@ jobs:
                 command: |
                   echo "//registry.npmjs.org/:_authToken=\${NPM_ACCESS_TOKEN}" > .npmrc
                   
-                  for DIST in `find -type d -depth 1 ./dist`
-                  do
-                      npm publish $DIST --dry-run
-                  done
+                  npm publish ./dist/cjs
+                  npm publish ./dist/es
                   
 workflows:
     version: 2
@@ -78,7 +76,7 @@ workflows:
                 context: org-global
                 requires:
                     - test
-                # filters:
-                #     branches:
-                #         only: master
+                filters:
+                    branches:
+                        only: master
               

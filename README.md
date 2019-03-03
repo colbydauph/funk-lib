@@ -12,12 +12,15 @@ $ npm i -P github:colbydauph/funk-lib#0.14.0
 const { mapKeys } = require('funk-lib/object');
 ```
 
+## Development
+
 #### Commands
 
 `$ npm run <command>`
 
 | command      | description   |
 |--------------|---------------|
+| `build`      | Transpile source |
 | `cover`      | Run test coverage |
 | `init`       | Re/Install deps |
 | `init:hard`  | `init` with a fresh `package-lock` |

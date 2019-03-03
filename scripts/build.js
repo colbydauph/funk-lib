@@ -9,6 +9,7 @@ const path = require('path');
 const R = require('ramda');
 const babel = require('@babel/core');
 const {
+  copyFile,
   isDir,
   isFile,
   mkdirp,
@@ -77,27 +78,34 @@ const toHumanJSON = json => JSON.stringify(json, null, 2);
     /^[.]/,
   ];
   const env = NODE_ENV;
-  const src = path.join(__dirname, '../src');
-  const dist = '../dist';
+  const root = path.join(__dirname, '..');
+  const src = path.join(root, './src');
   
-  const esDist = path.join(__dirname, path.join(dist, 'es'));
-  const cjsDist = path.join(__dirname, path.join(dist, 'cjs'));
+  const dist = path.join(root, './dist');
+  const esDist = path.join(dist, 'es');
+  const cjsDist = path.join(dist, 'cjs');
   
   const opts = { env, ignore };
   
   // transpile multiple targets in parallel
   await Promise.all([
     transpileDir(src, esDist, { ...opts, node: false })
-      .then(_ => {
+      .then(async _ => {
         const pack = stripPkg(pkg);
-        return writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs);
-      }),
+        
+        await writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs);
+        await copyFile(path.join(root, 'README.md'), path.join(esDist, 'README.md'), fs);
+      })
+      .catch(err => console.error('Error transpiling es', err)),
     transpileDir(src, cjsDist, { ...opts, node: pkg.engines.node })
-      .then(_ => {
+      .then(async _ => {
         const pack = stripPkg(pkg);
         pack.name = `${ pack.name }-cjs`;
-        return writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs);
-      }),
+        
+        await writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs);
+        await copyFile(path.join(root, 'README.md'), path.join(cjsDist, 'README.md'), fs);
+      })
+      .catch(err => console.error('Error transpiling cjs', err)),
   ]);
   
 })();

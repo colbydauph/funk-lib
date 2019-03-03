@@ -33,6 +33,7 @@ const transpileFile = async (src, dist, opts) => {
   const { code: output } = await babel.transformAsync(input, config(opts));
   const { dir: distDir } = path.parse(dist);
   
+  // ensure dir exists before writing file to it
   await mkdirp(distDir, fs);
   await writeFile(output, dist, fs);
 };
@@ -84,6 +85,7 @@ const toHumanJSON = json => JSON.stringify(json, null, 2);
   
   const opts = { env, ignore };
   
+  // transpile multiple targets in parallel
   await Promise.all([
     transpileDir(src, esDist, { ...opts, node: false })
       .then(_ => {

@@ -3,6 +3,7 @@
 module.exports = ({
   env = 'production',
   node = false,
+  alias = {},
 } = {}) => {
   
   const envConfig = node
@@ -21,6 +22,7 @@ module.exports = ({
       '@babel/plugin-proposal-export-namespace-from',
       ['module-resolver', {
         alias: {
+          ...alias,
           'funk-lib': (env === 'test') ? './src' : '..',
         },
       }],

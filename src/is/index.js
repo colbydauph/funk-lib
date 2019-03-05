@@ -32,7 +32,7 @@ export const is = R.curry((left, right) => (left === right));
 // * -> * -> boolean
 export const isNot = R.complement(is);
 // string -> * -> boolean
-export const isInstanceOf = R.curry((type, thing) => thing instanceof type);
+export const isInstanceOf = R.curry((type, thing) => (thing instanceof type));
 // string -> * -> boolean
 export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 // * -> boolean

@@ -19,7 +19,7 @@ export const race = Promise.race.bind(Promise);
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
 
 // wraps a function to always return a promise
-// (a -> b) -> (a -> b)
+// (a -> b) -> (a -> promise<b>)
 export const toAsync = f => async (...args) => f(...args);
 
 // returns a promise that is resolved by an err-back function
@@ -62,8 +62,7 @@ export const deferred = () => {
 
 // @async (series)
 // ((a, t) -> a) -> a -> [t] -> a
-export const reduce = R.curry(async (f, init, xs) => {
-  let acc = init;
+export const reduce = R.curry(async (f, acc, xs) => {
   for (const x of xs) acc = await f(acc, x);
   return acc;
 });

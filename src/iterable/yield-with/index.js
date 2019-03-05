@@ -22,7 +22,7 @@ const yieldWith = R.curry((onYield, iterator) => {
   
 });
 
-// (A -> B) -> AsyncIterator<A> -> *
+// (A -> Promise<B>) -> AsyncIterator<A> -> *
 const yieldWithAsync = R.curry(async (onYield, iterator) => {
 
   let value, done;

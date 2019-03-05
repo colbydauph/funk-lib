@@ -30,7 +30,7 @@ export const nextOr = R.curry(async (or, iterator) => {
 
 // returns the first or "next" item. aka head
 // Iterable<T> -> Promise<T>
-export const next = async (iterator) => {
+export const next = async iterator => {
   const err = new StopIteration();
   const out = await nextOr(err, iterator);
   if (out === err) throw err;
@@ -39,7 +39,7 @@ export const next = async (iterator) => {
 
 // returns the last item
 // Iterable<T> -> Promise<T>
-export const last = async (xs) => {
+export const last = async xs => {
   let last;
   for await (const x of xs) last = x;
   return last;
@@ -141,9 +141,9 @@ export const slice = R.curry(async function* (start, stop, xs) {
 
 // yield all items from one iterator, then the other
 // Iterable<T> -> Iterable<T> -> AsyncIterator<T>
-export const concat = R.curry(async function* (iterable1, iterable2) {
-  yield* iterable1;
-  yield* iterable2;
+export const concat = R.curry(async function* (xs1, xs2) {
+  yield* xs1;
+  yield* xs2;
 });
 
 // prepend an item (T) to the end of an iterable
@@ -174,20 +174,18 @@ export const reject = R.useWith(filter, [complementP, R.identity]);
 // (A -> AsyncIterator<B>) -> A -> AsyncIterator<B>
 export const flatUnfold = R.curry(async function* (f, x) {
   do {
-    x = yield* f(x);
+    x = yield* await f(x);
   } while (x);
 });
 
 // (A -> Promise<[B, A]>) -> * -> AsyncIterator<B>
-export const unfold = R.useWith(flatUnfold, [
-  f => async function* (x) {
-    const pair = await f(x);
-    if (!pair || !pair[0]) return;
+export const unfold = R.curry(async function* (f, x) {
+  let pair = await f(x);
+  while (pair && pair.length) {
     yield pair[0];
-    return pair[1];
-  },
-  R.identity,
-]);
+    pair = await f(pair[1]);
+  }
+});
 
 // iterate infinitely, yielding items from seed through a predicate
 // (T -> Promise<T>) -> T -> AsyncIterator<T>
@@ -221,7 +219,7 @@ export const uniqueWith = R.curry(async function* (f, xs) {
   }, xs);
 });
 
-// yield only the unique items in an iterable (using Set)
+// yield only the unique items in an iterable (by strict equality)
 // Iterable<T> -> AsyncIterator<T>
 export const unique = async function* (xs) {
   const set = new Set();

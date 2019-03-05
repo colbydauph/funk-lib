@@ -15,36 +15,36 @@ export { yieldWith } from './yield-with';
 // todo: consider replacing "is" with R.equals
 
 // * -> Iterable<T> -> T | *
-export const nextOr = R.curry((or, iterable) => {
-  const { value, done } = iterable.next();
+export const nextOr = R.curry((or, iterator) => {
+  const { value, done } = iterator.next();
   return done ? or : value;
 });
 
 // returns the first or "next" item. aka head
 // Iterable<T> -> T
-export const next = (iterable) => {
+export const next = iterator => {
   const err = new StopIteration();
-  const out = nextOr(err, iterable);
+  const out = nextOr(err, iterator);
   if (out === err) throw err;
   return out;
 };
 
 // returns the last item
 // Iterable<T> -> T
-export const last = (iterable) => {
+export const last = xs => {
   let last;
-  for (const item of iterable) last = item;
+  for (const x of xs) last = x;
   return last;
 };
 
 // (A -> Iterable<B>) -> Iterable<A> -> Iterator<B>
-export const flatMap = R.curry(function* (pred, iterable) {
-  for (const item of iterable) yield* pred(item);
+export const flatMap = R.curry(function* (f, xs) {
+  for (const x of xs) yield* f(x);
 });
 
 // (A -> B) -> Iterable<A> -> Iterator<B>
-export const map = R.curry(function* (pred, iterable) {
-  for (const item of iterable) yield pred(item);
+export const map = R.curry(function* (f, xs) {
+  for (const x of xs) yield f(x);
 });
 
 // returns an iterator from an iterable
@@ -56,16 +56,16 @@ export const from = map(R.identity);
 export const of = R.unapply(from);
 
 // ((A, T) -> A) -> A -> Iterable<T> -> Iterator<A>
-export const scan = R.curry(function* (pred, acc, iterable) {
+export const scan = R.curry(function* (f, acc, xs) {
   yield acc;
-  yield* map((item) => (acc = pred(acc, item)), iterable);
+  yield* map(x => (acc = f(acc, x)), xs);
 });
 
 // ((A, T) -> A) -> A -> Iterable<T> -> A
 export const reduce = pipeC(scan, last);
 
 // ((...A) -> B) -> [Iterable<A>] -> Iterator<B>
-export const zipAllWith = R.curry(function* (pred, iterators) {
+export const zipAllWith = R.curry(function* (func, iterators) {
   iterators = R.map(from, iterators);
   while (true) {
     const { done, values } = R.reduce((out, iterator) => {
@@ -77,7 +77,7 @@ export const zipAllWith = R.curry(function* (pred, iterators) {
       }, out);
     }, { done: false, values: [] }, iterators);
     if (done) return;
-    yield pred(...values);
+    yield func(...values);
   }
 });
 
@@ -86,7 +86,7 @@ export const zipAllWith = R.curry(function* (pred, iterators) {
 // [Iterable<A>] -> Iterator<B>
 export const zipAll = zipAllWith(Array.of);
 
-export const zipWithN = n => R.curryN(n + 1)((pred, ...iterables) => zipAllWith(pred, iterables));
+export const zipWithN = n => R.curryN(n + 1)((f, ...iterables) => zipAllWith(f, iterables));
 
 // ((A, B) -> C) -> Iterable<A> -> Iterable<B> -> Iterator<C>
 export const zipWith = zipWithN(2);
@@ -115,26 +115,26 @@ export const enumerate = iterable => zip(range(0, Infinity), iterable);
 // accumulate is to scan, like reduce with no init
 // todo: consider ditching this. scan is more useful
 // ((A, T) -> A) -> Iterable<T> -> Iterator<A>
-export const accumulate = R.curry((pred, iterable) => {
+export const accumulate = R.curry((f, xs) => {
   let last;
-  return map(([i, item]) => {
-    return (last = i ? pred(last, item) : item);
-  }, enumerate(iterable));
+  return map(([i, x]) => {
+    return (last = i ? f(last, x) : x);
+  }, enumerate(xs));
 });
 
 // Integer -> Integer -> Iterable<T> -> Iterator<T>
-export const slice = R.curry(function* (start, stop, iterable) {
-  for (const [i, item] of enumerate(iterable)) {
-    if (i >= start) yield item;
+export const slice = R.curry(function* (start, stop, xs) {
+  for (const [i, x] of enumerate(xs)) {
+    if (i >= start) yield x;
     if (i >= stop - 1) return;
   }
 });
 
 // yield all items from one iterator, then the other
 // Iterable<T> -> Iterable<T> -> Iterator<T>
-export const concat = R.curry(function* (iterator1, iterator2) {
-  yield* iterator1;
-  yield* iterator2;
+export const concat = R.curry(function* (xs1, xs2) {
+  yield* xs1;
+  yield* xs2;
 });
 
 // prepend an item (T) to the end of an iterable
@@ -147,66 +147,73 @@ export const append = R.useWith(R.flip(concat), [of, R.identity]);
 
 // run a function (side-effect) once for each item
 // (T -> *) -> Iterable<T> -> Iterator<T>
-export const forEach = R.curry(function* (pred, iterable) {
+export const forEach = R.curry(function* (f, xs) {
   // eslint-disable-next-line no-unused-expressions
-  for (const item of iterable) pred(item), yield item;
+  for (const x of xs) f(x), yield x;
 });
 
 // yield only items that pass the predicate
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-export const filter = R.curry(function* (pred, iterable) {
-  for (const item of iterable) if (pred(item)) yield item;
+export const filter = R.curry(function* (f, xs) {
+  for (const x of xs) if (f(x)) yield x;
 });
 
 // yield only items that do not pass the predicate
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
 export const reject = R.useWith(filter, [R.complement, R.identity]);
 
+// (A -> Iterator<B>) -> A -> Iterator<B>
+export const flatUnfold = R.curry(function* (f, x) {
+  do {
+    x = yield* f(x);
+  } while (x);
+});
+
 // (A -> [B]) -> * -> Iterator<B>
-export const unfold = R.curry(function* (pred, item) {
-  let pair = pred(item);
+export const unfold = R.curry(function* (f, x) {
+  let pair = f(x);
   while (pair && pair.length) {
     yield pair[0];
-    pair = pred(pair[1]);
+    pair = f(pair[1]);
   }
 });
 
 // iterate infinitely, yielding items from seed through a predicate
 // (T -> T) -> T -> Iterator<T>
 export const iterate = R.useWith(unfold, [
-  pred => item => [item, pred(item)],
+  f => x => [x, f(x)],
   R.identity,
 ]);
 
 // yield only items that are unique by their predicate
 // ((T, T) -> Boolean) -> Iterable<T> -> Iterator<T>
-export const uniqueWith = R.curry(function* (pred, iterable) {
+export const uniqueWith = R.curry(function* (f, xs) {
   const seen = [];
   const add = saw => seen.push(saw);
-  const has = item => seen.some((saw) => pred(item, saw));
-  yield* filter((item) => {
+  const has = item => seen.some(saw => f(item, saw));
+  yield* filter(item => {
     if (has(item)) return false;
     add(item);
     return true;
-  }, iterable);
+  }, xs);
 });
 
 // yield only the unique items in an iterable (using Set)
 // Iterable<T> -> Iterator<T>
-export const unique = function* (iterable) {
+export const unique = function* (xs) {
   const set = new Set();
-  yield* filter((item) => {
-    if (set.has(item)) return;
-    set.add(item);
+  yield* filter(x => {
+    if (set.has(x)) return;
+    set.add(x);
     return true;
-  }, iterable);
+  }, xs);
 };
 
 // yield only the first n items of an iterable
 // Integer -> Iterable<T> -> Iterator<T>
-export const take = R.curry(function* (n, iterable) {
+export const take = R.curry(function* (n, xs) {
   if (n <= 0) return;
-  yield* slice(0, n, iterable);
+  yield* slice(0, n, xs);
 });
 
 // drop the first n items of an iterable
@@ -257,17 +264,17 @@ export const toArray = reduce(R.flip(R.append), []);
 
 // returns the item at the nth index
 // Integer -> Iterable<T> -> T | Undefined
-export const nth = R.curry((n, iterable) => {
-  for (const [i, item] of enumerate(iterable)) {
-    if (i === n) return item;
+export const nth = R.curry((n, xs) => {
+  for (const [i, x] of enumerate(xs)) {
+    if (i === n) return x;
   }
 });
 
 // todo: consider calling this any
 // does any item pass its predicate?
 // (T -> Boolean) -> Iterable<T> -> Boolean
-export const some = R.curry((pred, iterable) => {
-  for (const item of iterable) if (pred(item)) return true;
+export const some = R.curry((f, xs) => {
+  for (const x of xs) if (f(x)) return true;
   return false;
 });
 
@@ -277,44 +284,43 @@ export const none = R.complement(some);
 
 // do all items pass their predicate?
 // (T -> Boolean) -> Iterable<T> -> Boolean
-export const every = R.curry((pred, iterable) => {
-  for (const item of iterable) if (!pred(item)) return false;
+export const every = R.curry((f, xs) => {
+  for (const x of xs) if (!f(x)) return false;
   return true;
 });
 
 // (T -> Boolean) -> Iterable<T> -> T | Undefined
-export const find = R.curry((pred, iterable) => {
-  for (const item of iterable) if (pred(item)) return item;
+export const find = R.curry((f, xs) => {
+  for (const x of xs) if (f(x)) return x;
 });
 
 // (T -> Boolean) -> Iterable<T> -> Integer
-export const findIndex = R.curry((pred, iterable) => {
-  for (const [i, item] of enumerate(iterable)) {
-    if (pred(item)) return i;
+export const findIndex = R.curry((f, xs) => {
+  for (const [i, x] of enumerate(xs)) {
+    if (f(x)) return i;
   }
   return -1;
 });
 
 // yield all items
 // Iterable<T> -> Undefined
-export const exhaust = (iterable) => {
-  // eslint-disable-next-line no-unused-vars
-  for (const item of iterable);
+export const exhaust = xs => {
+  for (const _ of xs);
 };
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-export const takeWhile = R.curry(function* (pred, iterable) {
-  for (const item of iterable) {
-    if (!pred(item)) return;
-    yield item;
+export const takeWhile = R.curry(function* (f, xs) {
+  for (const x of xs) {
+    if (!f(x)) return;
+    yield x;
   }
 });
 
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
-export const dropWhile = R.curry(function* (pred, iterable) {
-  const iterator = from(iterable);
-  for (const item of iterator) {
-    if (!pred(item)) return yield* prepend(item, iterator);
+export const dropWhile = R.curry(function* (f, xs) {
+  xs = from(xs);
+  for (const x of xs) {
+    if (!f(x)) return yield* prepend(x, xs);
   }
 });
 
@@ -329,24 +335,24 @@ export const sort = R.useWith(R.sort, [R.identity, toArray]);
 // yield a sliding "window" of length n
 // note: caches of n items
 // Integer -> Iterable<T> -> Iterator<[T]>
-export const frame = R.curry(function* (n, iterable) {
+export const frame = R.curry(function* (n, xs) {
   const cache = [];
-  yield* flatMap(function* (item) {
+  yield* flatMap(function* (x) {
     if (cache.length === n) {
       yield [...cache];
       cache.shift();
     }
-    cache.push(item);
-  }, iterable);
+    cache.push(x);
+  }, xs);
   yield cache;
 });
 
 // yield all but the last n items
 // note: caches n + 1 items
 // Number -> Iterable<T> -> Iterator<T>
-export const dropLast = R.curry(function* (n, iterable) {
+export const dropLast = R.curry(function* (n, xs) {
   const done = new StopIteration();
-  for (const group of frame(n + 1, append(done, iterable))) {
+  for (const group of frame(n + 1, append(done, xs))) {
     if (R.last(group) === done) return;
     yield R.head(group);
   }
@@ -365,15 +371,15 @@ export const includes = R.useWith(some, [is, R.identity]);
 // yield groups of items where the predicate returns truthy
 // for all adjacent items
 // ((T , T) -> Boolean) -> Iterable<T> -> Iterator<[T]>
-export const groupWith = R.curry(function* (pred, iterable) {
+export const groupWith = R.curry(function* (f, xs) {
   let last, group = [];
-  yield* flatMap(function* ([i, item]) {
-    if (i && !pred(last, item)) {
+  yield* flatMap(function* ([i, x]) {
+    if (i && !f(last, x)) {
       yield group;
       group = [];
     }
-    group.push(last = item);
-  }, enumerate(iterable));
+    group.push(last = x);
+  }, enumerate(xs));
   if (group.length) yield group;
 });
 
@@ -382,14 +388,14 @@ export const group = groupWith(is);
 
 // copy an iterator n times (exhausts its input)
 // Integer -> Iterable<T> -> [Iterator<T>]
-export const tee = R.curry((n, iterable) => {
-  const iterator = from(iterable);
+export const tee = R.curry((n, xs) => {
+  xs = from(xs);
   return [...Array(n)]
     .map(() => [])
     .map(function* (cache, _, caches) {
       while (true) {
         if (!cache.length) {
-          const { done, value } = iterator.next();
+          const { done, value } = xs.next();
           if (done) return;
           for (const cache of caches) cache.push(value);
         }
@@ -400,42 +406,39 @@ export const tee = R.curry((n, iterable) => {
 
 // yield groups of length n
 // Integer -> Iterable<T> -> Iterator<[T]>
-export const splitEvery = R.curry(function* (n, iterable) {
+export const splitEvery = R.curry(function* (n, xs) {
   let group = [];
-  yield* flatMap(function* (item) {
-    group.push(item);
+  yield* flatMap(function* (x) {
+    group.push(x);
     if (group.length < n) return;
     yield group;
     group = [];
-  }, iterable);
+  }, xs);
   if (group.length) yield group;
 });
 
 // split an iterable into a pair of iterables at a particular index
 // Integer -> Iterable<T> -> [Iterator<T>, Iterator<T>]
-export const splitAt = R.curry((n, iterable) => {
-  const [it1, it2] = tee(2, iterable);
+export const splitAt = R.curry((n, xs) => {
+  const [it1, it2] = tee(2, xs);
   return [take(n, it1), drop(n, it2)];
 });
 
 // split an iterable into a pair of iterables based on the truthiness of their predicate
 // (T -> Boolean) -> Iterable<T> -> [Iterator<T>, Iterator<T>]
-export const partition = R.curry((pred, iterable) => {
-  const [pass, fail] = tee(2, iterable);
-  return [
-    filter(pred, pass),
-    reject(pred, fail),
-  ];
+export const partition = R.curry((f, xs) => {
+  const [pass, fail] = tee(2, xs);
+  return [filter(f, pass), reject(f, fail)];
 });
 
 // flattens n-levels of a nested iterable of iterables
 // Number -> Iterable<Iterable<T>> -> Iterator<T>
-export const flattenN = R.curry((n, iterable) => {
-  if (n < 1) return iterable;
-  return flatMap(function* (item) {
-    if (!isIterable(item)) return yield item;
-    yield* flattenN(n - 1, item);
-  }, iterable);
+export const flattenN = R.curry((n, xs) => {
+  if (n < 1) return xs;
+  return flatMap(function* (x) {
+    if (!isIterable(x)) return yield x;
+    yield* flattenN(n - 1, x);
+  }, xs);
 });
 
 // flattens one level of a nested iterable of iterables
@@ -448,10 +451,10 @@ export const flatten = flattenN(Infinity);
 
 // yield all items from an iterator, n times
 // Integer -> Iterable<T> -> Iterator<T>
-export const cycleN = R.curry(function* (n, iterable) {
+export const cycleN = R.curry(function* (n, xs) {
   if (n < 1) return;
   const buffer = [];
-  yield* forEach((item) => buffer.push(item), iterable);
+  yield* forEach(x => buffer.push(x), xs);
   while (n-- > 1) yield* buffer;
 });
 
@@ -461,7 +464,7 @@ export const cycle = cycleN(Infinity);
 
 // transforms an iterable of n-tuple into an n-tuple of iterables
 // Number -> Iterable<[A, B, ...Z]> -> [Iterator<A>, Iterator<B>, ...Iterator<Z>]
-export const unzipN = pipeC(tee, R.addIndex(R.map)((iter, i) => map(nth(i), iter)));
+export const unzipN = pipeC(tee, R.addIndex(R.map)((xs, i) => map(nth(i), xs)));
 
 // transforms an iterable of pairs into a pairs of iterables
 // Iterable<[A, B]> -> [Iterator<A>, Iterator<B>]
@@ -470,7 +473,7 @@ export const unzip = unzipN(2);
 // insert an item (T) between every item in the iterable
 // T -> Iterable<T> -> Iterator<T>
 export const intersperse = R.useWith(flatMap, [
-  spacer => ([i, item]) => (i ? [spacer, item] : [item]),
+  spacer => ([i, x]) => (i ? [spacer, x] : [x]),
   enumerate,
 ]);
 
@@ -511,9 +514,9 @@ export const indices = R.pipe(enumerate, map(R.head));
 
 // pad an iterable with with a finite number of items (T)
 // Integer -> T -> Iterable<T> -> Iterator<T>
-export const padTo = R.curry(function* (len, padder, iterable) {
+export const padTo = R.curry(function* (len, padder, xs) {
   let n = 0;
-  yield* forEach((item) => n++, iterable);
+  yield* forEach((item) => n++, xs);
   if (n < len) yield* times(len - n, padder);
 });
 

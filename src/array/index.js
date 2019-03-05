@@ -1,5 +1,5 @@
 // core
-import util from 'util';
+import { deprecate } from 'util';
 
 // modules
 import * as R from 'ramda';
@@ -12,9 +12,8 @@ import { random } from 'funk-lib/number';
 // [v] -> object<k, v>
 export const toObj = R.pipe(R.toPairs, R.fromPairs);
 
-// @deprecated
 // (a -> b) -> [a] -> object<b, a>
-export const toObjBy = R.curryN(2)(util.deprecate(
+export const toObjBy = R.curryN(2)(deprecate(
   R.indexBy,
   'funk-lib/object/toObjBy -> R.indexBy'
 ));

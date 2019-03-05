@@ -1,5 +1,5 @@
 // core
-import * as util from 'util';
+import { deprecate } from 'util';
 
 // modules
 import {
@@ -19,11 +19,11 @@ export const localeCompare = invoker(1, 'localeCompare');
 
 // todo: deprecate these
 // string -> string
-export const toUpperCase = unary(util.deprecate(
+export const toUpperCase = unary(deprecate(
   toUpper,
   'funk-lib/string/toUpperCase -> R.toUpper'
 ));
-export const toLowerCase = unary(util.deprecate(
+export const toLowerCase = unary(deprecate(
   toLower,
   'funk-lib/string/toLowerCase -> R.toLower'
 ));

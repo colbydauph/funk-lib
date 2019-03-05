@@ -16,7 +16,7 @@ describe('src', () => {
   
   readDirSync(SRC, fs)
     .filter(file => isDirSync(path.join(SRC, file), fs))
-    .forEach((module) => {
+    .forEach(module => {
       
       it(`should export the ${ module } module`, () => {
         expect(index[module]).to.eql(

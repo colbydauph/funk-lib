@@ -171,6 +171,8 @@ export const filter = R.curry(async function* (f, xs) {
 // (T -> Promise<Boolean>) -> Iterable<T> -> AsyncIterator<T>
 export const reject = R.useWith(filter, [complementP, R.identity]);
 
+// todo: would be better to use an option type here
+// can this be done whilst maintaining operability with non-monad returns?
 // (A -> AsyncIterator<B>) -> A -> AsyncIterator<B>
 export const flatUnfold = R.curry(async function* (f, x) {
   do {

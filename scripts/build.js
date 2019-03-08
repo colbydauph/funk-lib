@@ -92,6 +92,7 @@ const toHumanJSON = json => JSON.stringify(json, null, 2);
     transpileDir(src, esDist, { ...opts, node: false })
       .then(async _ => {
         const pack = stripPkg(pkg);
+        pack.name = `${ pack.name }-es`;
         
         await writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs);
         await copyFile(path.join(root, 'README.md'), path.join(esDist, 'README.md'), fs);
@@ -100,7 +101,7 @@ const toHumanJSON = json => JSON.stringify(json, null, 2);
     transpileDir(src, cjsDist, { ...opts, node: pkg.engines.node })
       .then(async _ => {
         const pack = stripPkg(pkg);
-        pack.name = `${ pack.name }-cjs`;
+        pack.name = `${ pack.name }`;
         
         await writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs);
         await copyFile(path.join(root, 'README.md'), path.join(cjsDist, 'README.md'), fs);

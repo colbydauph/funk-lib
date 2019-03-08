@@ -4,13 +4,18 @@ Functional JavaScript Utilities
 
 ## Install
 ```shell
-$ npm i -P github:colbydauph/funk-lib#0.14.0
+$ npm i -P colbydauph/funk-lib
+# or: es-module compatible build
+$ npm i -P colbydauph/funk-lib-es
 ```
 
 ## Import
 ```javascript
 const { mapKeys } = require('funk-lib/object');
+// or: es-module compatible build
+import { mapKeys } from 'funk-lib-es/object';
 ```
+
 
 ## Development
 

@@ -71,7 +71,14 @@ const transpileDir = async (src, dist, opts) => {
 const stripPkg = R.omit(['devDependencies', 'nyc']);
 const toHumanJSON = json => JSON.stringify(json, null, 2);
 
+const copyOtherFiles = R.curry(async (src, dist, fs) => {
+  await Promise.all(
+    ['./README.md', './LICENSE']
+      .map(file => copyFile(path.join(src, file), path.join(dist, file), fs))
+  );
+});
 
+// eslint-disable-next-line max-statements
 (async () => {
   
   const ignore = [
@@ -94,20 +101,22 @@ const toHumanJSON = json => JSON.stringify(json, null, 2);
   await Promise.all([
     transpileDir(src, esDist, { ...opts, node: false })
       .then(async _ => {
-        const pack = stripPkg(pkg);
-        pack.name = `${ pack.name }-es`;
+        const pack = { ...stripPkg(pkg), name: `${ pkg.name }-es` };
         
-        await writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs);
-        await copyFile(path.join(root, 'README.md'), path.join(esDist, 'README.md'), fs);
+        await Promise.all([
+          writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs),
+          copyOtherFiles(root, esDist, fs),
+        ]);
       })
       .catch(err => console.error('Error transpiling es', err)),
     transpileDir(src, cjsDist, { ...opts, node: pkg.engines.node })
       .then(async _ => {
         const pack = stripPkg(pkg);
-        pack.name = `${ pack.name }`;
         
-        await writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs);
-        await copyFile(path.join(root, 'README.md'), path.join(cjsDist, 'README.md'), fs);
+        await Promise.all([
+          writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs),
+          copyOtherFiles(root, cjsDist, fs),
+        ]);
       })
       .catch(err => console.error('Error transpiling cjs', err)),
   ]);

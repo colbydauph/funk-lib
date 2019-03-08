@@ -1,4 +1,11 @@
+/* istanbul ignore file */
 'use strict';
+
+const srcRoot = ({ env, node }) => {
+  if (env === 'test') return './src';
+  if (node) return './dist/cjs';
+  return './dist/es';
+};
 
 module.exports = ({
   env = 'production',
@@ -21,9 +28,10 @@ module.exports = ({
     plugins: [
       '@babel/plugin-proposal-export-namespace-from',
       ['module-resolver', {
+        root: ['.'],
         alias: {
           ...alias,
-          'funk-lib': (env === 'test') ? './src' : '..',
+          'funk-lib': srcRoot({ env, node }),
         },
       }],
     ],

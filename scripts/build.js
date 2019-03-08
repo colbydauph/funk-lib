@@ -29,9 +29,12 @@ const { NODE_ENV } = process.env;
 
 const transpileFile = async (src, dist, opts) => {
   if (!isFile(src, fs)) throw Error(`${ src } is not a file`);
-  
+    
   const input = await readFile(src, fs);
-  const { code: output } = await babel.transformAsync(input, config(opts));
+  const { code: output } = await babel.transformAsync(input, {
+    ...config(opts),
+    filename: dist,
+  });
   const { dir: distDir } = path.parse(dist);
   
   // ensure dir exists before writing file to it

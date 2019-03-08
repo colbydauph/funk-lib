@@ -1,6 +1,6 @@
 {
   "name": "funk-lib",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "engines": {
     "node": "8.10"
   },
@@ -31,7 +31,7 @@
   },
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
-    "build": "NODE_ENV=production rm -rf dist && node scripts/build",
+    "build": "rm -rf dist && NODE_ENV=production node scripts/build",
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "NODE_ENV=test mocha --reporter=list --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "NODE_ENV=test mocha --watch --reporter=min --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",

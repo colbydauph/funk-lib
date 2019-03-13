@@ -6,7 +6,7 @@ import * as R from 'ramda';
 // aliased
 import { pipeC } from 'funk-lib/function';
 import { pipeC as asyncPipeC, reduce as reduceP } from 'funk-lib/async';
-import { is, isIterable } from 'funk-lib/is';
+import { is, isIterable, isAsyncIterable } from 'funk-lib/is';
 
 // local
 import StopIteration from './stop-iteration';
@@ -22,8 +22,18 @@ const complementP = f => R.curryN(f.length)(async (...args) => !await f(...args)
 
 // todo: consider replacing "is" with R.equals
 
+// (A -> Promise<B>) -> Iterable<A> -> AsyncIterator<B>
+export const map = R.curry(async function* (f, xs) {
+  for await (const x of xs) yield await f(x);
+});
+
+// returns an iterator from an iterable
+// Iterable<T> -> AsyncIterator<T>
+export const from = map(R.identity);
+
 // * -> Iterable<T> -> Promise<T|*>
 export const nextOr = R.curry(async (or, iterator) => {
+  iterator = from(iterator);
   const { value, done } = await iterator.next();
   return done ? or : value;
 });
@@ -31,6 +41,7 @@ export const nextOr = R.curry(async (or, iterator) => {
 // returns the first or "next" item. aka head
 // Iterable<T> -> Promise<T>
 export const next = async iterator => {
+  iterator = from(iterator);
   const err = new StopIteration();
   const out = await nextOr(err, iterator);
   if (out === err) throw err;
@@ -49,15 +60,6 @@ export const last = async xs => {
 export const flatMap = R.curry(async function* (f, xs) {
   for await (const x of xs) yield* await f(x);
 });
-
-// (A -> Promise<B>) -> Iterable<A> -> AsyncIterator<B>
-export const map = R.curry(async function* (f, xs) {
-  for await (const x of xs) yield await f(x);
-});
-
-// returns an iterator from an iterable
-// Iterable<T> -> AsyncIterator<T>
-export const from = map(R.identity);
 
 // create an iterator of one or more (variadic) arguments
 // T... -> AsyncIterator<T>
@@ -171,15 +173,26 @@ export const filter = R.curry(async function* (f, xs) {
 // (T -> Promise<Boolean>) -> Iterable<T> -> AsyncIterator<T>
 export const reject = R.useWith(filter, [complementP, R.identity]);
 
-// todo: would be better to use an option type here
-// can this be done whilst maintaining operability with non-monad returns?
-// (A -> AsyncIterator<B>) -> A -> AsyncIterator<B>
-export const flatUnfold = R.curry(async function* (f, x) {
-  do {
-    x = yield* await f(x);
-  } while (x);
+// flattens n-levels of a nested iterable of iterables
+// Number -> Iterable<Iterable<T>> -> AsyncIterator<T>
+export const flattenN = R.curry((n, xs) => {
+  if (n < 1) return xs;
+  return flatMap(async function* (x) {
+    if (!(isIterable(x) || isAsyncIterable(x))) return yield x;
+    yield* flattenN(n - 1, x);
+  }, xs);
 });
 
+// flattens one level of a nested iterable of iterables
+// Iterable<Iterable<T>> -> AsyncIterator<T>
+export const unnest = flattenN(1);
+
+// flattens a nested iterable of iterables into a single iterable
+// Iterable<Iterable<T>> -> AsyncIterator<T>
+export const flatten = flattenN(Infinity);
+
+// todo: would be better to use an option type here
+// can this be done whilst maintaining operability with non-monad returns?
 // (A -> Promise<[B, A]>) -> * -> AsyncIterator<B>
 export const unfold = R.curry(async function* (f, x) {
   let pair = await f(x);
@@ -189,12 +202,21 @@ export const unfold = R.curry(async function* (f, x) {
   }
 });
 
+// (A -> Promise<[Iterable<B>, A]>) -> * -> AsyncIterator<B>
+export const flatUnfold = pipeC(unfold, unnest);
+
+// (T -> Iterable<A>) -> T -> AsyncIterator<A>
+export const flatIterate = R.curry(async function* flatIterate(f, x) {
+  while (true) x = yield* await f(x);
+});
+
 // iterate infinitely, yielding items from seed through a predicate
 // (T -> Promise<T>) -> T -> AsyncIterator<T>
 export const iterate = R.useWith(unfold, [
   f => async x => [x, await f(x)],
   R.identity,
 ]);
+
 
 // todo: consider calling this any
 // does any item pass the predicate?
@@ -448,24 +470,6 @@ export const partition = R.curry((f, xs) => {
   return [filter(f, pass), reject(f, fail)];
 });
 
-// flattens n-levels of a nested iterable of iterables
-// Number -> Iterable<Iterable<T>> -> AsyncIterator<T>
-export const flattenN = R.curry((n, xs) => {
-  if (n < 1) return xs;
-  return flatMap(async function* (x) {
-    if (!isIterable(x)) return yield x;
-    yield* flattenN(n - 1, x);
-  }, xs);
-});
-
-// flattens one level of a nested iterable of iterables
-// Iterable<Iterable<T>> -> AsyncIterator<T>
-export const unnest = flattenN(1);
-
-// flattens a nested iterable of iterables into a single iterable
-// Iterable<Iterable<T>> -> AsyncIterator<T>
-export const flatten = flattenN(Infinity);
-
 // yield all items from an iterator, n times
 // Integer -> Iterable<T> -> AsyncIterator<T>
 export const cycleN = R.curry(async function* (n, xs) {
@@ -540,6 +544,7 @@ export const padTo = R.curry(async function* (len, padder, xs) {
 // pad iterable with an infinite number of items (T)
 // T -> Iterable<T> -> AsyncIterator<T>
 export const pad = padTo(Infinity);
+
 
 // const unionWith = R.curry(() => {});
 // const union = unionWith(is);

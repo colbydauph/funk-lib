@@ -14,8 +14,18 @@ export { yieldWith } from './yield-with';
 
 // todo: consider replacing "is" with R.equals
 
+// (A -> B) -> Iterable<A> -> Iterator<B>
+export const map = R.curry(function* (f, xs) {
+  for (const x of xs) yield f(x);
+});
+
+// returns an iterator from an iterable
+// Iterable<T> -> Iterator<T>
+export const from = map(R.identity);
+
 // * -> Iterable<T> -> T | *
 export const nextOr = R.curry((or, iterator) => {
+  iterator = from(iterator);
   const { value, done } = iterator.next();
   return done ? or : value;
 });
@@ -23,6 +33,7 @@ export const nextOr = R.curry((or, iterator) => {
 // returns the first or "next" item. aka head
 // Iterable<T> -> T
 export const next = iterator => {
+  iterator = from(iterator);
   const err = new StopIteration();
   const out = nextOr(err, iterator);
   if (out === err) throw err;
@@ -41,15 +52,6 @@ export const last = xs => {
 export const flatMap = R.curry(function* (f, xs) {
   for (const x of xs) yield* f(x);
 });
-
-// (A -> B) -> Iterable<A> -> Iterator<B>
-export const map = R.curry(function* (f, xs) {
-  for (const x of xs) yield f(x);
-});
-
-// returns an iterator from an iterable
-// Iterable<T> -> Iterator<T>
-export const from = map(R.identity);
 
 // create an iterator of one or more (variadic) arguments
 // T... -> Iterator<T>
@@ -162,12 +164,23 @@ export const filter = R.curry(function* (f, xs) {
 // (T -> Boolean) -> Iterable<T> -> Iterator<T>
 export const reject = R.useWith(filter, [R.complement, R.identity]);
 
-// (A -> Iterator<B>) -> A -> Iterator<B>
-export const flatUnfold = R.curry(function* (f, x) {
-  do {
-    x = yield* f(x);
-  } while (x);
+// flattens n-levels of a nested iterable of iterables
+// Number -> Iterable<Iterable<T>> -> Iterator<T>
+export const flattenN = R.curry((n, xs) => {
+  if (n < 1) return xs;
+  return flatMap(function* (x) {
+    if (!isIterable(x)) return yield x;
+    yield* flattenN(n - 1, x);
+  }, xs);
 });
+
+// flattens one level of a nested iterable of iterables
+// Iterable<Iterable<T>> -> Iterator<T>
+export const unnest = flattenN(1);
+
+// flattens a nested iterable of iterables into a single iterable
+// Iterable<Iterable<T>> -> Iterator<T>
+export const flatten = flattenN(Infinity);
 
 // (A -> [B]) -> * -> Iterator<B>
 export const unfold = R.curry(function* (f, x) {
@@ -176,6 +189,14 @@ export const unfold = R.curry(function* (f, x) {
     yield pair[0];
     pair = f(pair[1]);
   }
+});
+
+// (A -> [Iterable<B>, A]) -> * -> Iterator<B>
+export const flatUnfold = pipeC(unfold, unnest);
+
+// (T -> Iterable<A>) -> T -> Iterator<A>
+export const flatIterate = R.curry(function* flatIterate(f, x) {
+  while (true) x = yield* f(x);
 });
 
 // iterate infinitely, yielding items from seed through a predicate
@@ -430,24 +451,6 @@ export const partition = R.curry((f, xs) => {
   const [pass, fail] = tee(2, xs);
   return [filter(f, pass), reject(f, fail)];
 });
-
-// flattens n-levels of a nested iterable of iterables
-// Number -> Iterable<Iterable<T>> -> Iterator<T>
-export const flattenN = R.curry((n, xs) => {
-  if (n < 1) return xs;
-  return flatMap(function* (x) {
-    if (!isIterable(x)) return yield x;
-    yield* flattenN(n - 1, x);
-  }, xs);
-});
-
-// flattens one level of a nested iterable of iterables
-// Iterable<Iterable<T>> -> Iterator<T>
-export const unnest = flattenN(1);
-
-// flattens a nested iterable of iterables into a single iterable
-// Iterable<Iterable<T>> -> Iterator<T>
-export const flatten = flattenN(Infinity);
 
 // yield all items from an iterator, n times
 // Integer -> Iterable<T> -> Iterator<T>

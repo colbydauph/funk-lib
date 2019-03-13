@@ -1,6 +1,10 @@
 # funk-lib
 
-Functional JavaScript Utilities
+Functional JavaScript Library
+
+[![CircleCI](https://circleci.com/gh/colbydauph/funk-lib/tree/master.svg?style=svg)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
+[![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
+
 
 ## Install
 ```shell

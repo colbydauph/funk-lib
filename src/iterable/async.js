@@ -22,7 +22,10 @@ const complementP = f => R.curryN(f.length)(async (...args) => !await f(...args)
 
 // todo: consider replacing "is" with R.equals
 
-// (A -> Promise<B>) -> Iterable<A> -> AsyncIterator<B>
+/** map
+  * @func
+  * @sig (A -> Promise<B>) -> Iterable<A> -> AsyncIterator<B>
+*/
 export const map = R.curry(async function* (f, xs) {
   for await (const x of xs) yield await f(x);
 });

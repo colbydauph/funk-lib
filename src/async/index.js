@@ -60,8 +60,12 @@ export const deferred = () => {
   };
 };
 
-// @async (series)
-// ((a, t) -> a) -> a -> [t] -> a
+
+/** reduce
+  * @async
+  * @func
+  * @sig ((a, t) -> a) -> a -> [t] -> a
+*/
 export const reduce = R.curry(async (f, acc, xs) => {
   for (const x of xs) acc = await f(acc, x);
   return acc;

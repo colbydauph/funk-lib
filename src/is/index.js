@@ -37,8 +37,13 @@ export const isInstanceOf = R.curry((type, thing) => (thing instanceof type));
 export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 // * -> boolean
 export const isBoolean = isTypeOf('boolean');
-// * -> boolean
+
+/** Test for date type
+  * @func
+  * @sig * -> boolean
+*/
 export const isDate = isInstanceOf(Date);
+
 // * -> boolean
 export const isRegExp = isInstanceOf(RegExp);
 // * -> boolean

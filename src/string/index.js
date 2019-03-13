@@ -35,8 +35,10 @@ export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
 // eslint-disable-next-line no-useless-escape
 export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
-// reasonably similar to js template literals
-// string -> object -> string
+/** reasonably similar to js template literals
+  * @func
+  * @sig string -> object -> string
+*/
 export const template = curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {
     return variables[variable.trim()] || '';

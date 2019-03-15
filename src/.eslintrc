@@ -1,3 +1,5 @@
 extends: defaults/node
 parserOptions:
   sourceType: module
+rules:
+  valid-jsdoc: 0

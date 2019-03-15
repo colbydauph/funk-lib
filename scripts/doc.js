@@ -59,8 +59,10 @@ const toHTML = (modules) => {
     </html>
 `;
 };
+const SOURCE_HOST = 'https://github.com/colbydauph/funk-lib/blob/feat-docs/src';
 
 awaitPiped()
+  // eslint-disable-next-line max-statements
   .then(R.reduce((out, doc) => {
       
     const {
@@ -75,7 +77,7 @@ awaitPiped()
     
     if (kind === 'package') return out;
     if (/\.test\.js$/.test(doc.meta.filename)) return out;
-    if (kind === 'module') return R.assoc(name, {}, out);
+    if (kind === 'module') return out;
     
     const parentPath = (doc.meta.filename === 'index.js')
       ? []
@@ -91,19 +93,21 @@ awaitPiped()
       return R.assoc(tag.title, tag.text, out);
     }, {});
 
+    const { filename, lineno } = doc.meta;
+    const url = `${ SOURCE_HOST }${ relative }/${ filename }#L${ lineno }`;
     return R.over(
-      R.lensProp([...modulePath, ...parentPath].join('/')),
-      R.assoc(name, { ...tags, description, examples, kind, deprecated }),
+      R.lensProp([...modulePath, ...parentPath, name].join('/')),
+      _ => ({ ...tags, description, examples, kind, deprecated, url }),
       out
     );
     
   }, {}))
   .then(R.tap(obj => console.log(JSON.stringify(obj, null, 2))))
-  .then(toHTML)
-  .then(html => writeFile(
-    html,
-    path.join(__dirname, '../doc.html'),
-    fs
-  ))
-  .then(console.log)
+  // .then(toHTML)
+  // .then(html => writeFile(
+  //   html,
+  //   path.join(__dirname, '../doc.html'),
+  //   fs
+  // ))
+  // .then(console.log)
   .catch(console.error);

@@ -8,18 +8,34 @@ import { isObject, isIterator } from 'funk-lib/is';
 // local
 import mapLimitCallback from './map-limit-cb';
 
+export class TimeoutError extends Error {}
 
-// @async parallel resolve promises
+/** parallel resolve promises
+  * @async
+  * @func
+  * @sig [promise<t>] -> [t]
+*/
 export const all = Promise.all.bind(Promise);
 
-// @async array<promise> -> *
+/** race
+  * @async
+  * @func
+  * @sig [promise<t>] -> t
+*/
 export const race = Promise.race.bind(Promise);
 
-// @async number -> undefined
+/** delay
+  * @async
+  * @func
+  * @sig number -> undefined
+*/
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
 
-// wraps a function to always return a promise
-// (a -> b) -> (a -> promise<b>)
+/** wraps a function to always return a promise
+  * @async
+  * @func
+  * @sig (a -> b) -> (a -> promise<b>)
+*/
 export const toAsync = f => async (...args) => f(...args);
 
 // returns a promise that is resolved by an err-back function
@@ -32,8 +48,13 @@ export const fromCallback = async f => {
   });
 };
 
-// make an errback-calling function promise-returning
-// inverse of callbackify
+
+/** make an errback-calling function promise-returning
+  * inverse of callbackify
+  * @async
+  * @func
+  * @sig ?
+*/
 export const promisify = f => async (...args) => {
   return fromCallback(cb => f(...args, cb));
 };
@@ -47,8 +68,11 @@ export const callbackify = f => (...args) => {
     .catch(err => cb(err));
 };
 
-// creates an externally controlled promise
-// * -> object
+/** creates an externally controlled promise
+  * @async
+  * @func
+  * @sig  * -> object
+*/
 export const deferred = () => {
   let resolve, reject;
   return {
@@ -71,17 +95,30 @@ export const reduce = R.curry(async (f, acc, xs) => {
   return acc;
 });
 
-// serial + async R.pipe
-// works with sync or async functions
+/** serial + async R.pipe. works with sync or async functions
+  * @async
+  * @func
+  * @sig (...f) -> f
+*/
 export const pipe = (f, ...fs) => async (...args) => {
   return reduce(R.applyTo, await f(...args), fs);
 };
-// curried async pipe
+
+/** curried async pipe
+  * @async
+  * @func
+  * @sig (...f) -> f
+*/
 export const pipeC = (...f) => R.curryN(f[0].length, pipe(...f));
 
-// @async
-// number -> (a -> b) -> [a] -> [b]
+
 // number -> (a -> b) -> { k: a } -> { k: b }
+
+/** map limit
+  * @async
+  * @func
+  * @sig (a -> b) -> [a] -> [b]
+*/
 export const mapLimit = R.curry(async (limit, f, xs) => {
   if (isIterator(xs)) xs = [...xs];
   
@@ -104,18 +141,30 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
   ).then(after);
 });
 
-// number -> (v -> w) -> object<k,v> -> object<k,w>
+/** map pairs limit
+  * @async
+  * @func
+  * @sig number -> (v -> w) -> object<k,v> -> object<k,w>
+*/
 export const mapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
 });
 
-// number -> (a -> b) -> [a] -> [b]
+/** for each limit
+  * @async
+  * @func
+  * @sig number -> (a -> b) -> [a] -> [a]
+*/
 export const forEachLimit = R.curry(async (limit, f, xs) => {
   await mapLimit(limit, f, xs);
   return xs;
 });
 
-// number -> (a -> boolean) -> [a] -> boolean
+/** every limit
+  * @async
+  * @func
+  * @sig number -> (a -> boolean) -> [a] -> boolean
+*/
 export const everyLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async resolve => {
     await forEachLimit(limit, async x => {
@@ -125,7 +174,11 @@ export const everyLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// number -> (a -> boolean) -> [a] -> boolean
+/** some limit
+  * @async
+  * @func
+  * @sig number -> (a -> boolean) -> [a] -> boolean
+*/
 export const someLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async resolve => {
     await forEachLimit(limit, async x => {
@@ -135,8 +188,11 @@ export const someLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// @async (parallel)
-// number -> (a -> boolean) -> [a]
+/** find limit
+  * @async
+  * @func
+  * @sig number -> (a -> boolean) -> [a]
+*/
 export const findLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async (resolve, reject) => {
     await forEachLimit(limit, async x => {
@@ -148,17 +204,27 @@ export const findLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// number -> (a -> [a]) -> [a] -> [a]
+/** flat map limit
+  * @async
+  * @func
+  * @sig number -> (a -> [a]) -> [a] -> [a]
+*/
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
-// @async (parallel)
-// number -> (a -> boolean) -> [a] -> [a]
+/** filter limit
+  * @async
+  * @func
+  * @sig number -> (a -> boolean) -> [a] -> [a]
+*/
 export const filterLimit = R.curry(async (limit, f, xs) => {
   return flatMapLimit(limit, async x => (await f(x) ? [x] : []), xs);
 });
 
-// @async (parallel)
-// number -> [promise] -> [object]
+/** all settled limit
+  * @async
+  * @func
+  * @sig number -> [promise] -> [object]
+*/
 export const allSettledLimit = R.curry((limit, promises) => {
   return mapLimit(limit, promise => {
     return Promise
@@ -168,86 +234,144 @@ export const allSettledLimit = R.curry((limit, promises) => {
   }, promises);
 });
 
-
-
-// @async (parallel)
-// Functor f => (a -> b) -> f a -> f b
+/** map limit
+  * @async
+  * @func
+  * @sig Functor f => (a -> b) -> f a -> f b
+*/
 export const map = mapLimit(Infinity);
-// @async (series)
-// predicate -> iterable -> iterable
+
+/** map series
+  * @async
+  * @func
+  * @sig Functor f => (a -> b) -> f a -> f b
+*/
 export const mapSeries = mapLimit(1);
 
-
-// @async (parallel)
-// (v -> w) -> object<k,v> -> object<k,w>
+/** map pairs
+  * @async
+  * @func
+  * @sig (v -> w) -> object<k,v> -> object<k,w>
+*/
 export const mapPairs = mapPairsLimit(Infinity);
-// @async (series)
-// (v -> w) -> object<k,v> -> object<k,w>
+
+/** map pairs series
+  * @async
+  * @func
+  * @sig (v -> w) -> object<k,v> -> object<k,w>
+*/
 export const mapPairsSeries = mapPairsLimit(1);
 
-
-// @async (parallel)
-// (a -> b) -> [a] -> [b]
+/** parallel for each
+  * @async
+  * @func
+  * @sig (a -> b) -> [a] -> [a]
+*/
 export const forEach = forEachLimit(Infinity);
-// @async (series)
-// (a -> b) -> [a] -> [b]
+
+/** for each series
+  * @async
+  * @func
+  * @sig (a -> b) -> [a] -> [a]
+*/
 export const forEachSeries = forEachLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> boolean
+/** parallel every
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> boolean
+*/
 export const every = everyLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> boolean
+
+/** every series
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> boolean
+*/
 export const everySeries = everyLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> boolean
+/** parallel some
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> boolean
+*/
 export const some = someLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> boolean
+
+/** some series
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> boolean
+*/
 export const someSeries = someLimit(1);
 
-
-// @async (parallel)
-// predicate -> iterable<a> -> a
+/** parallel find
+  * @async
+  * @func
+  * @sig (t -> boolean) -> [t] -> t
+*/
 export const find = findLimit(Infinity);
-// @async (series)
-// predicate -> iterable<a> -> a
+
+/** find series
+  * @async
+  * @func
+  * @sig (t -> boolean) -> [t] -> t
+*/
 export const findSeries = findLimit(1);
 
-
-// @async (parallel)
-// (a -> [a]) -> [a] -> [a]
+/** parallel flatMap (chain)
+  * @async
+  * @func
+  * @sig (a -> [a]) -> [a] -> [a]
+*/
 export const flatMap = flatMapLimit(Infinity);
-// @async (series)
-// (a -> [a]) -> [a] -> [a]
+
+/** flatMap series (chain)
+  * @async
+  * @func
+  * @sig (a -> [a]) -> [a] -> [a]
+*/
 export const flatMapSeries = flatMapLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> [a]
+/** parallel filter
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> [a]
+*/
 export const filter = filterLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> [a]
+
+/** filter series
+  * @async
+  * @func
+  * @sig (a -> boolean) -> [a] -> [a]
+*/
 export const filterSeries = filterLimit(1);
 
-
-// @async array<promise> -> array<object>
+/** parallel all settled
+  * @async
+  * @func
+  * @sig [promise] -> [object]
+*/
 export const allSettled = allSettledLimit(Infinity);
 
-// @async array<promise> -> array<object>
+/** all settled series
+  * @async
+  * @func
+  * @sig [promise] -> [object]
+*/
 export const allSettledSeries = allSettledLimit(1);
 
-
-// @async (parallel)
-// object -> object
+/** parallel props
+  * @async
+  * @func
+  * @sig object<a, promise<b>> -> object<a, b>
+*/
 export const props = mapPairs(async ([key, val]) => [key, await val]);
 
-// timeout a promise. timeout throws TimeoutError
-export class TimeoutError extends Error {}
-// number -> promise -> promise
+/** timeout a promise
+  * @async
+  * @func
+  * @sig number -> promise<t> -> promise<t>
+*/
 export const timeout = R.curry((ms, promise) => race([
   promise,
   delay(ms).then(() => {

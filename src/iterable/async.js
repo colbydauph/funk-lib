@@ -22,9 +22,14 @@ const complementP = f => R.curryN(f.length)(async (...args) => !await f(...args)
 
 // todo: consider replacing "is" with R.equals
 
-/** map
+/** Applies a function to each of an async iterable's yielded items. Works on all iterables
   * @func
   * @sig (A -> Promise<B>) -> Iterable<A> -> AsyncIterator<B>
+  * @example
+  * const iter = from([1, 2, 3])
+  *
+  * // from([2, 4, 6])
+  * map(async n => n * 2, iter)
 */
 export const map = R.curry(async function* (f, xs) {
   for await (const x of xs) yield await f(x);
@@ -59,7 +64,18 @@ export const last = async xs => {
   return last;
 };
 
-// (A -> Iterable<B>) -> Iterable<A> -> AsyncIterator<B>
+/** flat map
+  * @func
+  * @sig (a -> iterable<b>) -> iterable<a> -> asynciterator<b>
+  * @example
+  * const iter = from([1, 2, 3])
+  *
+  * // from([1, 2, 2, 4, 3, 6])
+  * flatMap(async function* (n) {
+  *   yield await n;
+  *   yield await n * 2;
+  * }, iter)
+*/
 export const flatMap = R.curry(async function* (f, xs) {
   for await (const x of xs) yield* await f(x);
 });

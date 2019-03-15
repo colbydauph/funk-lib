@@ -28,7 +28,10 @@ export const toLowerCase = unary(deprecate(
   'funk-lib/string/toLowerCase -> R.toLower'
 ));
 
-// string -> string
+/** capitalize the first letter of a string
+  * @func
+  * @sig string -> string
+*/
 export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
 
 // string -> string
@@ -56,7 +59,10 @@ const encodeFrom = curry((from, to, string) => Buffer
 export const toBase64 = encodeFrom('utf8', 'base64');
 export const parseBase64 = encodeFrom('base64', 'utf8');
 
-// string -> string
+/** slugify
+  * @func
+  * @sig string -> string
+*/
 export const slugify = pipe(
   toLower,
   replace(/[^a-z0-9]/gi, '-'),

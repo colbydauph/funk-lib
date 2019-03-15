@@ -12,8 +12,21 @@ export const hashWith = curry((algo, str) => crypto
   .digest('hex'));
 
 // string -> string
+
+/** md5 hash
+  * @func
+  * @sig string -> string
+*/
 export const md5 = hashWith('md5');
-// string -> string
+
+/** sha256 hash
+  * @func
+  * @sig string -> string
+*/
 export const sha256 = hashWith('sha256');
-// string -> string
+
+/** sha512 hash
+  * @func
+  * @sig string -> string
+*/
 export const sha512 = hashWith('sha512');

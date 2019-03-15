@@ -1,9 +1,11 @@
 // core
 import { Readable as ReadableStream } from 'stream';
 
-
-// stream -> string
-export const toString = async (stream) => {
+/** stream to string
+  * @func
+  * @sig stream -> string
+*/
+export const toString = async stream => {
   return new Promise((resolve, reject) => {
     const chunks = [];
     /* eslint-disable indent */
@@ -14,8 +16,11 @@ export const toString = async (stream) => {
   });
 };
 
-// string -> stream
-export const fromString = (string) => {
+/** string to stream
+  * @func
+  * @sig string -> stream
+*/
+export const fromString = string => {
   const stream = new ReadableStream();
   // eslint-disable-next-line no-underscore-dangle
   stream._read = () => {};

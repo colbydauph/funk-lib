@@ -70,7 +70,10 @@ export const hslToRgb = ({ h, s, l }) => {
   };
 };
 
-// string -> { r, g, b }
+/** hex to rgb
+  * @func
+  * @sig string -> { r, g, b }
+*/
 export const hexToRgb = (hex) => {
   // expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;

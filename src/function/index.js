@@ -1,13 +1,27 @@
 import { curry, curryN, pipe } from 'ramda';
 
 
-// curried pipe
+/** curried pipe
+  * @func
+  * @sig ...f -> f
+*/
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
-// (b -> b -> c) -> (a -> b) -> a -> a -> c
+/** on
+  * @func
+  * @sig (b -> b -> c) -> (a -> b) -> a -> a -> c
+  * @example
+  * const records = [{ age: 9 }, { age: 1 }, { age: 3 }];
+  *
+  * // [{ age: 1 }, { age: 3 }, { age: 9 }]
+  * R.sort(on(R.subtract, R.prop('age'))), records);
+*/
 export const on = curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 
-// (a -> b) -> (a -> b)
+/** once
+  * @func
+  * @sig (a -> b) -> (a -> b)
+*/
 export const once = fn => {
   let called = false;
   let res;
@@ -20,5 +34,8 @@ export const once = fn => {
   };
 };
 
-// "no-op"
+/** "no-op"
+  * @func
+  * @sig * -> undefined
+*/
 export const noop = () => {};

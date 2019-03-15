@@ -144,7 +144,7 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
 /** map pairs limit
   * @async
   * @func
-  * @sig number -> (v -> w) -> object<k,v> -> object<k,w>
+  * @sig number -> ([a, b] -> [c, d]) -> { a: b } -> { c: d }
 */
 export const mapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
@@ -207,7 +207,12 @@ export const findLimit = R.curry(async (limit, f, xs) => {
 /** flat map limit
   * @async
   * @func
-  * @sig number -> (a -> [a]) -> [a] -> [a]
+  * @sig number -> (a -> [b]) -> [a] -> [b]
+  * @example
+  * const array = [1, 2, 3];
+  *
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMapLimit(2, async n => [n, n * 2], array)
 */
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
@@ -251,14 +256,14 @@ export const mapSeries = mapLimit(1);
 /** map pairs
   * @async
   * @func
-  * @sig (v -> w) -> object<k,v> -> object<k,w>
+  * @sig ([a, b] -> [c, d]) -> { a: b } -> { c: d }
 */
 export const mapPairs = mapPairsLimit(Infinity);
 
 /** map pairs series
   * @async
   * @func
-  * @sig (v -> w) -> object<k,v> -> object<k,w>
+  * @sig ([a, b] -> [c, d]) -> { a: b } -> { c: d }
 */
 export const mapPairsSeries = mapPairsLimit(1);
 
@@ -321,14 +326,24 @@ export const findSeries = findLimit(1);
 /** parallel flatMap (chain)
   * @async
   * @func
-  * @sig (a -> [a]) -> [a] -> [a]
+  * @sig (a -> [b]) -> [a] -> [b]
+  * @example
+  * const array = [1, 2, 3];
+  *
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMap(async n => [n, n * 2], array)
 */
 export const flatMap = flatMapLimit(Infinity);
 
 /** flatMap series (chain)
   * @async
   * @func
-  * @sig (a -> [a]) -> [a] -> [a]
+  * @sig (a -> [b]) -> [a] -> [b]
+  * @example
+  * const array = [1, 2, 3];
+  *
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMapSeries(async n => [n, n * 2], array)
 */
 export const flatMapSeries = flatMapLimit(1);
 
@@ -363,7 +378,7 @@ export const allSettledSeries = allSettledLimit(1);
 /** parallel props
   * @async
   * @func
-  * @sig object<a, promise<b>> -> object<a, b>
+  * @sig { a: promise<b> } -> { a: b }
 */
 export const props = mapPairs(async ([key, val]) => [key, await val]);
 

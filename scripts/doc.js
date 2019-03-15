@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 'use strict';
 
-const path = require('path');
+// const path = require('path');
 const R = require('ramda');
-const fs = require('fs');
-const { writeFile }  = require('funk-fs');
+// const fs = require('fs');
+// const { writeFile }  = require('funk-fs');
 const prefix = '/Users/colby/Development/funk-lib/src';
 
 const awaitPiped = async () => {

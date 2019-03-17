@@ -1,5 +1,3 @@
-/** @module array */
-
 // core
 import { deprecate } from 'util';
 
@@ -13,11 +11,14 @@ import { random } from 'funk-lib/number';
 /** Transform an array into an object, where keys are indices, and values are elements.
   * @func
   * @todo rename to index
-  * @sig [v] -> { k: v }
+  * @sig [ k: v ] -> { k: v }
+  * @example
+  * toObj(['a', 'b', 'c']) // { 0: a, 1: b, 2: c }
 */
 export const toObj = R.pipe(R.toPairs, R.fromPairs);
 
 /** Given a function that generates a key, turns a list of objects into an object indexing the objects by the given key
+  * @ignore
   * @func
   * @deprecated
   * @sig (a -> b) -> [a] -> { b: a }
@@ -30,6 +31,8 @@ export const toObjBy = R.curryN(2)(deprecate(
 /** Select a random array item
   * @func
   * @sig [t] -> t
+  * @example
+  * sample([0, 1, 2, 3, 4, 5]) // 2
 */
 export const sample = arr => arr[random(0, arr.length - 1)];
 

@@ -72,6 +72,7 @@ awaitPiped()
       examples = [],
       description = '',
       deprecated,
+      ignore,
     } = doc;
     if (undocumented) return out;
     
@@ -97,7 +98,7 @@ awaitPiped()
     const url = `${ SOURCE_HOST }${ relative }/${ filename }#L${ lineno }`;
     return R.over(
       R.lensProp([...modulePath, ...parentPath, name].join('/')),
-      _ => ({ ...tags, description, examples, kind, deprecated, url }),
+      _ => ({ ...tags, description, examples, kind, deprecated, url, ignore }),
       out
     );
     

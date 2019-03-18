@@ -73,6 +73,7 @@ awaitPiped()
       description = '',
       deprecated,
       ignore,
+      tags = [],
     } = doc;
     if (undocumented) return out;
     
@@ -89,16 +90,22 @@ awaitPiped()
     const modulePath = relative
       .replace(/^\/|\/$/, '')
       .split('/');
-      
-    const tags = doc.tags.reduce((out, tag) => {
-      return R.assoc(tag.title, tag.text, out);
-    }, {});
 
     const { filename, lineno } = doc.meta;
     const url = `${ SOURCE_HOST }${ relative }/${ filename }#L${ lineno }`;
     return R.over(
       R.lensProp([...modulePath, ...parentPath, name].join('/')),
-      _ => ({ ...tags, description, examples, kind, deprecated, url, ignore }),
+      _ => ({
+        ...tags.reduce((out, tag) => {
+          return R.assoc(tag.title, tag.text, out);
+        }, {}),
+        description,
+        examples,
+        kind,
+        deprecated,
+        url,
+        ignore,
+      }),
       out
     );
     

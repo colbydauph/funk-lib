@@ -28,9 +28,10 @@ export const toLowerCase = unary(deprecate(
   'funk-lib/string/toLowerCase -> R.toLower'
 ));
 
-/** capitalize the first letter of a string
+/** Capitalize the first letter of a string
   * @func
-  * @sig string -> string
+  * @sig String -> String
+  * @example capitalize('hello'); // 'Hello'
 */
 export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
 
@@ -38,9 +39,9 @@ export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
 // eslint-disable-next-line no-useless-escape
 export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
-/** reasonably similar to js template literals
+/** Reasonably similar to JavaScript template literals
   * @func
-  * @sig string -> object -> string
+  * @sig String -> Object -> String
 */
 export const template = curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {
@@ -55,13 +56,23 @@ const encodeFrom = curry((from, to, string) => Buffer
   .toString(to));
   
 // encode and decode base64 strings
-// string -> string
+
+
+/** Encode a string to base64
+  * @func
+  * @sig String -> String
+*/
 export const toBase64 = encodeFrom('utf8', 'base64');
+
+/** Decode a string from base64
+  * @func
+  * @sig String -> String
+*/
 export const parseBase64 = encodeFrom('base64', 'utf8');
 
-/** slugify
+/** Slugify
   * @func
-  * @sig string -> string
+  * @sig String -> String
 */
 export const slugify = pipe(
   toLower,

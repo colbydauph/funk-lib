@@ -13,7 +13,7 @@ import { random } from 'funk-lib/number';
   * @todo rename to index
   * @sig [ k: v ] -> { k: v }
   * @example
-  * toObj(['a', 'b', 'c']) // { 0: a, 1: b, 2: c }
+  * toObj(['a', 'b', 'c']); // { 0: a, 1: b, 2: c }
 */
 export const toObj = R.pipe(R.toPairs, R.fromPairs);
 
@@ -32,7 +32,7 @@ export const toObjBy = R.curryN(2)(deprecate(
   * @func
   * @sig [t] -> t
   * @example
-  * sample([0, 1, 2, 3, 4, 5]) // 2
+  * sample([0, 1, 2, 3, 4, 5]); // 2
 */
 export const sample = arr => arr[random(0, arr.length - 1)];
 
@@ -42,7 +42,7 @@ export const sample = arr => arr[random(0, arr.length - 1)];
   * Fisher-Yates shuffle
   * @func
   * @sig [t] -> [t]
-  * @example shuffle([1, 2, 3, 4, 5]) // [4, 1, 2, 5, 3]
+  * @example shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]
 */
 export const shuffle = arr => {
   arr = [...arr];

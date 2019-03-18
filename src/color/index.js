@@ -6,8 +6,10 @@ import * as R from 'ramda';
 // aliased
 import { random } from 'funk-lib/number';
 
-
-// { r, g, b } -> { h, s, l }
+/** rgb to hsl
+  * @func
+  * @sig { r, g, b } -> { h, s, l }
+*/
 export const rgbToHsl = ({ r, g, b }) => {
   r /= 255;
   g /= 255;
@@ -38,7 +40,11 @@ export const rgbToHsl = ({ r, g, b }) => {
   return { h: (h * 360), s, l };
 };
 
-// { h, s, l } -> { r, g, b }
+
+/** hsl to rgb
+  * @func
+  * @sig { h, s, l } -> { r, g, b }
+*/
 export const hslToRgb = ({ h, s, l }) => {
   h /= 360;
   let r, g, b;
@@ -72,7 +78,7 @@ export const hslToRgb = ({ h, s, l }) => {
 
 /** hex to rgb
   * @func
-  * @sig string -> { r, g, b }
+  * @sig String -> { r, g, b }
 */
 export const hexToRgb = (hex) => {
   // expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -90,7 +96,10 @@ export const hexToRgb = (hex) => {
   } : null;
 };
 
-// { r, g, b } -> string
+/** rgb to hex
+  * @func
+  * @sig { r, g, b } -> String
+*/
 export const rgbToHex = R.pipe(
   R.map((color) =>  {
     const hex = color.toString(16);
@@ -99,22 +108,37 @@ export const rgbToHex = R.pipe(
   ({ r, g, b }) => `#${ r }${ g }${ b }`,
 );
 
-// { h, s, l } -> string
+/** hsl to hex
+  * @func
+  * @sig { h, s, l } -> String
+*/
 export const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
-// string -> { h, s, l }
+/** hex to hsl
+  * @func
+  * @sig String -> { h, s, l }
+*/
 export const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
 
-// * -> { r, g, b }
+/** random rgb
+  * @func
+  * @sig * -> { r, g, b }
+*/
 export const randomRgb = () => ({
   r: random(0, 255),
   g: random(0, 255),
   b: random(0, 255),
 });
 
-// * -> string
+/** random hex
+  * @func
+  * @sig * -> String
+*/
 export const randomHex = R.pipe(randomRgb, rgbToHex);
 
-// * -> { h, s, l }
+/** random hsl
+  * @func
+  * @sig * -> { h, s, l }
+*/
 export const randomHsl = R.pipe(randomRgb, rgbToHsl);
 

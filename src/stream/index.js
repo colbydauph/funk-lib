@@ -1,9 +1,9 @@
 // core
 import { Readable as ReadableStream } from 'stream';
 
-/** stream to string
+/** Stream to string
   * @func
-  * @sig stream -> string
+  * @sig Stream -> String
 */
 export const toString = async stream => {
   return new Promise((resolve, reject) => {
@@ -16,9 +16,9 @@ export const toString = async stream => {
   });
 };
 
-/** string to stream
+/** String to stream
   * @func
-  * @sig string -> stream
+  * @sig String -> Stream
 */
 export const fromString = string => {
   const stream = new ReadableStream();

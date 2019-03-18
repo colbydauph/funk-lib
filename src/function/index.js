@@ -1,7 +1,7 @@
 import { curry, curryN, pipe } from 'ramda';
 
 
-/** curried pipe
+/** Curried pipe
   * @func
   * @sig ...f -> f
 */

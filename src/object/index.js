@@ -8,11 +8,22 @@ import * as R from 'ramda';
 import { isObject } from 'funk-lib/is';
 
 
-// { k: v } -> [k, v]
+/** Get an object's first key: value pair
+  * @func
+  * @sig { k: v } -> [k, v]
+*/
 export const firstPair = R.pipe(R.toPairs, R.nth(0));
-// { k: v } -> k
+
+/** Get an object's first key
+  * @func
+  * @sig { k: v } -> k
+*/
 export const firstKey = R.pipe(firstPair, R.nth(0));
-// { k: v } -> v
+
+/** Get an object's first value
+  * @func
+  * @sig { k: v } -> v
+*/
 export const firstValue = R.pipe(firstPair, R.nth(1));
 
 // todo: pickAsDeep (recursive)
@@ -25,17 +36,19 @@ export const pickAs = R.curry((keyVals, obj) => {
   }, {});
 });
 
-/** map object pairs
+/** Map object key / value pairs
   * @func
-  * @sig ([k, v] -> [l, m]) -> { k: v } -> { l: m }
+  * @sig ([a, b] -> [c, d]) -> { a: b } -> { c: d }
 */
 export const mapPairs = R.curry((pred, obj) => {
   return R.fromPairs(R.map(pred, R.toPairs(obj)));
 });
 
-/** map object keys
+/** Map object keys
   * @func
-  * @sig (k -> m) -> { k: v } -> { m: v }
+  * @sig (k -> k) -> { k: v } -> { k: v }
+  * @example
+  * mapKeys(R.reverse, { one: 1, two: 2 }); // { eno: 1, owt: 2 }
 */
 export const mapKeys = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [pred(key), value], obj);
@@ -49,7 +62,7 @@ export const mapValues = R.curryN(2)(deprecate(
 
 /** recursive + mutating + identity
   * @func
-  * @sig object -> object
+  * @sig {*} -> {*}
 */
 export const deepFreeze = obj => {
   Object.freeze(obj);
@@ -79,9 +92,9 @@ export const nestWith = R.curry((pred, obj) => {
   }, {}, R.toPairs(obj));
 });
 
-/** serialize to json with newlines and indentation
+/** Serialize to JSON with newlines and indentation
   * @func
-  * @sig json -> string
+  * @sig JSON -> String
 */
 export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 

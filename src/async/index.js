@@ -13,21 +13,22 @@ export class TimeoutError extends Error {}
 /** Resolve promises in parallel
   * @async
   * @func
-  * @sig [Promise<t>] -> [t]
+  * @sig [Promise<a>] -> [a]
 */
 export const all = Promise.all.bind(Promise);
 
 /** Race
   * @async
   * @func
-  * @sig [Promise<t>] -> t
+  * @sig [Promise<a>] -> a
 */
 export const race = Promise.race.bind(Promise);
 
-/** delay
+/** Promise returning setTimeout
   * @async
   * @func
   * @sig Number -> undefined
+  * @example await delay(100) // resolved in 100ms
 */
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
 
@@ -234,7 +235,7 @@ export const filterLimit = R.curry(async (limit, f, xs) => {
 /** All settled with variable parallelization
   * @async
   * @func
-  * @sig Number -> [Promise] -> Promise<[Object]>
+  * @sig Number -> [Promise] -> Promise<[{ status, value, reason }]>
 */
 export const allSettledLimit = R.curry((limit, promises) => {
   return mapLimit(limit, promise => {
@@ -378,14 +379,14 @@ export const filterSeries = filterLimit(1);
 /** Parallel all settled
   * @async
   * @func
-  * @sig [Promise] -> Promise<[Object]>
+  * @sig [Promise] -> Promise<[{ status, value, reason }]>
 */
 export const allSettled = allSettledLimit(Infinity);
 
 /** Serial all settled
   * @async
   * @func
-  * @sig [Promise] -> Promise<[Object]>
+  * @sig [Promise] -> Promise<[{ status, value, reason }]>
 */
 export const allSettledSeries = allSettledLimit(1);
 

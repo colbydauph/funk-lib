@@ -30,7 +30,7 @@ export const toObjBy = R.curryN(2)(deprecate(
 
 /** Select a random array item
   * @func
-  * @sig [t] -> t
+  * @sig [a] -> a
   * @example
   * sample([0, 1, 2, 3, 4, 5]); // 2
 */
@@ -41,7 +41,7 @@ export const sample = arr => arr[random(0, arr.length - 1)];
   * Immutably randomize array element order
   * Fisher-Yates shuffle
   * @func
-  * @sig [t] -> [t]
+  * @sig [a] -> [a]
   * @example shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]
 */
 export const shuffle = arr => {

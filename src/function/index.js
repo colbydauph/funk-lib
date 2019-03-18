@@ -36,6 +36,6 @@ export const once = fn => {
 
 /** "no-op"
   * @func
-  * @sig * -> undefined
+  * @sig a -> undefined
 */
 export const noop = () => {};

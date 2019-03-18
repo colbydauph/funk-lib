@@ -41,7 +41,7 @@ export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\
 
 /** Reasonably similar to JavaScript template literals
   * @func
-  * @sig String -> Object -> String
+  * @sig String -> {*} -> String
 */
 export const template = curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {

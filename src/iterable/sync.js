@@ -19,8 +19,12 @@ export const map = R.curry(function* (f, xs) {
   for (const x of xs) yield f(x);
 });
 
-// returns an iterator from an iterable
-// Iterable<T> -> Iterator<T>
+/** Returns an iterator from an iterable
+  * @func
+  * @sig Iterable<a> -> Iterator<a>
+  * @example
+  * from([1, 2, 3]) // Iterator<1, 2, 3>
+*/
 export const from = map(R.identity);
 
 // * -> Iterable<T> -> T | *

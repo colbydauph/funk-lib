@@ -8,101 +8,233 @@ import * as R from 'ramda';
 import 'core-js/modules/es7.symbol.async-iterator';
 
 export const {
-  // * -> boolean
+  /** Is finite?
+    * @func
+    * @sig a -> Boolean
+    * @example
+    * isFinite(10); // true
+    * isFinite(Infinity); // false
+  */
   isFinite,
-  // * -> boolean
+  
+  /** Is integer?
+    * @func
+    * @sig a -> Boolean
+    * @example
+    * isInteger(1); // true
+    * isInteger(1.23); // false
+  */
   isInteger,
-  // * -> boolean
+  
+  /** Is NaN?
+    * @func
+    * @sig a -> Boolean
+    * @example isNaN(NaN); // true
+  */
   isNaN,
 } = Number;
 
 export const {
-  // * -> boolean
+  /** Is Array?
+    * @func
+    * @sig a -> Boolean
+    * @example isArray([]); // true
+  */
   isArray,
 } = Array;
 
 export const {
-  // * -> boolean
+  /** Is Buffer?
+    * @func
+    * @sig a -> Boolean
+  */
   isBuffer,
 } = Buffer;
 
-// referentially equal
-// * -> * -> boolean
+/** Is equal (strict reference equality)
+  * @func
+  * @sig a -> b -> Boolean
+*/
 export const is = R.curry((left, right) => (left === right));
-// * -> * -> boolean
+
+/** Is not equal (strict reference equality)
+  * @func
+  * @sig a -> b -> Boolean
+*/
 export const isNot = R.complement(is);
-// string -> * -> boolean
+
+/** Is instance of class?
+  * @func
+  * @sig String -> a -> Boolean
+  * @example isInstanceOf(Array, []); // true
+*/
 export const isInstanceOf = R.curry((type, thing) => (thing instanceof type));
-// string -> * -> boolean
+
+/** Is type of?
+  * @func
+  * @sig String -> a -> Boolean
+  * @example isTypeOf('boolean', true); // true
+*/
 export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
-// * -> boolean
+
+/** Is Boolean?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isBoolean = isTypeOf('boolean');
 
-/** Test for date type
+/** Is Date?
   * @func
-  * @sig * -> boolean
+  * @sig a -> Boolean
+  * @example isDate(new Date()); // true
 */
 export const isDate = isInstanceOf(Date);
 
-// * -> boolean
+/** Is regular expression?
+  * @func
+  * @sig a -> Boolean
+  * @example isRegExp(/[a-z]/); // true
+*/
 export const isRegExp = isInstanceOf(RegExp);
-// * -> boolean
+
+/** Is function?
+  * @func
+  * @sig a -> Boolean
+  * @example isFunction(() => {}); // true
+*/
 export const isFunction = isTypeOf('function');
-// * -> boolean
+
+/** Is null?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isNull = is(null);
-// * -> boolean
+
+/** Is string?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isString = isTypeOf('string');
-// * -> boolean
+
+/** Is symbol?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isSymbol = isTypeOf('symbol');
-// * -> boolean
+
+/** Is undefined?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isUndefined = isTypeOf('undefined');
-// * -> boolean
+
+/** Is number?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
-// * -> boolean
+
+/** Is negative?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isNegative = R.lt(R.__, 0);
-// * -> boolean
+
+/** Is positive?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isPositive = R.gte(R.__, 0);
-// * -> boolean
+
+/** Is float?
+  * @func
+  * @sig a -> Boolean
+  * @example
+  * isFloat(1.23); // true
+  * isFloat(1); // false
+*/
 export const isFloat = R.allPass([isFinite, R.complement(isInteger)]);
-// * -> boolean
+
+/** Is truthy?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isTruthy = R.pipe(R.not, R.not);
-// * -> boolean
+
+/** Is false?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isFalsey = R.not;
-// * -> boolean
+
+/** Is object?
+  * @func
+  * @sig a -> Boolean
+  * @example
+  * isObject({}); // true
+  * isObject([]]); // false
+  * isObject(null); // false
+*/
 export const isObject = R.allPass([
   isTypeOf('object'),
   R.complement(isNull),
   R.complement(isArray),
 ]);
-// * -> boolean
+
+/** Is promise?
+  * @func
+  * @sig a -> Boolean
+  * @example isPromise(Promise.resolve(1)); // true
+*/
 export const isPromise = R.allPass([
   isObject,
   R.propSatisfies(isFunction, 'then'),
   R.propSatisfies(isFunction, 'catch'),
 ]);
-// * -> boolean
+
+/** Is stream?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isStream = R.allPass([
   isObject,
   R.propSatisfies(isFunction, 'pipe'),
 ]);
-// is "plain old javascript object"
-// * -> boolean
+
+/** Is "plain old javascript object"?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isPojo = R.allPass([
   isObject,
   R.pipe(Object.getPrototypeOf, is(Object.prototype)),
 ]);
 
-// * -> boolean
+/** Is iterator?
+  * @func
+  * @sig a -> Boolean
+  * @example
+  * const iterator = [][Symbol.iterator]();
+  * isIterator(iterator); // true
+*/
 export const isIterator = R.allPass([
   isObject,
   R.propSatisfies(isFunction, 'next'),
 ]);
-// * -> boolean
+
+/** Is iterable?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isIterable = R.allPass([
   isTruthy,
   R.propSatisfies(isFunction, Symbol.iterator),
 ]);
-// * -> boolean
+
+/** Is async iterable?
+  * @func
+  * @sig a -> Boolean
+*/
 export const isAsyncIterable = R.allPass([
   isTruthy,
   R.propSatisfies(isFunction, Symbol.asyncIterator),

@@ -6,7 +6,8 @@ import * as R from 'ramda';
 // aliased
 import { random } from 'funk-lib/number';
 
-/** rgb to hsl
+
+/** RGB to HSL
   * @func
   * @sig { r, g, b } -> { h, s, l }
 */
@@ -41,7 +42,7 @@ export const rgbToHsl = ({ r, g, b }) => {
 };
 
 
-/** hsl to rgb
+/** HSL to RGB
   * @func
   * @sig { h, s, l } -> { r, g, b }
 */
@@ -76,7 +77,7 @@ export const hslToRgb = ({ h, s, l }) => {
   };
 };
 
-/** hex to rgb
+/** Hex to RGB
   * @func
   * @sig String -> { r, g, b }
 */
@@ -96,33 +97,35 @@ export const hexToRgb = (hex) => {
   } : null;
 };
 
-/** rgb to hex
+/** RGB to hex
   * @func
+  * @todo: should this not include the hash prefix?
   * @sig { r, g, b } -> String
 */
 export const rgbToHex = R.pipe(
-  R.map((color) =>  {
+  R.map(color =>  {
     const hex = color.toString(16);
     return (hex.length === 1) ? `0${ hex }` : hex;
   }),
   ({ r, g, b }) => `#${ r }${ g }${ b }`,
 );
 
-/** hsl to hex
+/** HSL to hex
   * @func
   * @sig { h, s, l } -> String
 */
 export const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
-/** hex to hsl
+/** Hex to HSL
   * @func
   * @sig String -> { h, s, l }
 */
 export const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
 
-/** random rgb
+/** Get a random RGB value
   * @func
   * @sig * -> { r, g, b }
+  * @example randomRgb(); // { r: 35, g: 125, b: 106 }
 */
 export const randomRgb = () => ({
   r: random(0, 255),
@@ -130,13 +133,14 @@ export const randomRgb = () => ({
   b: random(0, 255),
 });
 
-/** random hex
+/** Get a random hex string
   * @func
   * @sig * -> String
+  * @example randomHex(); // #b3a95a
 */
 export const randomHex = R.pipe(randomRgb, rgbToHex);
 
-/** random hsl
+/** Get a random HSL value
   * @func
   * @sig * -> { h, s, l }
 */

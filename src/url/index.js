@@ -1,14 +1,19 @@
 // modules
 import { test } from 'ramda';
 
-
 const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 
-// * -> boolean
+/** Is a string a data url
+  * @func
+  * @sig a -> Boolean
+*/
 export const isDataUrl = test(DATA_URL_REGEXP);
 
-// dataurl -> { mediatype, data, base64 }
-export const parseDataUrl = (url) => {
+/** Parse Data URL
+  * @func
+  * @sig String -> { mediatype, data, base64 }
+*/
+export const parseDataUrl = url => {
   const [
     // eslint-disable-next-line no-unused-vars
     _,

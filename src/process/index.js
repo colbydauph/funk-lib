@@ -1,4 +1,7 @@
-export const onSigInt = (handler) => {
+/** On SIGINT
+  * @func
+*/
+export const onSigInt = handler => {
   process.on('SIGINT', handler);
   // offSigInt
   return () => {

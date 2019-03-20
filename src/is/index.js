@@ -80,6 +80,7 @@ export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 /** Is Boolean?
   * @func
   * @sig a -> Boolean
+  * @example isBoolean(false); // true
 */
 export const isBoolean = isTypeOf('boolean');
 
@@ -107,12 +108,14 @@ export const isFunction = isTypeOf('function');
 /** Is null?
   * @func
   * @sig a -> Boolean
+  * @example isNull(null); // true
 */
 export const isNull = is(null);
 
 /** Is string?
   * @func
   * @sig a -> Boolean
+  * @example isString('hello'); // true
 */
 export const isString = isTypeOf('string');
 
@@ -125,24 +128,34 @@ export const isSymbol = isTypeOf('symbol');
 /** Is undefined?
   * @func
   * @sig a -> Boolean
+  * @example isUndefined(undefined); // true
 */
 export const isUndefined = isTypeOf('undefined');
 
 /** Is number?
   * @func
   * @sig a -> Boolean
+  * @example
+  * isNumber(10); // true
+  * isNumber(NaN); // false
 */
 export const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 
 /** Is negative?
   * @func
   * @sig a -> Boolean
+  * @example
+  * isNumber(-10); // true
+  * isNumber(10); // false
 */
 export const isNegative = R.lt(R.__, 0);
 
 /** Is positive?
   * @func
   * @sig a -> Boolean
+  * @example
+  * isNumber(10); // true
+  * isNumber(-10); // false
 */
 export const isPositive = R.gte(R.__, 0);
 
@@ -158,12 +171,14 @@ export const isFloat = R.allPass([isFinite, R.complement(isInteger)]);
 /** Is truthy?
   * @func
   * @sig a -> Boolean
+  * @example isTruthy(1); // true
 */
 export const isTruthy = R.pipe(R.not, R.not);
 
 /** Is false?
   * @func
   * @sig a -> Boolean
+  * @example isFalsey(0); // true
 */
 export const isFalsey = R.not;
 
@@ -204,6 +219,7 @@ export const isStream = R.allPass([
 /** Is "plain old javascript object"?
   * @func
   * @sig a -> Boolean
+  * @example isPojo({}); // true
 */
 export const isPojo = R.allPass([
   isObject,
@@ -225,6 +241,8 @@ export const isIterator = R.allPass([
 /** Is iterable?
   * @func
   * @sig a -> Boolean
+  * @example
+  * isIterable([]); // true
 */
 export const isIterable = R.allPass([
   isTruthy,

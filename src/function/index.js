@@ -39,3 +39,32 @@ export const once = fn => {
   * @sig a -> undefined
 */
 export const noop = () => {};
+
+/** Throttle a function
+  * @func
+  * @sig Number -> (a -> b) -> (a -> b)
+*/
+export const throttle = curry((delay, fn) => {
+  let lastCall = 0;
+  return (...args) => {
+    const now = (new Date()).getTime();
+    if (now - lastCall < delay) return;
+    lastCall = now;
+    return fn(...args);
+  };
+});
+
+/** Debounce a function
+  * @func
+  * @sig Number -> (a -> b) -> (a -> undefined)
+*/
+export const debounce = curry((delay, fn) => {
+  let timeoutID;
+  return (...args) => {
+    if (timeoutID) clearTimeout(timeoutID);
+    timeoutID = setTimeout(() => {
+      fn(...args);
+      timeoutID = null;
+    }, delay);
+  };
+});

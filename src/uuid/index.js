@@ -5,7 +5,7 @@ import { test } from 'ramda';
   * @func
   * @sig a -> String
   * @example
-  * uuid(); // 'uuid318651f1-8736-48ea-8937-a1732e544983'
+  * uuid(); // 'c4f2e775-a5f9-4796-bd31-46e544bfab06'
 */
 export const uuid = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (placeholder) => {
@@ -18,6 +18,6 @@ export const uuid = () => {
   * @func
   * @sig a -> Boolean
   * @example
-  * isUuid('uuid318651f1-8736-48ea-8937-a1732e544983'); // true
+  * isUuid('c4f2e775-a5f9-4796-bd31-46e544bfab06'); // true
 */
 export const isUuid = test(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

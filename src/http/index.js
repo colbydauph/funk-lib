@@ -6,10 +6,9 @@ import {
   split,
 } from 'ramda';
 
-// parse a content-type http header into its parts
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
-// content-type -> { mimeType, charset, boundary }
-// string -> object
+/** Parse a content-type HTTP header into its parts
+  * @sig String -> { mimeType, charset, boundary }
+*/
 export const parseContentType = pipe(
   defaultTo(''),
   split(/;\s*/),

@@ -27,10 +27,18 @@ export const race = Promise.race.bind(Promise);
 /** Promise returning setTimeout
   * @async
   * @func
-  * @sig Number -> undefined
-  * @example await delay(100) // resolved in 100ms
+  * @sig Number -> Promise<undefined>
+  * @example await delay(100); // resolved in 100ms
 */
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
+
+/** Defers invoking a function until the current call stack has cleared
+  * @async
+  * @func
+  * @sig (a -> b) -> Promise<b>
+  * @example await defer(_ => 3); // 3
+*/
+export const defer = f => delay(1).then(_ => f());
 
 /** wraps a function to always return a promise
   * @async

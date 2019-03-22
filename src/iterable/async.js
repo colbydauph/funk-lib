@@ -172,8 +172,8 @@ export const range = rangeStep(1);
   * @func
   * @sig Iterable<a> -> AsyncIterator<[Integer, a]>
   * @example
-  * const iterator = from(['zero', 'one', 'two'])
-  * enumerate(iterator); // AsyncIterator<[0, 'zero'], [1, 'one'], [2, 'two']>
+  * // AsyncIterator<[0, 'zero'], [1, 'one'], [2, 'two']>
+  * enumerate(from(['zero', 'one', 'two']));
 */
 export const enumerate = xs => zip(range(0, Infinity), xs);
 

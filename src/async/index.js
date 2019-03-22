@@ -14,6 +14,13 @@ export class TimeoutError extends Error {}
   * @async
   * @func
   * @sig [Promise<a>] -> [a]
+  * @example
+  * // [1, 2, 3]
+  * await Promise.all([
+  *  Promise.resolve(1),
+  *  2,
+  *  Promise.resolve(3),
+  * ]);
 */
 export const all = Promise.all.bind(Promise);
 
@@ -32,18 +39,30 @@ export const race = Promise.race.bind(Promise);
 */
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
 
+/** Defers invoking a function until the current call stack has cleared. Passes args to deferred function.
+  * @async
+  * @func
+  * @sig [a] -> (a -> b) -> Promise<b>
+  * @example await deferWith([1, 2], (a, b)) => a + b); // 3
+*/
+export const deferWith = R.curry((args, f) => delay(1).then(_ => f(...args)));
+
 /** Defers invoking a function until the current call stack has cleared
   * @async
   * @func
   * @sig (a -> b) -> Promise<b>
   * @example await defer(_ => 3); // 3
 */
-export const defer = f => delay(1).then(_ => f());
+export const defer = deferWith([]);
 
-/** wraps a function to always return a promise
+/** Wraps a function to always return a promise
   * @async
   * @func
   * @sig (a -> b) -> (a -> Promise<b>)
+  * @example
+  * const pred = n => n > 5;
+  * const asyncPred = toAsync(pred);
+  * asyncPred(2); // Promise<false>
 */
 export const toAsync = f => async (...args) => f(...args);
 
@@ -74,8 +93,15 @@ export const promisify = f => async (...args) => {
   return fromCallback(cb => f(...args, cb));
 };
 
-// make a promise-returning function errback-yielding
-// inverse of promisify
+/** Make a promise-returning function errback-yielding. Inverse of promisify
+  * @async
+  * @func
+  * @example
+  * const func = async n => n + 1;
+  * await callbackify(func)(1, (err, res) => {
+  *   // err = null, res = 2
+  * });
+*/
 export const callbackify = f => (...args) => {
   const cb = args.pop();
   toAsync(f)(...args)
@@ -104,6 +130,9 @@ export const deferred = () => {
   * @async
   * @func
   * @sig ((a, b) -> Promise<a>) -> a -> [b] -> Promise<a>
+  * @example
+  * // 15
+  * await reduce(async (a, n) => a + n, 0, [1, 2, 3, 4, 5]);
 */
 export const reduce = R.curry(async (f, acc, xs) => {
   for (const x of xs) acc = await f(acc, x);
@@ -114,6 +143,12 @@ export const reduce = R.curry(async (f, acc, xs) => {
   * @async
   * @func
   * @sig (...f) -> f
+  * @example
+  * // 4
+  * await pipe(
+  *   async n => n + 1,
+  *   async n => n * 2,
+  * )(1);
 */
 export const pipe = (f, ...fs) => async (...args) => {
   return reduce(R.applyTo, await f(...args), fs);
@@ -160,6 +195,9 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
   * @async
   * @func
   * @sig Number -> ([a, b] -> Promise<[c, d]>) -> { a: b } -> Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
 */
 export const mapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
@@ -272,6 +310,9 @@ export const mapSeries = mapLimit(1);
   * @async
   * @func
   * @sig ([a, b] -> Promise<[c, d]>) -> { a: b } -> Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
 */
 export const mapPairs = mapPairsLimit(Infinity);
 
@@ -286,6 +327,11 @@ export const mapPairsSeries = mapPairsLimit(1);
   * @async
   * @func
   * @sig (a -> Promise<b>) -> [a] -> Promise<[a]>
+  * @example
+  * // 1
+  * // 2
+  * // 3
+  * await forEach(async n => console.log(n), [1, 2, 3]);
 */
 export const forEach = forEachLimit(Infinity);
 
@@ -403,10 +449,11 @@ export const allSettledSeries = allSettledLimit(1);
   * @func
   * @sig { k: Promise<v> } -> Promise<{ k: v }>
   * @example
-  * // { one: 1, two: 2 }
+  * // { one: 1, two: 2, three: 3 }
   * await props({
   *  one: Promise.resolve(1),
-  *  two: Promise.resolve(2),
+  *  two: 2,
+  *  three: Promise.resolve(3),
   * })
 */
 export const props = mapPairs(async ([key, val]) => [key, await val]);

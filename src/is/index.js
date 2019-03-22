@@ -122,6 +122,7 @@ export const isString = isTypeOf('string');
 /** Is symbol?
   * @func
   * @sig a -> Boolean
+  * @example isSymbol('foo'); // true
 */
 export const isSymbol = isTypeOf('symbol');
 
@@ -252,6 +253,9 @@ export const isIterable = R.allPass([
 /** Is async iterable?
   * @func
   * @sig a -> Boolean
+  * @example
+  * const iterator = (async function* () {})();
+  * isAsyncIterable(iterator); // true
 */
 export const isAsyncIterable = R.allPass([
   isTruthy,

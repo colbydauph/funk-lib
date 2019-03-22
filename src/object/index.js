@@ -96,9 +96,16 @@ export const nestWith = R.curry((pred, obj) => {
   }, {}, R.toPairs(obj));
 });
 
-/** Serialize to JSON with newlines and indentation
+/** Serialize to JSON with newlines and 2-space indentation
   * @func
   * @sig JSON -> String
+  * @example
+  * // '{
+  * //   "one": {
+  * //     "two": 2
+  * //   }
+  * // }'
+  * toHumanJSON({ one: { two: 2 } });
 */
 export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 

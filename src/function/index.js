@@ -18,9 +18,15 @@ export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 */
 export const on = curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 
-/** once
+/** Creates a function that is restricted to invoking func once.
+  * Repeat calls to the function return the value of the first invocation
   * @func
   * @sig (a -> b) -> (a -> b)
+  * @example
+  * const pred = n => n > 5;
+  * const oncePred = once(pred);
+  * oncePred(10); // true
+  * oncePred(1); // true (cached. pred not called again)
 */
 export const once = fn => {
   let called = false;
@@ -34,9 +40,10 @@ export const once = fn => {
   };
 };
 
-/** "no-op"
+/** A function that does nothing. "no-op"
   * @func
   * @sig a -> undefined
+  * @example noop(); // undefined
 */
 export const noop = () => {};
 

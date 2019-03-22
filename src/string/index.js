@@ -13,12 +13,13 @@ import {
   unary,
 } from 'ramda';
 
-
-// String -> String -> Number
+/** Locale compare
+  * @func
+  * @sig String -> String -> Number
+*/
 export const localeCompare = invoker(1, 'localeCompare');
 
-// todo: deprecate these
-// String -> String
+
 export const toUpperCase = unary(deprecate(
   toUpper,
   'funk-lib/string/toUpperCase -> R.toUpper'
@@ -42,7 +43,9 @@ export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\
 /** String interpolation. Reasonably similar to JavaScript template literals.
   * @func
   * @sig String -> {*} -> String
-  * @example template('Hello ${ name }!', { name: 'Pat' }); // 'Hello Pat!'
+  * @example
+  * // 'Hello Pat!'
+  * template('Hello ${ name }!', { name: 'Pat' });
 */
 export const template = curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {

@@ -1,0 +1,19 @@
+:global html {
+  font-family: sans-serif;
+  color: black;
+  box-sizing: border-box;
+  font-size: 10px;
+  line-height: 10px;
+}
+
+:global body,
+:global #__main__ {
+  margin: 0;
+  /* 16px */
+  font-size: 1.6rem;
+  line-height: 1.6rem;
+}
+
+:global * {
+  box-sizing: border-box;
+}

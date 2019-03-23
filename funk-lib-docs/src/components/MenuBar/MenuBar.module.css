@@ -1,0 +1,27 @@
+.menu-bar {
+  background: rgba(255, 255, 255, 0.95);
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 16px -6px rgba(0, 0, 0, 0.5);
+}
+
+.menu-bar .version {
+  font-size: 18px;
+  padding-left: 10px;
+  font-weight: normal;
+}
+
+.github {
+  height: 30px;
+  width: 30px;
+}
+
+.home {
+  text-decoration: none;
+  color: inherit;
+}

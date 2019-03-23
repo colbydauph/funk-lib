@@ -3,7 +3,7 @@ import { Readable as ReadableStream } from 'stream';
 
 /** Stream to string
   * @func
-  * @sig Stream -> String
+  * @sig Stream → String
 */
 export const toString = async stream => {
   return new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ export const toString = async stream => {
 
 /** String to stream
   * @func
-  * @sig String -> Stream
+  * @sig String → Stream
 */
 export const fromString = string => {
   const stream = new ReadableStream();

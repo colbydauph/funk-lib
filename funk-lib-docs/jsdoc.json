@@ -1,6 +1,6 @@
 {
   "array/toObj": {
-    "sig": "[ k: v ] -> { k: v }",
+    "sig": "[ k: v ] → { k: v }",
     "description": "Transform an array into an object, where keys are indices, and values are elements.",
     "examples": [
       "toObj(['a', 'b', 'c']); // { 0: a, 1: b, 2: c }"
@@ -10,7 +10,7 @@
     "ignore": false
   },
   "array/toObjBy": {
-    "sig": "(a -> b) -> [a] -> { b: a }",
+    "sig": "(a → b) → [a] → { b: a }",
     "description": "Given a function that generates a key, turns a list of objects into an object indexing the objects by the given key",
     "examples": [],
     "kind": "function",
@@ -19,7 +19,7 @@
     "ignore": true
   },
   "array/sample": {
-    "sig": "[a] -> a",
+    "sig": "[a] → a",
     "description": "Select a random array item",
     "examples": [
       "sample([0, 1, 2, 3, 4, 5]); // 2"
@@ -29,7 +29,7 @@
     "ignore": false
   },
   "array/shuffle": {
-    "sig": "[a] -> [a]",
+    "sig": "[a] → [a]",
     "description": "Immutably randomize array element order\nFisher-Yates shuffle",
     "examples": [
       "shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]"
@@ -39,61 +39,63 @@
     "ignore": false
   },
   "async/all": {
-    "sig": "[Promise<a>] -> [a]",
+    "sig": "[Promise<a>] → [a]",
     "description": "Resolve promises in parallel",
     "examples": [
-      "// [1, 2, 3]\nawait Promise.all([\n Promise.resolve(1),\n 2,\n Promise.resolve(3),\n]);"
+      "// [1, 2, 3]\nawait all([\n  Promise.resolve(1),\n  2,\n  Promise.resolve(3),\n]);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L25",
     "ignore": false
   },
   "async/race": {
-    "sig": "[Promise<a>] -> a",
-    "description": "Race",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L32",
-    "ignore": false
-  },
-  "async/delay": {
-    "sig": "Number -> Promise<undefined>",
-    "description": "Promise returning setTimeout",
+    "sig": "[Promise<a>] → a",
+    "description": "Returns a promise that resolves or rejects as soon as one of the promises in an\niterable resolves or rejects, with the value or reason from that promise.",
     "examples": [
-      "await delay(100); // resolved in 100ms"
+      "// true\nawait race([\n  delay(1).then(_ => true),\n  delay(10).then(_ => false),\n  delay(100).then(_ => throw Error('oops')),\n]);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L40",
     "ignore": false
   },
-  "async/deferWith": {
-    "sig": "[a] -> (a -> b) -> Promise<b>",
-    "description": "Defers invoking a function until the current call stack has cleared. Passes args to deferred function.",
+  "async/delay": {
+    "sig": "Number → Promise<undefined>",
+    "description": "Promise returning setTimeout",
     "examples": [
-      "await deferWith([1, 2], (a, b)) => a + b); // 3"
+      "await delay(100); // resolved in 100ms"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L48",
     "ignore": false
   },
-  "async/defer": {
-    "sig": "(a -> b) -> Promise<b>",
-    "description": "Defers invoking a function until the current call stack has cleared",
+  "async/deferWith": {
+    "sig": "[a] → (a → b) → Promise<b>",
+    "description": "Defers invoking a function until the current call stack has cleared. Passes args to deferred function.",
     "examples": [
-      "await defer(_ => 3); // 3"
+      "await deferWith([1, 2], (a, b) => a + b); // 3"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L56",
     "ignore": false
   },
+  "async/defer": {
+    "sig": "(a → b) → Promise<b>",
+    "description": "Defers invoking a function until the current call stack has cleared",
+    "examples": [
+      "await defer(_ => 3); // 3"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L64",
+    "ignore": false
+  },
   "async/toAsync": {
-    "sig": "(a -> b) -> (a -> Promise<b>)",
+    "sig": "(a → b) → (a → Promise<b>)",
     "description": "Wraps a function to always return a promise",
     "examples": [
       "const pred = n => n > 5;\nconst asyncPred = toAsync(pred);\nasyncPred(2); // Promise<false>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L67",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L75",
     "ignore": false
   },
   "async/fromCallback": {
@@ -102,7 +104,7 @@
       "await fromCallback(cb => cb(null, 123)); // 123\nawait fromCallback(cb => cb(Error('oops'))); // Error('oops')"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L75",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L83",
     "ignore": false
   },
   "async/promisify": {
@@ -111,7 +113,7 @@
       "const callback = (n, cb) => cb(null, n + 1);\nawait promisify(callback)(1); // 2"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L92",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L100",
     "ignore": false
   },
   "async/callbackify": {
@@ -120,307 +122,341 @@
       "const func = async n => n + 1;\nawait callbackify(func)(1, (err, res) => {\n  // err = null, res = 2\n});"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L105",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L113",
     "ignore": false
   },
   "async/deferred": {
-    "sig": "* -> Object",
-    "description": "creates an externally controlled promise",
-    "examples": [],
+    "sig": "* → Object",
+    "description": "Creates an externally controlled promise",
+    "examples": [
+      "const { promise, resolve, reject } = deferred();\nresolve(123);\nawait promise; // 123"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L117",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L129",
     "ignore": false
   },
   "async/reduce": {
-    "sig": "((a, b) -> Promise<a>) -> a -> [b] -> Promise<a>",
+    "sig": "((a, b) → Promise<a>) → a → [b] → Promise<a>",
     "description": "Async reduce",
     "examples": [
       "// 15\nawait reduce(async (a, n) => a + n, 0, [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L137",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L149",
     "ignore": false
   },
   "async/pipe": {
-    "sig": "(...f) -> f",
+    "sig": "(...f) → f",
     "description": "serial + async R.pipe. works with sync or async functions",
     "examples": [
       "// 4\nawait pipe(\n  async n => n + 1,\n  async n => n * 2,\n)(1);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L153",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L165",
     "ignore": false
   },
   "async/pipeC": {
-    "sig": "(...f) -> f",
+    "sig": "(...f) → f",
     "description": "Curried async pipe",
-    "examples": [],
+    "examples": [
+      "const math = pipeC(\n  async (a, b) => a + b,\n  c => (c * 2),\n  async c => (c + 1),\n);\nawait math(2)(5) // 21;"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L162",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L181",
     "ignore": false
   },
   "async/mapLimit": {
-    "sig": "Number -> (a -> Promise<b>) -> [a] -> Promise<[b]>",
+    "sig": "Number → (a → Promise<b>) → [a] → Promise<[b]>",
     "description": "Map with variable parallelization",
     "examples": [
-      "// [2, 4, 6, 8, 10]\nawait mapLimit(2, async n => n * 2, [1, 2, 3, 4, 5]);"
+      "// [2, 4, 6, 8, 10]\nawait mapLimit(2, async n => (n * 2), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L172",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L191",
     "ignore": false
   },
   "async/mapPairsLimit": {
-    "sig": "Number -> ([a, b] -> Promise<[c, d]>) -> { a: b } -> Promise<{ c: d }>",
+    "sig": "Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>",
     "description": "Map pairs with variable parallelization",
     "examples": [
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L202",
-    "ignore": false
-  },
-  "async/forEachLimit": {
-    "sig": "Number -> (a -> Promise<b>) -> [a] -> Promise<[a]>",
-    "description": "For each with variable parallelization",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L211",
-    "ignore": false
-  },
-  "async/everyLimit": {
-    "sig": "Number -> (a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
-    "description": "Every with variable parallelization",
-    "examples": [],
-    "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L221",
     "ignore": false
   },
-  "async/someLimit": {
-    "sig": "Number -> (a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
-    "description": "Some with variable parallelization",
-    "examples": [],
+  "async/forEachLimit": {
+    "sig": "Number → (a → Promise<b>) → [a] → Promise<[a]>",
+    "description": "For each with variable parallelization",
+    "examples": [
+      "// 1\n// 2\n// 3\nawait forEachLimit(2, async n => console.log(n), [1, 2, 3]);"
+    ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L235",
     "ignore": false
   },
-  "async/findLimit": {
-    "sig": "Number -> (a -> Promise<Boolean>) -> [a] -> Promise<a>",
-    "description": "Find with variable parallelization",
-    "examples": [],
+  "async/everyLimit": {
+    "sig": "Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>",
+    "description": "Every with variable parallelization",
+    "examples": [
+      "// false\nawait everyLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L249",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L248",
+    "ignore": false
+  },
+  "async/someLimit": {
+    "sig": "Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>",
+    "description": "Some with variable parallelization",
+    "examples": [
+      "// true\nawait someLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L265",
+    "ignore": false
+  },
+  "async/findLimit": {
+    "sig": "Number → (a → Promise<Boolean>) → [a] → Promise<a>",
+    "description": "Find with variable parallelization",
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findLimit(2, async ({ id }) => (id === 2), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L284",
     "ignore": false
   },
   "async/flatMapLimit": {
-    "sig": "Number -> (a -> Promise<[b]>) -> [a] -> Promise<[b]>",
+    "sig": "Number → (a → Promise<[b]>) → [a] → Promise<[b]>",
     "description": "Flat map (aka. \"chain\") with variable parallelization",
     "examples": [
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapLimit(2, async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L270",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L305",
     "ignore": false
   },
   "async/filterLimit": {
-    "sig": "Number -> (a -> Promise<Boolean>) -> [a] -> Promise<[a]>",
+    "sig": "Number → (a → Promise<Boolean>) → [a] → Promise<[a]>",
     "description": "Filter with variable parallelization",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L277",
-    "ignore": false
-  },
-  "async/allSettledLimit": {
-    "sig": "Number -> [Promise] -> Promise<[{ status, value, reason }]>",
-    "description": "All settled with variable parallelization",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L286",
-    "ignore": false
-  },
-  "async/map": {
-    "sig": "(a -> Promise<b>) -> [a] -> Promise<[b]>",
-    "description": "Parallel map",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L300",
-    "ignore": false
-  },
-  "async/mapSeries": {
-    "sig": "(a -> Promise<b>) -> [a] -> Promise<[b]>",
-    "description": "Serial map",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L307",
-    "ignore": false
-  },
-  "async/mapPairs": {
-    "sig": "([a, b] -> Promise<[c, d]>) -> { a: b } -> Promise<{ c: d }>",
-    "description": "Parallel map pairs",
     "examples": [
-      "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
+      "const array = [1, 2, 3, 4, 5];\n\n// [1, 2]\nawait filterLimit(2, async n => (n < 3), array);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L317",
     "ignore": false
   },
-  "async/mapPairsSeries": {
-    "sig": "([a, b] -> Promise<[c, d]>) -> { a: b } -> Promise<{ c: d }>",
-    "description": "Serial map pairs",
+  "async/allSettledLimit": {
+    "sig": "Number → [Promise] → Promise<[{ status, value, reason }]>",
+    "description": "All settled with variable parallelization",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L324",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L326",
+    "ignore": false
+  },
+  "async/map": {
+    "sig": "(a → Promise<b>) → [a] → Promise<[b]>",
+    "description": "Parallel map",
+    "examples": [
+      "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait map(async n => (n * 2), array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L345",
+    "ignore": false
+  },
+  "async/mapSeries": {
+    "sig": "(a → Promise<b>) → [a] → Promise<[b]>",
+    "description": "Serial map",
+    "examples": [
+      "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait mapSeries(async n => (n * 2), array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L357",
+    "ignore": false
+  },
+  "async/mapPairs": {
+    "sig": "([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>",
+    "description": "Parallel map pairs",
+    "examples": [
+      "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L367",
+    "ignore": false
+  },
+  "async/mapPairsSeries": {
+    "sig": "([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>",
+    "description": "Serial map pairs",
+    "examples": [
+      "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsSeries(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L377",
     "ignore": false
   },
   "async/forEach": {
-    "sig": "(a -> Promise<b>) -> [a] -> Promise<[a]>",
+    "sig": "(a → Promise<b>) → [a] → Promise<[a]>",
     "description": "Parallel for each",
     "examples": [
       "// 1\n// 2\n// 3\nawait forEach(async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L336",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L389",
     "ignore": false
   },
   "async/forEachSeries": {
-    "sig": "(a -> Promise<b>) -> [a] -> Promise<[a]>",
+    "sig": "(a → Promise<b>) → [a] → Promise<[a]>",
     "description": "Serial for each",
-    "examples": [],
+    "examples": [
+      "// 1\n// 2\n// 3\nawait forEachSeries(async n => console.log(n), [1, 2, 3]);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L343",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L401",
     "ignore": false
   },
   "async/every": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<Boolean>",
     "description": "Parallel every",
-    "examples": [],
+    "examples": [
+      "// false\nawait every(async n => (n > 5), [4, 5, 6, 7]);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L350",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L411",
     "ignore": false
   },
   "async/everySeries": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<Boolean>",
     "description": "Serial every",
-    "examples": [],
+    "examples": [
+      "// false\nawait everySeries(async n => (n > 5), [4, 5, 6, 7]);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L357",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L421",
     "ignore": false
   },
   "async/some": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<Boolean>",
     "description": "Parallel some",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L364",
-    "ignore": false
-  },
-  "async/someSeries": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<Boolean>",
-    "description": "Serial some",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L371",
-    "ignore": false
-  },
-  "async/find": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<a>",
-    "description": "Parallel find",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L378",
-    "ignore": false
-  },
-  "async/findSeries": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<a>",
-    "description": "Serial find",
-    "examples": [],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L385",
-    "ignore": false
-  },
-  "async/flatMap": {
-    "sig": "(a -> Promise<[b]>) -> [a] -> Promise<[b]>",
-    "description": "Parallel flatMap (aka. \"chain\")",
     "examples": [
-      "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMap(async n => [n, n * 2], array);"
-    ],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L397",
-    "ignore": false
-  },
-  "async/flatMapSeries": {
-    "sig": "(a -> Promise<[b]>) -> [a] -> Promise<[b]>",
-    "description": "Serial flatMap (aka. \"chain\")",
-    "examples": [
-      "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapSeries(async n => [n, n * 2], array);"
-    ],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L409",
-    "ignore": false
-  },
-  "async/filter": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<[a]>",
-    "description": "Parallel filter",
-    "examples": [
-      "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filter(async n => (n <= 5), array);"
-    ],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L420",
-    "ignore": false
-  },
-  "async/filterSeries": {
-    "sig": "(a -> Promise<Boolean>) -> [a] -> Promise<[a]>",
-    "description": "Serial filter",
-    "examples": [
-      "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filterSeries(async n => (n <= 5), array);"
+      "// true\nawait some(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L431",
     "ignore": false
   },
+  "async/someSeries": {
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<Boolean>",
+    "description": "Serial some",
+    "examples": [
+      "// true\nawait someSeries(async n => (n > 5), [4, 5, 6, 7]);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L441",
+    "ignore": false
+  },
+  "async/find": {
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<a>",
+    "description": "Parallel find",
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait find(async ({ id }) => (id === 2), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L453",
+    "ignore": false
+  },
+  "async/findSeries": {
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<a>",
+    "description": "Serial find",
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findSeries(async ({ id }) => (id === 2), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L465",
+    "ignore": false
+  },
+  "async/flatMap": {
+    "sig": "(a → Promise<[b]>) → [a] → Promise<[b]>",
+    "description": "Parallel flatMap (aka. \"chain\")",
+    "examples": [
+      "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMap(async n => [n, n * 2], array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L477",
+    "ignore": false
+  },
+  "async/flatMapSeries": {
+    "sig": "(a → Promise<[b]>) → [a] → Promise<[b]>",
+    "description": "Serial flatMap (aka. \"chain\")",
+    "examples": [
+      "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapSeries(async n => [n, n * 2], array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L489",
+    "ignore": false
+  },
+  "async/filter": {
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<[a]>",
+    "description": "Parallel filter",
+    "examples": [
+      "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filter(async n => (n <= 5), array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L500",
+    "ignore": false
+  },
+  "async/filterSeries": {
+    "sig": "(a → Promise<Boolean>) → [a] → Promise<[a]>",
+    "description": "Serial filter",
+    "examples": [
+      "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filterSeries(async n => (n <= 5), array);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L511",
+    "ignore": false
+  },
   "async/allSettled": {
-    "sig": "[Promise] -> Promise<[{ status, value, reason }]>",
+    "sig": "[Promise] → Promise<[{ status, value, reason }]>",
     "description": "Parallel all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L438",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L518",
     "ignore": false
   },
   "async/allSettledSeries": {
-    "sig": "[Promise] -> Promise<[{ status, value, reason }]>",
+    "sig": "[Promise] → Promise<[{ status, value, reason }]>",
     "description": "Serial all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L445",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L525",
     "ignore": false
   },
   "async/props": {
-    "sig": "{ k: Promise<v> } -> Promise<{ k: v }>",
+    "sig": "{ k: Promise<v> } → Promise<{ k: v }>",
     "description": "Parallel props",
     "examples": [
-      "// { one: 1, two: 2, three: 3 }\nawait props({\n one: Promise.resolve(1),\n two: 2,\n three: Promise.resolve(3),\n})"
+      "// { one: 1, two: 2, three: 3 }\nawait props({\n  one: Promise.resolve(1),\n  two: 2,\n  three: Promise.resolve(3),\n});"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L459",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L539",
     "ignore": false
   },
   "async/evolve": {
-    "sig": "{ k: (a -> Promise<b>) } -> { k: a } -> Promise<{ k: b }>",
+    "sig": "{ k: (a → Promise<b>) } → { k: a } → Promise<{ k: b }>",
     "description": "Async R.evolve",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L466",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L546",
     "ignore": false
   },
   "async/timeout": {
-    "sig": "Number -> Promise<a> -> Promise<a>",
+    "sig": "Number → Promise<a> → Promise<a>",
     "description": "Timeout a promise",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L473",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L553",
     "ignore": false
   },
   "color/rgbToHsl": {
-    "sig": "{ r, g, b } -> { h, s, l }",
+    "sig": "{ r, g, b } → { h, s, l }",
     "description": "RGB to HSL",
     "examples": [],
     "kind": "function",
@@ -428,7 +464,7 @@
     "ignore": false
   },
   "color/hslToRgb": {
-    "sig": "{ h, s, l } -> { r, g, b }",
+    "sig": "{ h, s, l } → { r, g, b }",
     "description": "HSL to RGB",
     "examples": [],
     "kind": "function",
@@ -436,7 +472,7 @@
     "ignore": false
   },
   "color/hexToRgb": {
-    "sig": "String -> { r, g, b }",
+    "sig": "String → { r, g, b }",
     "description": "Hex to RGB",
     "examples": [],
     "kind": "function",
@@ -445,7 +481,7 @@
   },
   "color/rgbToHex": {
     "todo:": "should this not include the hash prefix?",
-    "sig": "{ r, g, b } -> String",
+    "sig": "{ r, g, b } → String",
     "description": "RGB to hex",
     "examples": [],
     "kind": "function",
@@ -453,7 +489,7 @@
     "ignore": false
   },
   "color/hslToHex": {
-    "sig": "{ h, s, l } -> String",
+    "sig": "{ h, s, l } → String",
     "description": "HSL to hex",
     "examples": [],
     "kind": "function",
@@ -461,7 +497,7 @@
     "ignore": false
   },
   "color/hexToHsl": {
-    "sig": "String -> { h, s, l }",
+    "sig": "String → { h, s, l }",
     "description": "Hex to HSL",
     "examples": [],
     "kind": "function",
@@ -469,7 +505,7 @@
     "ignore": false
   },
   "color/randomRgb": {
-    "sig": "* -> { r, g, b }",
+    "sig": "* → { r, g, b }",
     "description": "Get a random RGB value",
     "examples": [
       "randomRgb(); // { r: 35, g: 125, b: 106 }"
@@ -479,7 +515,7 @@
     "ignore": false
   },
   "color/randomHex": {
-    "sig": "* -> String",
+    "sig": "* → String",
     "description": "Get a random hex string",
     "examples": [
       "randomHex(); // #b3a95a"
@@ -489,7 +525,7 @@
     "ignore": false
   },
   "color/randomHsl": {
-    "sig": "* -> { h, s, l }",
+    "sig": "* → { h, s, l }",
     "description": "Get a random HSL value",
     "examples": [],
     "kind": "function",
@@ -497,7 +533,7 @@
     "ignore": false
   },
   "crypto/hashWith": {
-    "sig": "String -> String -> String",
+    "sig": "String → String → String",
     "description": "Hash with variable algorithm",
     "examples": [
       "hashWith('md5', 'hello'); // '5d41402abc4b2a76b9719d911017c592'"
@@ -507,7 +543,7 @@
     "ignore": false
   },
   "crypto/md5": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "md5 hash a string",
     "examples": [
       "md5('hello'); // '5d41402abc4b2a76b9719d911017c592'"
@@ -517,7 +553,7 @@
     "ignore": false
   },
   "crypto/sha256": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "sha256 hash a string",
     "examples": [
       "sha256('hello'); // '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'"
@@ -527,7 +563,7 @@
     "ignore": false
   },
   "crypto/sha512": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "sha512 hash a string",
     "examples": [],
     "kind": "function",
@@ -535,7 +571,7 @@
     "ignore": false
   },
   "datetime/now": {
-    "sig": "a -> Date",
+    "sig": "a → Date",
     "description": "Get the current unix epoch (in ms)",
     "examples": [],
     "kind": "function",
@@ -543,7 +579,7 @@
     "ignore": false
   },
   "function/pipeC": {
-    "sig": "...f -> f",
+    "sig": "...f → f",
     "description": "Curried pipe",
     "examples": [],
     "kind": "function",
@@ -551,7 +587,7 @@
     "ignore": false
   },
   "function/on": {
-    "sig": "(b -> b -> c) -> (a -> b) -> a -> a -> c",
+    "sig": "(b → b → c) → (a → b) → a → a → c",
     "description": "on",
     "examples": [
       "const records = [{ age: 9 }, { age: 1 }, { age: 3 }];\n\n// [{ age: 1 }, { age: 3 }, { age: 9 }]\nR.sort(on(R.subtract, R.prop('age'))), records);"
@@ -561,7 +597,7 @@
     "ignore": false
   },
   "function/once": {
-    "sig": "(a -> b) -> (a -> b)",
+    "sig": "(a → b) → (a → b)",
     "description": "Creates a function that is restricted to invoking func once.\nRepeat calls to the function return the value of the first invocation",
     "examples": [
       "const pred = n => n > 5;\nconst oncePred = once(pred);\noncePred(10); // true\noncePred(1); // true (cached. pred not called again)"
@@ -571,7 +607,7 @@
     "ignore": false
   },
   "function/noop": {
-    "sig": "a -> undefined",
+    "sig": "a → undefined",
     "description": "A function that does nothing. \"no-op\"",
     "examples": [
       "noop(); // undefined"
@@ -581,7 +617,7 @@
     "ignore": false
   },
   "function/throttle": {
-    "sig": "Number -> (a -> b) -> (a -> b)",
+    "sig": "Number → (a → b) → (a → b)",
     "description": "Throttle a function",
     "examples": [],
     "kind": "function",
@@ -589,7 +625,7 @@
     "ignore": false
   },
   "function/debounce": {
-    "sig": "Number -> (a -> b) -> (a -> undefined)",
+    "sig": "Number → (a → b) → (a → undefined)",
     "description": "Debounce a function",
     "examples": [],
     "kind": "function",
@@ -597,7 +633,7 @@
     "ignore": false
   },
   "http/parseContentType": {
-    "sig": "String -> { mimeType, charset, boundary }",
+    "sig": "String → { mimeType, charset, boundary }",
     "description": "Parse a content-type HTTP header into its parts",
     "examples": [],
     "kind": "constant",
@@ -717,7 +753,7 @@
     "ignore": false
   },
   "is/isFinite": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is finite?",
     "examples": [
       "isFinite(10); // true\nisFinite(Infinity); // false"
@@ -727,7 +763,7 @@
     "ignore": false
   },
   "is/isInteger": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is integer?",
     "examples": [
       "isInteger(1); // true\nisInteger(1.23); // false"
@@ -737,7 +773,7 @@
     "ignore": false
   },
   "is/isNaN": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is NaN?",
     "examples": [
       "isNaN(NaN); // true"
@@ -747,7 +783,7 @@
     "ignore": false
   },
   "is/isArray": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is Array?",
     "examples": [
       "isArray([]); // true"
@@ -757,7 +793,7 @@
     "ignore": false
   },
   "is/isBuffer": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is Buffer?",
     "examples": [],
     "kind": "function",
@@ -765,7 +801,7 @@
     "ignore": false
   },
   "is/is": {
-    "sig": "a -> b -> Boolean",
+    "sig": "a → b → Boolean",
     "description": "Is equal (strict reference equality)",
     "examples": [],
     "kind": "function",
@@ -773,7 +809,7 @@
     "ignore": false
   },
   "is/isNot": {
-    "sig": "a -> b -> Boolean",
+    "sig": "a → b → Boolean",
     "description": "Is not equal (strict reference equality)",
     "examples": [],
     "kind": "function",
@@ -781,7 +817,7 @@
     "ignore": false
   },
   "is/isInstanceOf": {
-    "sig": "String -> a -> Boolean",
+    "sig": "String → a → Boolean",
     "description": "Is instance of class?",
     "examples": [
       "isInstanceOf(Array, []); // true"
@@ -791,7 +827,7 @@
     "ignore": false
   },
   "is/isTypeOf": {
-    "sig": "String -> a -> Boolean",
+    "sig": "String → a → Boolean",
     "description": "Is type of?",
     "examples": [
       "isTypeOf('boolean', true); // true"
@@ -801,7 +837,7 @@
     "ignore": false
   },
   "is/isBoolean": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is Boolean?",
     "examples": [
       "isBoolean(false); // true"
@@ -811,7 +847,7 @@
     "ignore": false
   },
   "is/isDate": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is Date?",
     "examples": [
       "isDate(new Date()); // true"
@@ -821,7 +857,7 @@
     "ignore": false
   },
   "is/isRegExp": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is regular expression?",
     "examples": [
       "isRegExp(/[a-z]/); // true"
@@ -831,7 +867,7 @@
     "ignore": false
   },
   "is/isFunction": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is function?",
     "examples": [
       "isFunction(() => {}); // true"
@@ -841,7 +877,7 @@
     "ignore": false
   },
   "is/isNull": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is null?",
     "examples": [
       "isNull(null); // true"
@@ -851,7 +887,7 @@
     "ignore": false
   },
   "is/isString": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is string?",
     "examples": [
       "isString('hello'); // true"
@@ -861,7 +897,7 @@
     "ignore": false
   },
   "is/isSymbol": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is symbol?",
     "examples": [
       "isSymbol('foo'); // true"
@@ -871,7 +907,7 @@
     "ignore": false
   },
   "is/isUndefined": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is undefined?",
     "examples": [
       "isUndefined(undefined); // true"
@@ -881,7 +917,7 @@
     "ignore": false
   },
   "is/isNumber": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is number?",
     "examples": [
       "isNumber(10); // true\nisNumber(NaN); // false"
@@ -891,7 +927,7 @@
     "ignore": false
   },
   "is/isNegative": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is negative?",
     "examples": [
       "isNumber(-10); // true\nisNumber(10); // false"
@@ -901,7 +937,7 @@
     "ignore": false
   },
   "is/isPositive": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is positive?",
     "examples": [
       "isNumber(10); // true\nisNumber(-10); // false"
@@ -911,7 +947,7 @@
     "ignore": false
   },
   "is/isFloat": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is float?",
     "examples": [
       "isFloat(1.23); // true\nisFloat(1); // false"
@@ -921,7 +957,7 @@
     "ignore": false
   },
   "is/isTruthy": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is truthy?",
     "examples": [
       "isTruthy(1); // true"
@@ -931,7 +967,7 @@
     "ignore": false
   },
   "is/isFalsey": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is false?",
     "examples": [
       "isFalsey(0); // true"
@@ -941,7 +977,7 @@
     "ignore": false
   },
   "is/isObject": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is object?",
     "examples": [
       "isObject({}); // true\nisObject([]]); // false\nisObject(null); // false"
@@ -951,7 +987,7 @@
     "ignore": false
   },
   "is/isPromise": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is promise?",
     "examples": [
       "isPromise(Promise.resolve(1)); // true"
@@ -961,7 +997,7 @@
     "ignore": false
   },
   "is/isStream": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is stream?",
     "examples": [],
     "kind": "function",
@@ -969,7 +1005,7 @@
     "ignore": false
   },
   "is/isPojo": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is \"plain old javascript object\"?",
     "examples": [
       "isPojo({}); // true"
@@ -979,7 +1015,7 @@
     "ignore": false
   },
   "is/isIterator": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is iterator?",
     "examples": [
       "const iterator = [][Symbol.iterator]();\nisIterator(iterator); // true"
@@ -989,7 +1025,7 @@
     "ignore": false
   },
   "is/isIterable": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is iterable?",
     "examples": [
       "isIterable([]); // true"
@@ -999,7 +1035,7 @@
     "ignore": false
   },
   "is/isAsyncIterable": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is async iterable?",
     "examples": [
       "const iterator = (async function* () {})();\nisAsyncIterable(iterator); // true"
@@ -1009,7 +1045,7 @@
     "ignore": false
   },
   "iterable/async/map": {
-    "sig": "(a -> Promise<b>) -> Iterable<a> -> AsyncIterator<b>",
+    "sig": "(a → Promise<b>) → Iterable<a> → AsyncIterator<b>",
     "description": "Applies a function to each of an async iterable's yielded items. Works on all iterables",
     "examples": [
       "const iterator = from([1, 2, 3]);\nmap(async n => n * 2, iterator); // AsyncIterator<2, 4, 6>"
@@ -1019,7 +1055,7 @@
     "ignore": false
   },
   "iterable/async/from": {
-    "sig": "Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Returns an async iterator from an iterable",
     "examples": [
       "from([1, 2, 3]) // AsyncIterator<1, 2, 3>"
@@ -1029,7 +1065,7 @@
     "ignore": false
   },
   "iterable/async/flatMap": {
-    "sig": "(a -> Iterable<b>) -> Iterable<a> -> AsyncIterator<b>",
+    "sig": "(a → Iterable<b>) → Iterable<a> → AsyncIterator<b>",
     "description": "Maps a function over an iterable and concatenates the results. a.k.a. \"chain\"",
     "examples": [
       "const iterator = from([1, 2, 3])\n\n// AsyncIterator<1, 2, 2, 4, 3, 6>\nflatMap(async function* (n) {\n  yield await n;\n  yield await n * 2;\n}, iterator);"
@@ -1039,7 +1075,7 @@
     "ignore": false
   },
   "iterable/async/of": {
-    "sig": "...a -> AsyncIterator<a>",
+    "sig": "...a → AsyncIterator<a>",
     "description": "Create an iterator of one or more (variadic) arguments",
     "examples": [
       "of(1, 2, 3); // AsyncIterator<1, 2, 3>"
@@ -1049,7 +1085,7 @@
     "ignore": false
   },
   "iterable/async/reduce": {
-    "sig": "((a, b) -> Promise<a>) -> a -> Iterable<b> -> Promise<a>",
+    "sig": "((a, b) → Promise<a>) → a → Iterable<b> → Promise<a>",
     "description": "reduce",
     "examples": [
       "const iterator = from([1, 2, 3]);\nawait reduce((a, b) => a + b, 0, iterator); // 6"
@@ -1059,7 +1095,7 @@
     "ignore": false
   },
   "iterable/async/zipWith": {
-    "sig": "((a, b) -> Promise<c>) -> Iterable<a> -> Iterable<b> -> AsyncIterator<c>",
+    "sig": "((a, b) → Promise<c>) → Iterable<a> → Iterable<b> → AsyncIterator<c>",
     "description": "zip with",
     "examples": [],
     "kind": "function",
@@ -1067,7 +1103,7 @@
     "ignore": false
   },
   "iterable/async/zip": {
-    "sig": "Iterable<a> -> Iterable<b> -> AsyncIterator<[a, b]>",
+    "sig": "Iterable<a> → Iterable<b> → AsyncIterator<[a, b]>",
     "description": "\"zips\" two iterables into pairs of items from corresponding indices\nof the input iterables. truncated to shorter of two iterables",
     "examples": [
       "zip(from([1, 2, 3]), from([4, 5, 6])); // AsyncIterator<[1, 4], [2, 5], [3, 6]>"
@@ -1077,7 +1113,7 @@
     "ignore": false
   },
   "iterable/async/rangeStep": {
-    "sig": "Number -> Number -> Number -> AsyncIterator<Number>",
+    "sig": "Number → Number → Number → AsyncIterator<Number>",
     "description": "Iterates from 0 to n by with a step (exclusive)",
     "examples": [],
     "kind": "function",
@@ -1085,7 +1121,7 @@
     "ignore": false
   },
   "iterable/async/range": {
-    "sig": "Number -> Number -> AsyncIterator<Number>",
+    "sig": "Number → Number → AsyncIterator<Number>",
     "description": "Iterates from 0 to n - 1 (exclusive)",
     "examples": [
       "range(0, 5) // AsyncIterator<0, 1, 2, 3, 4>"
@@ -1095,7 +1131,7 @@
     "ignore": false
   },
   "iterable/async/enumerate": {
-    "sig": "Iterable<a> -> AsyncIterator<[Integer, a]>",
+    "sig": "Iterable<a> → AsyncIterator<[Integer, a]>",
     "description": "transform an iterable to an iterable of pairs of indices and their items",
     "examples": [
       "// AsyncIterator<[0, 'zero'], [1, 'one'], [2, 'two']>\nenumerate(from(['zero', 'one', 'two']));"
@@ -1105,7 +1141,7 @@
     "ignore": false
   },
   "iterable/async/slice": {
-    "sig": "Integer -> Integer -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Integer → Integer → Iterable<a> → AsyncIterator<a>",
     "description": "Slice",
     "examples": [],
     "kind": "function",
@@ -1113,7 +1149,7 @@
     "ignore": false
   },
   "iterable/async/concat": {
-    "sig": "Iterable<a> -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → Iterable<a> → AsyncIterator<a>",
     "description": "Yield all items from one iterator, then the other",
     "examples": [
       "concat(from([1, 2, 3]), from([4, 5, 6])); // AsyncIterator<1, 2, 3, 4, 5, 6>"
@@ -1123,7 +1159,7 @@
     "ignore": false
   },
   "iterable/async/prepend": {
-    "sig": "a -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "a → Iterable<a> → AsyncIterator<a>",
     "description": "Prepend an item `a` to the end of an iterable",
     "examples": [],
     "kind": "function",
@@ -1131,7 +1167,7 @@
     "ignore": false
   },
   "iterable/async/append": {
-    "sig": "a -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "a → Iterable<a> → AsyncIterator<a>",
     "description": "Append an item `a` to the start of an iterable",
     "examples": [],
     "kind": "function",
@@ -1139,7 +1175,7 @@
     "ignore": false
   },
   "iterable/async/forEach": {
-    "sig": "(a -> Promise<b>) -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "(a → Promise<b>) → Iterable<a> → AsyncIterator<a>",
     "description": "run a function (side-effect) once for each item",
     "examples": [],
     "kind": "function",
@@ -1147,7 +1183,7 @@
     "ignore": false
   },
   "iterable/async/filter": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
     "description": "yield only items that pass the predicate",
     "examples": [],
     "kind": "function",
@@ -1155,7 +1191,7 @@
     "ignore": false
   },
   "iterable/async/reject": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
     "description": "Yield only items that do not pass the predicate",
     "examples": [],
     "kind": "function",
@@ -1163,7 +1199,7 @@
     "ignore": false
   },
   "iterable/async/unnest": {
-    "sig": "Iterable<Iterable<a>> -> AsyncIterator<a>",
+    "sig": "Iterable<Iterable<a>> → AsyncIterator<a>",
     "description": "Flattens one level of a nested iterable of iterables",
     "examples": [],
     "kind": "function",
@@ -1171,7 +1207,7 @@
     "ignore": false
   },
   "iterable/async/flatIterate": {
-    "sig": "(a -> Iterable<a>) -> a -> AsyncIterator<a>",
+    "sig": "(a → Iterable<a>) → a → AsyncIterator<a>",
     "description": "Flat iterate",
     "examples": [],
     "kind": "function",
@@ -1179,7 +1215,7 @@
     "ignore": false
   },
   "iterable/async/iterate": {
-    "sig": "(a -> Promise<a>) -> a -> AsyncIterator<a>",
+    "sig": "(a → Promise<a>) → a → AsyncIterator<a>",
     "description": "Iterate infinitely, yielding items from seed through a predicate",
     "examples": [],
     "kind": "function",
@@ -1187,7 +1223,7 @@
     "ignore": false
   },
   "iterable/async/some": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Does any item pass the predicate?",
     "examples": [],
     "kind": "function",
@@ -1195,7 +1231,7 @@
     "ignore": false
   },
   "iterable/async/none": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items fail the predicate?",
     "examples": [],
     "kind": "function",
@@ -1203,7 +1239,7 @@
     "ignore": false
   },
   "iterable/async/unique": {
-    "sig": "Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Yield only the unique items in an iterable (by strict equality)",
     "examples": [
       "unique(from([1, 1, 2, 3, 4, 4, 4])) // AsyncIterator<1, 2, 3, 4>"
@@ -1213,7 +1249,7 @@
     "ignore": false
   },
   "iterable/async/take": {
-    "sig": "Integer -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Integer → Iterable<a> → AsyncIterator<a>",
     "description": "Yield only the first n items of an iterable",
     "examples": [],
     "kind": "function",
@@ -1221,7 +1257,7 @@
     "ignore": false
   },
   "iterable/async/drop": {
-    "sig": "Integer -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Integer → Iterable<a> → AsyncIterator<a>",
     "description": "Drop the first n items of an iterable",
     "examples": [],
     "kind": "function",
@@ -1229,7 +1265,7 @@
     "ignore": false
   },
   "iterable/async/tail": {
-    "sig": "Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Yield all but the first item",
     "examples": [],
     "kind": "function",
@@ -1237,7 +1273,7 @@
     "ignore": false
   },
   "iterable/async/repeat": {
-    "sig": "a -> Iterator<a>",
+    "sig": "a → Iterator<a>",
     "description": "Infinitely yield an item (a)",
     "examples": [],
     "kind": "function",
@@ -1245,7 +1281,7 @@
     "ignore": false
   },
   "iterable/async/times": {
-    "sig": "Integer -> a -> AsyncIterator<a>",
+    "sig": "Integer → a → AsyncIterator<a>",
     "description": "Yield an item (a) n times. aka replicate",
     "examples": [],
     "kind": "function",
@@ -1253,7 +1289,7 @@
     "ignore": false
   },
   "iterable/async/length": {
-    "sig": "Iterable<a> -> Promise<Integer>",
+    "sig": "Iterable<a> → Promise<Integer>",
     "description": "Get length of iterable",
     "examples": [],
     "kind": "function",
@@ -1261,7 +1297,7 @@
     "ignore": false
   },
   "iterable/async/sumBy": {
-    "sig": "(a -> Promise<Number>) -> Iterable<a> -> Promise<Number>",
+    "sig": "(a → Promise<Number>) → Iterable<a> → Promise<Number>",
     "description": "Sum by",
     "examples": [],
     "kind": "function",
@@ -1269,7 +1305,7 @@
     "ignore": false
   },
   "iterable/async/sum": {
-    "sig": "Iterable<Number> -> Promise<Number>",
+    "sig": "Iterable<Number> → Promise<Number>",
     "description": "Sum",
     "examples": [],
     "kind": "function",
@@ -1277,7 +1313,7 @@
     "ignore": false
   },
   "iterable/async/max": {
-    "sig": "Iterable<Number> -> Promise<Number>",
+    "sig": "Iterable<Number> → Promise<Number>",
     "description": "Max",
     "examples": [],
     "kind": "function",
@@ -1285,7 +1321,7 @@
     "ignore": false
   },
   "iterable/async/toArray": {
-    "sig": "Iterable<a> -> Promise<[a]>",
+    "sig": "Iterable<a> → Promise<[a]>",
     "description": "Transforms an iterable to an array. exhasts input",
     "examples": [],
     "kind": "function",
@@ -1293,7 +1329,7 @@
     "ignore": false
   },
   "iterable/async/every": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> Promise<Boolean>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items pass their predicate?",
     "examples": [],
     "kind": "function",
@@ -1301,7 +1337,7 @@
     "ignore": false
   },
   "iterable/async/find": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> Promise<a|undefined>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<a|undefined>",
     "description": "Find",
     "examples": [],
     "kind": "function",
@@ -1309,7 +1345,7 @@
     "ignore": false
   },
   "iterable/async/findIndex": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> Promise<Integer>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Integer>",
     "description": "Find index",
     "examples": [],
     "kind": "function",
@@ -1317,7 +1353,7 @@
     "ignore": false
   },
   "iterable/async/exhaust": {
-    "sig": "Iterable<a> -> Promise<undefined>",
+    "sig": "Iterable<a> → Promise<undefined>",
     "description": "Yield all items",
     "examples": [],
     "kind": "function",
@@ -1325,7 +1361,7 @@
     "ignore": false
   },
   "iterable/async/takeWhile": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
     "description": "Take while",
     "examples": [],
     "kind": "function",
@@ -1333,7 +1369,7 @@
     "ignore": false
   },
   "iterable/async/dropWhile": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
     "description": "Drop while",
     "examples": [],
     "kind": "function",
@@ -1342,7 +1378,7 @@
   },
   "iterable/async/reverse": {
     "todo:": "there might be a more efficient strategy for arrays. generators are not iterable in reverse",
-    "sig": "Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Reverse",
     "examples": [
       "reverse(from([1, 2, 3])); // AsyncIterator<3, 2, 1>"
@@ -1352,7 +1388,7 @@
     "ignore": false
   },
   "iterable/async/group": {
-    "sig": "Iterable<a> -> AsyncIterator<[a]>",
+    "sig": "Iterable<a> → AsyncIterator<[a]>",
     "description": "Group",
     "examples": [],
     "kind": "function",
@@ -1360,7 +1396,7 @@
     "ignore": false
   },
   "iterable/async/splitEvery": {
-    "sig": "Integer -> Iterable<a> -> AsyncIterator<[a]>",
+    "sig": "Integer → Iterable<a> → AsyncIterator<[a]>",
     "description": "Yield groups of length n",
     "examples": [
       "// AsyncIterator<[0, 1, 2], [3, 4, 5], [6, 7, 8]>\nsplitEvery(3, from([0, 1, 2, 3, 4, 5, 6, 7, 8]));"
@@ -1370,7 +1406,7 @@
     "ignore": false
   },
   "iterable/async/splitAt": {
-    "sig": "Integer -> Iterable<a> -> [AsyncIterator<a>, AsyncIterator<a>]",
+    "sig": "Integer → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]",
     "description": "Split an iterable into a pair of iterables at a particular index",
     "examples": [
       "// [AsyncIterator<0, 1, 2, 3, 4>, AsyncIterator<5, 6>]\nsplitAt(4, from([0, 1, 2, 3, 4, 5, 6]));"
@@ -1380,7 +1416,7 @@
     "ignore": false
   },
   "iterable/async/partition": {
-    "sig": "(a -> Promise<Boolean>) -> Iterable<a> -> [AsyncIterator<a>, AsyncIterator<a>]",
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]",
     "description": "Split an iterable into a pair of iterables based on the truthiness of their predicate",
     "examples": [
       "// [AsyncIterator<0, 1, 2>, AsyncIterator<3, 4, 5, 6>]\npartition(n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));"
@@ -1390,7 +1426,7 @@
     "ignore": false
   },
   "iterable/async/cycleN": {
-    "sig": "Integer -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Integer → Iterable<a> → AsyncIterator<a>",
     "description": "Yield all items from an iterator, n times",
     "examples": [],
     "kind": "function",
@@ -1398,7 +1434,7 @@
     "ignore": false
   },
   "iterable/async/cycle": {
-    "sig": "Iterable<a> -> AsyncIterator<a>",
+    "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "yield iterable items cyclically, infinitely looping when exhausted",
     "examples": [
       "const iterator = from([1, 2, 3]);\ncycle(iterator); // AsyncIterator<1, 2, 3, 1, 2, 3, ...>"
@@ -1408,7 +1444,7 @@
     "ignore": false
   },
   "iterable/async/joinWith": {
-    "sig": "String -> Iterable<a> -> Promise<String>",
+    "sig": "String → Iterable<a> → Promise<String>",
     "description": "Serialize iterator items to a string with an arbitrary spacer",
     "examples": [
       "const iterator = from(['some', 'slug', 'parts']);\nawait joinWith('-', iterator); // 'some-slug-parts';"
@@ -1418,7 +1454,7 @@
     "ignore": false
   },
   "iterable/async/join": {
-    "sig": "Iterable<a> -> Promise<String>",
+    "sig": "Iterable<a> → Promise<String>",
     "description": "Serialize iterator items to a string",
     "examples": [
       "const iterator = from(['a', 'b', 'c', 'd', 'e']);\nawait join(iterator); // 'abcde';"
@@ -1428,7 +1464,7 @@
     "ignore": false
   },
   "iterable/async/isEmpty": {
-    "sig": "Iterable<a> -> Promise<Boolean>",
+    "sig": "Iterable<a> → Promise<Boolean>",
     "description": "Is an iterable empty? (done or length = 0)",
     "examples": [
       "await isEmpty(from([])); // true\nawait isEmpty(from([1])); // false"
@@ -1438,7 +1474,7 @@
     "ignore": false
   },
   "iterable/async/indices": {
-    "sig": "Iterable<a> -> AsyncIterator<Integer>",
+    "sig": "Iterable<a> → AsyncIterator<Integer>",
     "description": "Get an iterator of indices (0 to length - 1)",
     "examples": [
       "indices(from(['a', 'b', 'c'])); // AsyncIterator<0, 1, 2>"
@@ -1448,7 +1484,7 @@
     "ignore": false
   },
   "iterable/async/padTo": {
-    "sig": "Integer -> a -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "Integer → a → Iterable<a> → AsyncIterator<a>",
     "description": "Pad an iterable with with a finite number of items `a`",
     "examples": [
       "padTo(6, 'd', from(['a', 'b', 'c'])); // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd'>"
@@ -1458,7 +1494,7 @@
     "ignore": false
   },
   "iterable/async/pad": {
-    "sig": "a -> Iterable<a> -> AsyncIterator<a>",
+    "sig": "a → Iterable<a> → AsyncIterator<a>",
     "description": "Pad iterable with an infinite number of items `a`",
     "examples": [
       "pad('d', from(['a', 'b', 'c'])); // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd', ...>"
@@ -1482,7 +1518,7 @@
     "ignore": false
   },
   "iterable/sync/from": {
-    "sig": "Iterable<a> -> Iterator<a>",
+    "sig": "Iterable<a> → Iterator<a>",
     "description": "Returns an iterator from an iterable",
     "examples": [
       "from([1, 2, 3]) // Iterator<1, 2, 3>"
@@ -1492,7 +1528,7 @@
     "ignore": false
   },
   "number/random": {
-    "sig": "Integer -> Integer -> Integer",
+    "sig": "Integer → Integer → Integer",
     "description": "Get a random number between two inclusive bounds",
     "examples": [
       "random(0, 100); // 42"
@@ -1502,7 +1538,7 @@
     "ignore": false
   },
   "object/firstPair": {
-    "sig": "{ k: v } -> [k, v]",
+    "sig": "{ k: v } → [k, v]",
     "description": "Get an object's first key: value pair",
     "examples": [
       "firstPair({ a: 1 }); // ['a', 1]"
@@ -1512,7 +1548,7 @@
     "ignore": false
   },
   "object/firstKey": {
-    "sig": "{ k: v } -> k",
+    "sig": "{ k: v } → k",
     "description": "Get an object's first key",
     "examples": [
       "firstKey({ a: 1 }); // 'a'"
@@ -1522,7 +1558,7 @@
     "ignore": false
   },
   "object/firstValue": {
-    "sig": "{ k: v } -> v",
+    "sig": "{ k: v } → v",
     "description": "Get an object's first value",
     "examples": [
       "firstValue({ a: 1 }); // 1"
@@ -1532,7 +1568,7 @@
     "ignore": false
   },
   "object/mapPairs": {
-    "sig": "([a, b] -> [c, d]) -> { a: b } -> { c: d }",
+    "sig": "([a, b] → [c, d]) → { a: b } → { c: d }",
     "description": "Map object key / value pairs",
     "examples": [
       "mapPairs(R.reverse, { a: 1, b: 2 }); // { 1: 'a', 2: 'b' }"
@@ -1542,7 +1578,7 @@
     "ignore": false
   },
   "object/mapKeys": {
-    "sig": "(k -> k) -> { k: v } -> { k: v }",
+    "sig": "(k → k) → { k: v } → { k: v }",
     "description": "Map object keys",
     "examples": [
       "mapKeys(R.reverse, { one: 1, two: 2 }); // { eno: 1, owt: 2 }"
@@ -1552,7 +1588,7 @@
     "ignore": false
   },
   "object/deepFreeze": {
-    "sig": "{*} -> {*}",
+    "sig": "{*} → {*}",
     "description": "recursive + mutating + identity",
     "examples": [
       "deepFreeze({ a: 1 }); // { a: 1 }"
@@ -1562,7 +1598,7 @@
     "ignore": false
   },
   "object/toHumanJSON": {
-    "sig": "JSON -> String",
+    "sig": "JSON → String",
     "description": "Serialize to JSON with newlines and 2-space indentation",
     "examples": [
       "// '{\n//   \"one\": {\n//     \"two\": 2\n//   }\n// }'\ntoHumanJSON({ one: { two: 2 } });"
@@ -1581,7 +1617,7 @@
     "ignore": false
   },
   "stream/toString": {
-    "sig": "Stream -> String",
+    "sig": "Stream → String",
     "description": "Stream to string",
     "examples": [],
     "kind": "function",
@@ -1589,7 +1625,7 @@
     "ignore": false
   },
   "stream/fromString": {
-    "sig": "String -> Stream",
+    "sig": "String → Stream",
     "description": "String to stream",
     "examples": [],
     "kind": "function",
@@ -1597,7 +1633,7 @@
     "ignore": false
   },
   "string/localeCompare": {
-    "sig": "String -> String -> Number",
+    "sig": "String → String → Number",
     "description": "Locale compare",
     "examples": [],
     "kind": "function",
@@ -1605,7 +1641,7 @@
     "ignore": false
   },
   "string/capitalize": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "Capitalize the first letter of a string",
     "examples": [
       "capitalize('hello'); // 'Hello'"
@@ -1615,7 +1651,7 @@
     "ignore": false
   },
   "string/template": {
-    "sig": "String -> {*} -> String",
+    "sig": "String → {*} → String",
     "description": "String interpolation. Reasonably similar to JavaScript template literals.",
     "examples": [
       "// 'Hello Pat!'\ntemplate('Hello ${ name }!', { name: 'Pat' });"
@@ -1625,7 +1661,7 @@
     "ignore": false
   },
   "string/toBase64": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "Encode a string to base64",
     "examples": [
       "toBase64('hello'); // 'aGVsbG8='"
@@ -1635,7 +1671,7 @@
     "ignore": false
   },
   "string/parseBase64": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "Decode a string from base64",
     "examples": [
       "parseBase64('aGVsbG8='); // 'hello'"
@@ -1645,7 +1681,7 @@
     "ignore": false
   },
   "string/slugify": {
-    "sig": "String -> String",
+    "sig": "String → String",
     "description": "Slugify a string",
     "examples": [
       "slugify('Hello World!'); // 'hello-world'"
@@ -1655,7 +1691,7 @@
     "ignore": false
   },
   "url/isDataUrl": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is a string a data url",
     "examples": [
       "isDataUrl('data:,Hello%2C%20World!'); // true\nisDataUrl('https://foo.bar'); // false"
@@ -1665,7 +1701,7 @@
     "ignore": false
   },
   "url/parseDataUrl": {
-    "sig": "String -> { mediatype, data, base64 }",
+    "sig": "String → { mediatype, data, base64 }",
     "description": "Parse Data URL",
     "examples": [],
     "kind": "function",
@@ -1673,7 +1709,7 @@
     "ignore": false
   },
   "uuid/uuid": {
-    "sig": "a -> String",
+    "sig": "a → String",
     "description": "Random UUID v4",
     "examples": [
       "uuid(); // 'c4f2e775-a5f9-4796-bd31-46e544bfab06'"
@@ -1683,7 +1719,7 @@
     "ignore": false
   },
   "uuid/isUuid": {
-    "sig": "a -> Boolean",
+    "sig": "a → Boolean",
     "description": "Is UUID v4?",
     "examples": [
       "isUuid('c4f2e775-a5f9-4796-bd31-46e544bfab06'); // true"

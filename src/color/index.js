@@ -9,7 +9,7 @@ import { random } from 'funk-lib/number';
 
 /** RGB to HSL
   * @func
-  * @sig { r, g, b } -> { h, s, l }
+  * @sig { r, g, b } → { h, s, l }
 */
 export const rgbToHsl = ({ r, g, b }) => {
   r /= 255;
@@ -44,7 +44,7 @@ export const rgbToHsl = ({ r, g, b }) => {
 
 /** HSL to RGB
   * @func
-  * @sig { h, s, l } -> { r, g, b }
+  * @sig { h, s, l } → { r, g, b }
 */
 export const hslToRgb = ({ h, s, l }) => {
   h /= 360;
@@ -79,7 +79,7 @@ export const hslToRgb = ({ h, s, l }) => {
 
 /** Hex to RGB
   * @func
-  * @sig String -> { r, g, b }
+  * @sig String → { r, g, b }
 */
 export const hexToRgb = (hex) => {
   // expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -100,7 +100,7 @@ export const hexToRgb = (hex) => {
 /** RGB to hex
   * @func
   * @todo: should this not include the hash prefix?
-  * @sig { r, g, b } -> String
+  * @sig { r, g, b } → String
 */
 export const rgbToHex = R.pipe(
   R.map(color =>  {
@@ -112,19 +112,19 @@ export const rgbToHex = R.pipe(
 
 /** HSL to hex
   * @func
-  * @sig { h, s, l } -> String
+  * @sig { h, s, l } → String
 */
 export const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
 /** Hex to HSL
   * @func
-  * @sig String -> { h, s, l }
+  * @sig String → { h, s, l }
 */
 export const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
 
 /** Get a random RGB value
   * @func
-  * @sig * -> { r, g, b }
+  * @sig * → { r, g, b }
   * @example randomRgb(); // { r: 35, g: 125, b: 106 }
 */
 export const randomRgb = () => ({
@@ -135,14 +135,14 @@ export const randomRgb = () => ({
 
 /** Get a random hex string
   * @func
-  * @sig * -> String
+  * @sig * → String
   * @example randomHex(); // #b3a95a
 */
 export const randomHex = R.pipe(randomRgb, rgbToHex);
 
 /** Get a random HSL value
   * @func
-  * @sig * -> { h, s, l }
+  * @sig * → { h, s, l }
 */
 export const randomHsl = R.pipe(randomRgb, rgbToHsl);
 

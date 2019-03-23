@@ -7,7 +7,7 @@ import {
 } from 'ramda';
 
 /** Parse a content-type HTTP header into its parts
-  * @sig String -> { mimeType, charset, boundary }
+  * @sig String → { mimeType, charset, boundary }
 */
 export const parseContentType = pipe(
   defaultTo(''),

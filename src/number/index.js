@@ -2,7 +2,7 @@ import { max, min, useWith } from 'ramda';
 
 /** Get a random number between two inclusive bounds
   * @func
-  * @sig Integer -> Integer -> Integer
+  * @sig Integer → Integer → Integer
   * @example random(0, 100); // 42
 */
 export const random = useWith((min, max) => {

@@ -10,21 +10,21 @@ import { isObject } from 'funk-lib/is';
 
 /** Get an object's first key: value pair
   * @func
-  * @sig { k: v } -> [k, v]
+  * @sig { k: v } → [k, v]
   * @example firstPair({ a: 1 }); // ['a', 1]
 */
 export const firstPair = R.pipe(R.toPairs, R.nth(0));
 
 /** Get an object's first key
   * @func
-  * @sig { k: v } -> k
+  * @sig { k: v } → k
   * @example firstKey({ a: 1 }); // 'a'
 */
 export const firstKey = R.pipe(firstPair, R.nth(0));
 
 /** Get an object's first value
   * @func
-  * @sig { k: v } -> v
+  * @sig { k: v } → v
   * @example firstValue({ a: 1 }); // 1
 */
 export const firstValue = R.pipe(firstPair, R.nth(1));
@@ -32,7 +32,7 @@ export const firstValue = R.pipe(firstPair, R.nth(1));
 // todo: pickAsDeep (recursive)
 // pick the keys from the first argument, renaming by the values in the second arg
 // pickAs({ a: 'b', b: 'a' }, { a: 1, b: 2 }) === { a: 2, b: 1 }
-// object -> object -> object
+// object → object → object
 export const pickAs = R.curry((keyVals, obj) => {
   return R.toPairs(keyVals).reduce((result, [key, val]) => {
     return R.assoc(val, obj[key], result);
@@ -41,7 +41,7 @@ export const pickAs = R.curry((keyVals, obj) => {
 
 /** Map object key / value pairs
   * @func
-  * @sig ([a, b] -> [c, d]) -> { a: b } -> { c: d }
+  * @sig ([a, b] → [c, d]) → { a: b } → { c: d }
   * @example mapPairs(R.reverse, { a: 1, b: 2 }); // { 1: 'a', 2: 'b' }
 */
 export const mapPairs = R.curry((pred, obj) => {
@@ -50,22 +50,22 @@ export const mapPairs = R.curry((pred, obj) => {
 
 /** Map object keys
   * @func
-  * @sig (k -> k) -> { k: v } -> { k: v }
+  * @sig (k → k) → { k: v } → { k: v }
   * @example mapKeys(R.reverse, { one: 1, two: 2 }); // { eno: 1, owt: 2 }
 */
 export const mapKeys = R.curry((pred, obj) => {
   return mapPairs(([key, value]) => [pred(key), value], obj);
 });
 
-// (v -> m) -> { k: v } -> { k: m }
+// (v → m) → { k: v } → { k: m }
 export const mapValues = R.curryN(2)(deprecate(
   R.map,
-  'funk-lib/object/mapValues -> R.map'
+  'funk-lib/object/mapValues → R.map'
 ));
 
 /** recursive + mutating + identity
   * @func
-  * @sig {*} -> {*}
+  * @sig {*} → {*}
   * @example deepFreeze({ a: 1 }); // { a: 1 }
 */
 export const deepFreeze = obj => {
@@ -98,7 +98,7 @@ export const nestWith = R.curry((pred, obj) => {
 
 /** Serialize to JSON with newlines and 2-space indentation
   * @func
-  * @sig JSON -> String
+  * @sig JSON → String
   * @example
   * // '{
   * //   "one": {

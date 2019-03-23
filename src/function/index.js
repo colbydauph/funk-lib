@@ -3,13 +3,13 @@ import { curry, curryN, pipe } from 'ramda';
 
 /** Curried pipe
   * @func
-  * @sig ...f -> f
+  * @sig ...f → f
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
 /** on
   * @func
-  * @sig (b -> b -> c) -> (a -> b) -> a -> a -> c
+  * @sig (b → b → c) → (a → b) → a → a → c
   * @example
   * const records = [{ age: 9 }, { age: 1 }, { age: 3 }];
   *
@@ -21,7 +21,7 @@ export const on = curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 /** Creates a function that is restricted to invoking func once.
   * Repeat calls to the function return the value of the first invocation
   * @func
-  * @sig (a -> b) -> (a -> b)
+  * @sig (a → b) → (a → b)
   * @example
   * const pred = n => n > 5;
   * const oncePred = once(pred);
@@ -42,14 +42,14 @@ export const once = fn => {
 
 /** A function that does nothing. "no-op"
   * @func
-  * @sig a -> undefined
+  * @sig a → undefined
   * @example noop(); // undefined
 */
 export const noop = () => {};
 
 /** Throttle a function
   * @func
-  * @sig Number -> (a -> b) -> (a -> b)
+  * @sig Number → (a → b) → (a → b)
 */
 export const throttle = curry((delay, fn) => {
   let lastCall = 0;
@@ -63,7 +63,7 @@ export const throttle = curry((delay, fn) => {
 
 /** Debounce a function
   * @func
-  * @sig Number -> (a -> b) -> (a -> undefined)
+  * @sig Number → (a → b) → (a → undefined)
 */
 export const debounce = curry((delay, fn) => {
   let timeoutID;

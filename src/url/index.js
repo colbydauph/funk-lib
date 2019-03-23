@@ -5,7 +5,7 @@ const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 
 /** Is a string a data url
   * @func
-  * @sig a -> Boolean
+  * @sig a → Boolean
   * @example
   * isDataUrl('data:,Hello%2C%20World!'); // true
   * isDataUrl('https://foo.bar'); // false
@@ -14,7 +14,7 @@ export const isDataUrl = test(DATA_URL_REGEXP);
 
 /** Parse Data URL
   * @func
-  * @sig String -> { mediatype, data, base64 }
+  * @sig String → { mediatype, data, base64 }
 */
 export const parseDataUrl = url => {
   const [

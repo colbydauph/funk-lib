@@ -11,7 +11,7 @@ import styles from './Card.module.css';
 
 const Card = ({ doc, onQuery }) => (
   <div className={ `${ styles.card } ${ styles[doc.kind] }` } style={{ display: (doc.ignore ? 'none' : 'default') }}>
-    <a className={ styles.sourceLink } href={ doc.url } target={ '_new' }>
+    <a className={ styles.sourceLink } href={ doc.url } target={ '_new' } title={ 'View Source' }>
       <Icon type={ 'code' } />
     </a>
     <h2>

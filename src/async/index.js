@@ -16,7 +16,7 @@ export class TimeoutError extends Error {}
   * @sig [Promise<a>] -> [a]
   * @example
   * // [1, 2, 3]
-  * await Promise.all([
+  * await all([
   *  Promise.resolve(1),
   *  2,
   *  Promise.resolve(3),
@@ -43,7 +43,7 @@ export const delay = async ms => new Promise(res => setTimeout(res, ms));
   * @async
   * @func
   * @sig [a] -> (a -> b) -> Promise<b>
-  * @example await deferWith([1, 2], (a, b)) => a + b); // 3
+  * @example await deferWith([1, 2], (a, b) => a + b); // 3
 */
 export const deferWith = R.curry((args, f) => delay(1).then(_ => f(...args)));
 

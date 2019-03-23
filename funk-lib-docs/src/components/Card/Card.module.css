@@ -20,9 +20,10 @@
 }
 
 .card.module {
-  background: none;
-  box-shadow: none;
-  border: none;
+  background: rgb(239, 239, 239);
+  color: black;
+  /* box-shadow: none; */
+  /* border: none; */
   /* position: -webkit-sticky;
   position: sticky;
   top: 0; */
@@ -51,4 +52,12 @@
   justify-content: center;
   height: 30px;
   width: 30px;
+}
+
+.source-link:hover {
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global .hljs-comment {
+  color: #777d88;
 }

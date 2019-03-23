@@ -3,8 +3,12 @@ import React, { PureComponent, isValidElement } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
+import Highlight from 'react-highlight';
+import 'highlight.js/styles/atom-one-dark.css';
+
 // local
 import styles from './Code.module.css';
+
 
 export default class Code extends PureComponent {
   
@@ -30,8 +34,9 @@ export default class Code extends PureComponent {
 
   render() {
     let { children } = this.props;
-    const { className, inline, onClick } = this.props;
+    const { className, inline, onClick, lang } = this.props;
     const computedClassNames = classnames(className, styles.code, {
+      [`language-${ lang }`]: lang && !inline,
       [styles.inline]: inline,
     });
     
@@ -40,10 +45,16 @@ export default class Code extends PureComponent {
       children = JSON.stringify(children, null, spaces);
     }
     
+    if (inline) {
+      return (
+        <code className={ computedClassNames }>{ children }</code>
+      );
+    }
+    
     return (
-      <pre onClick={ onClick } className={ computedClassNames }>
-        <code>{ children }</code>
-      </pre>
+      <Highlight onClick={ onClick } className={ computedClassNames }>
+        { children }
+      </Highlight>
     );
   }
 

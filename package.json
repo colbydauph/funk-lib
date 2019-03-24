@@ -38,7 +38,7 @@
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "NODE_ENV=test mocha --reporter=list --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "NODE_ENV=test mocha --watch --reporter=min --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",
-    "lint": "eslint --max-warnings=5 $(find . ! -path '*node_modules*' ! -path '*funk-lib-docs*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",
+    "lint": "eslint --max-warnings=5 $(find . ! -path '*node_modules*' ! -path '*docs*' ! -path '*dist*' ! -path '*coverage*' -type f | egrep '[.]js?$')",
     "cover": "nyc --check-coverage npm test",
     "verify": "npm run lint && npm run cover"
   },

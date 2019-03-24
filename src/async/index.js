@@ -326,7 +326,6 @@ export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
   * @async
   * @func
   * @sig Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
-  * @example
 */
 export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await flatMapLimit(limit, f, R.toPairs(object)));

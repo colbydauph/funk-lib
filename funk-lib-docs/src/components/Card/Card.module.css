@@ -4,10 +4,14 @@
   margin-left: 20px;
   margin-right: 20px;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  padding: 20px;
+  border-radius: 3px;
   box-shadow: 5px 5px 16px -6px rgba(0, 0, 0, 0.5);
   position: relative;
+  overflow: hidden;
+}
+
+.top {
+  padding: 20px 20px 20px 20px;
 }
 
 .card h2 {
@@ -30,15 +34,12 @@
 }
 
 .description {
-  margin: 20px 0;
-}
-
-.card.module .description {
-  margin: 0;
+  margin: 20px 0 0 0;
 }
 
 .example {
   width: 100%;
+  border-radius: 0;
 }
 
 .source-link {
@@ -56,6 +57,10 @@
 
 .source-link:hover {
   text-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+:global .hljs {
+  color: #d5d6d8;
 }
 
 :global .hljs-comment {

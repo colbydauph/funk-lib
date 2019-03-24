@@ -1,11 +1,12 @@
 .code {
   margin: 0;
-  padding: 15px;
+  padding: 10px 20px;
   overflow: scroll;
   display: inline-block;
-  border-radius: 3px;
+  /* border-radius: 3px; */
   font-size: 90%;
   line-height: 160%;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 .inline {

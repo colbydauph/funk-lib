@@ -58,8 +58,12 @@ export const next = async iterator => {
   return out;
 };
 
-// returns the last item
-// Iterable<a> → Promise<a>
+/** Returns the last item
+  * @func
+  * @sig Iterable<a> → Promise<a>
+  * @example
+  * await last(from(1, 2, 3)); // 3
+*/
 export const last = async xs => {
   // should this throw for empty iterators, like next?
   let last;
@@ -83,7 +87,6 @@ export const flatMap = R.curry(async function* (f, xs) {
   for await (const x of xs) yield* await f(x);
 });
 
-
 /** Create an iterator of one or more (variadic) arguments
   * @func
   * @sig ...a → AsyncIterator<a>
@@ -92,19 +95,25 @@ export const flatMap = R.curry(async function* (f, xs) {
 */
 export const of = R.unapply(from);
 
-// ((a, b) → Promise<a>) → a → Iterable<b> → AsyncIterator<a>
+/** Scan
+  * @func
+  * @sig ((a, b) → Promise<a>) → a → Iterable<b> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 1, 2, 6, 24>
+  * scan(R.multiply, 1, from([1, 2, 3, 4]));
+*/
 export const scan = R.curry(async function* (f, acc, xs) {
   yield acc;
   yield* map(async x => (acc = await f(acc, x)), xs);
 });
 
-/** reduce
+/** Reduce
   * @async
   * @func
   * @sig ((a, b) → Promise<a>) → a → Iterable<b> → Promise<a>
   * @example
-  * const iterator = from([1, 2, 3]);
-  * await reduce((a, b) => a + b, 0, iterator); // 6
+  * // 6
+  * await reduce((a, b) => a + b, 0, from([1, 2, 3]));
 */
 export const reduce = asyncPipeC(scan, last);
 
@@ -126,26 +135,39 @@ export const zipAllWith = R.curry(async function* (func, iterators) {
   }
 });
 
-// zip an array of iterables into an iterables of arrays of items from corresponding indices
-// of the input iterables
-// [Iterable<a>] → AsyncIterator<b>
+/** Zip an array of iterables into an iterables of arrays of items from corresponding indices
+  * of the input iterables
+  * @func
+  * @sig [Iterable<a>, Iterable<b>, Iterable<c>] → AsyncIterator<[a, b, c]>
+  * @example
+  * // AsyncIterator<[1, 4, 7], [2, 5, 8], [3, 6, 9]>
+  * zipAll([
+  *   from([1, 2, 3]),
+  *   from([4, 5, 6]),
+  *   from([7, 8, 9]),
+  * ]);
+*/
 export const zipAll = zipAllWith(Array.of);
 
 export const zipWithN = n => R.curryN(n + 1)((f, ...iterables) => zipAllWith(f, iterables));
 
-/** zip with
+/** Zip two iterables with a custom zipping function
   * @func
   * @sig ((a, b) → Promise<c>) → Iterable<a> → Iterable<b> → AsyncIterator<c>
+  * @example
+  * // AsyncIterator<[4, 1], [5, 2], [6, 3]>
+  * zipWith((a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));
 */
 export const zipWith = zipWithN(2);
 
 
-/** "zips" two iterables into pairs of items from corresponding indices
+/** Zips two iterables into pairs of items from corresponding indices
   * of the input iterables. truncated to shorter of two iterables
   * @func
   * @sig Iterable<a> → Iterable<b> → AsyncIterator<[a, b]>
   * @example
-  * zip(from([1, 2, 3]), from([4, 5, 6])); // AsyncIterator<[1, 4], [2, 5], [3, 6]>
+  * // AsyncIterator<[1, 4], [2, 5], [3, 6]>
+  * zip(from([1, 2, 3]), from([4, 5, 6]));
 */
 export const zip = zipWith(Array.of);
 
@@ -164,7 +186,7 @@ export const rangeStep = R.curry(async function* (step, start, stop) {
   * @func
   * @sig Number → Number → AsyncIterator<Number>
   * @example
-  * range(0, 5) // AsyncIterator<0, 1, 2, 3, 4>
+  * range(0, 5); // AsyncIterator<0, 1, 2, 3, 4>
 */
 export const range = rangeStep(1);
 
@@ -187,9 +209,12 @@ export const accumulate = R.curry((f, xs) => {
   }, enumerate(xs));
 });
 
-/** Slice
+/** Slice an async iterator between two indices
   * @func
   * @sig Integer → Integer → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<3, 4, 5>
+  * slice(2, 5, from(1, 2, 3, 4, 5, 6, 7, 8));
 */
 export const slice = R.curry(async function* (start, stop, xs) {
   for await (const [i, x] of enumerate(xs)) {
@@ -201,7 +226,9 @@ export const slice = R.curry(async function* (start, stop, xs) {
 /** Yield all items from one iterator, then the other
   * @func
   * @sig Iterable<a> → Iterable<a> → AsyncIterator<a>
-  * @example concat(from([1, 2, 3]), from([4, 5, 6])); // AsyncIterator<1, 2, 3, 4, 5, 6>
+  * @example
+  * // AsyncIterator<1, 2, 3, 4, 5, 6>
+  * concat(from([1, 2, 3]), from([4, 5, 6]));
 */
 export const concat = R.curry(async function* (xs1, xs2) {
   yield* xs1;
@@ -211,12 +238,16 @@ export const concat = R.curry(async function* (xs1, xs2) {
 /** Prepend an item `a` to the end of an iterable
   * @func
   * @sig a → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<0, 1, 2, 3>
+  * prepend(0, from([1, 2, 3]));
 */
 export const prepend = R.useWith(concat, [of, R.identity]);
 
 /** Append an item `a` to the start of an iterable
   * @func
   * @sig a → Iterable<a> → AsyncIterator<a>
+  * @example append(4, from([1, 2, 3])); // AsyncIterator<1, 2, 3, 4>
 */
 export const append = R.useWith(R.flip(concat), [of, R.identity]);
 
@@ -232,6 +263,9 @@ export const forEach = R.curry(async function* (f, xs) {
 /** yield only items that pass the predicate
   * @func
   * @sig (a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 2, 3, 4>
+  * filter(async n => (n < 5), from(1, 2, 3, 4, 5, 6, 7, 8));
 */
 export const filter = R.curry(async function* (f, xs) {
   for await (const x of xs) if (await f(x)) yield x;
@@ -240,6 +274,9 @@ export const filter = R.curry(async function* (f, xs) {
 /** Yield only items that do not pass the predicate
   * @func
   * @sig (a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<6, 7, 8>
+  * reject(async n => (n < 5), from(1, 2, 3, 4, 5, 6, 7, 8));
 */
 export const reject = R.useWith(filter, [complementP, R.identity]);
 
@@ -253,15 +290,22 @@ export const flattenN = R.curry((n, xs) => {
   }, xs);
 });
 
-
 /** Flattens one level of a nested iterable of iterables
   * @func
   * @sig Iterable<Iterable<a>> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 2, [3, [4]]>
+  * unnest(from([1, [2, [3, [4]]]]));
 */
 export const unnest = flattenN(1);
 
-// Flattens a nested iterable of iterables into a single iterable
-// Iterable<Iterable<a>> → AsyncIterator<a>
+/** Flattens a nested iterable of iterables into a single iterable
+  * @func
+  * @sig Iterable<Iterable<a>> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 2, 3, 4>
+  * unnest(from([1, [2, [3, [4]]]]));
+*/
 export const flatten = flattenN(Infinity);
 
 // todo: would be better to use an option type here
@@ -281,14 +325,25 @@ export const flatUnfold = pipeC(unfold, unnest);
 /** Flat iterate
   * @func
   * @sig (a → Iterable<a>) → a → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<0, 0, 1, 2, 2, 4, 3, 6, 4, 8, ...>
+  * flatIterate(async function* (n) {
+  *   yield await n;
+  *   yield await (n * 2);
+  *   return n + 1;
+  * }, 0));
 */
 export const flatIterate = R.curry(async function* flatIterate(f, x) {
   while (true) x = yield* await f(x);
 });
 
+
 /** Iterate infinitely, yielding items from seed through a predicate
   * @func
   * @sig (a → Promise<a>) → a → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<0, 2, 4, 6, 8, 10, ...>
+  * iterate(async n => n + 2, 0);
 */
 export const iterate = R.useWith(unfold, [
   f => async x => [x, await f(x)],
@@ -341,6 +396,9 @@ export const unique = async function* (xs) {
 /** Yield only the first n items of an iterable
   * @func
   * @sig Integer → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 2, 3>
+  * take(3, from(1, 2, 3, 4, 5));
 */
 export const take = R.curry(async function* (n, xs) {
   if (n <= 0) return;
@@ -350,30 +408,46 @@ export const take = R.curry(async function* (n, xs) {
 /** Drop the first n items of an iterable
   * @func
   * @sig Integer → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<4, 5>
+  * drop(3, from(1, 2, 3, 4, 5));
 */
 export const drop = R.curry((n, xs) => slice(n, Infinity, xs));
 
 /** Yield all but the first item
   * @func
   * @sig Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<2, 3, 4, 5>
+  * tail(from(1, 2, 3, 4, 5));
 */
 export const tail = drop(1);
 
 /** Infinitely yield an item (a)
   * @func
   * @sig a → Iterator<a>
+  * @example
+  * // AsyncIterator<'hi', 'hi', 'hi', ...>
+  * repeat('hi');
 */
 export const repeat = iterate(R.identity);
 
 /** Yield an item (a) n times. aka replicate
   * @func
   * @sig Integer → a → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<'hi', 'hi', 'hi', 'hi'>
+  * time(4, 'hi');
 */
 export const times = R.useWith(take, [R.identity, repeat]);
 
 /** Get length of iterable
   * @func
+  * @async
   * @sig Iterable<a> → Promise<Integer>
+  * @example
+  * // 5
+  * await length(from([1, 2, 3, 4, 5]));
 */
 export const length = reduce(R.add(1), 0);
 
@@ -396,21 +470,28 @@ export const maxBy = pipeC(map, reduce(Math.max, -Infinity));
 /** Sum
   * @func
   * @sig Iterable<Number> → Promise<Number>
+  * @example await sum(from([1, 2, 3])); // 6
 */
 export const sum = sumBy(R.identity);
 
-// Iterable<Number> → Promise<Number>
+/** Min
+  * @func
+  * @sig Iterable<Number> → Promise<Number>
+  * @example await min(from([1, 2, 3])); // 1
+*/
 export const min = minBy(R.identity);
 
 /** Max
   * @func
   * @sig Iterable<Number> → Promise<Number>
+  * @example await max(from([1, 2, 3])); // 3
 */
 export const max = maxBy(R.identity);
 
 /** Transforms an iterable to an array. exhasts input
   * @func
   * @sig Iterable<a> → Promise<[a]>
+  * @example await toArray(from([1, 2, 3])); // [1, 2, 3]
 */
 export const toArray = reduce(R.flip(R.append), []);
 
@@ -457,6 +538,10 @@ export const findIndex = R.curry(async (f, xs) => {
   * @func
   * @async
   * @sig Iterable<a> → Promise<undefined>
+  * @example
+  * const iterator = from([1, 2, 3]);
+  * await exhaust(iterator);
+  * await toArray(iterator); // []
 */
 export const exhaust = async xs => {
   for await (const _ of xs);
@@ -498,9 +583,14 @@ export const reverse = async function* (xs) {
 // ((a, a) → Promise<Number>) → Iterable<a> → AsyncIterator<a>
 export const sort = R.useWith(R.sort, [R.identity, toArray]);
 
-// yield a sliding "window" of length n
-// note: caches of n items
-// Integer → Iterable<a> → AsyncIterator<[a]>
+/** Yield a sliding "window" of length n
+  * note: caches of n items
+  * @func
+  * @sig Integer → Iterable<a> → AsyncIterator<[a]>
+  * @example
+  * // AsyncIterator<[0, 1, 2], [1, 2, 3], [2, 3, 4], [4, 5, 6]>
+  * frame(3, from([0, 1, 2, 3, 4, 5, 6]));
+*/
 export const frame = R.curry(async function* (n, xs) {
   const cache = [];
   yield* flatMap(async function* (x) {
@@ -555,8 +645,14 @@ export const groupWith = R.curry(async function* (f, xs) {
 */
 export const group = groupWith(is);
 
-// copy an iterator n times (exhausts its input)
-// Integer → Iterable<a> → [AsyncIterator<a>]
+
+/** Copy an iterator n times (exhausts its input)
+  * @func
+  * @sig Integer → Iterable<a> → [AsyncIterator<a>]
+  * @example
+  * // [AsyncIterator<1, 2, 3>, AsyncIterator<1, 2, 3>, AsyncIterator<1, 2, 3>]
+  * tee(3, from([1, 2, 3]));
+*/
 export const tee = R.curry((n, xs) => {
   xs = from(xs);
   return [...Array(n)]
@@ -621,6 +717,9 @@ export const partition = R.curry((f, xs) => {
 /** Yield all items from an iterator, n times
   * @func
   * @sig Integer → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<1, 2, 1, 2, 1, 2>
+  * cycleN(3, from([1, 2]));
 */
 export const cycleN = R.curry(async function* (n, xs) {
   if (n < 1) return;
@@ -629,12 +728,12 @@ export const cycleN = R.curry(async function* (n, xs) {
   while (n-- > 1) yield* buffer;
 });
 
-/** yield iterable items cyclically, infinitely looping when exhausted
+/** Yield iterable items cyclically, infinitely looping when exhausted
   * @func
   * @sig Iterable<a> → AsyncIterator<a>
   * @example
-  * const iterator = from([1, 2, 3]);
-  * cycle(iterator); // AsyncIterator<1, 2, 3, 1, 2, 3, ...>
+  * // AsyncIterator<1, 2, 3, 1, 2, 3, ...>
+  * cycle(from([1, 2, 3]));
 */
 export const cycle = cycleN(Infinity);
 
@@ -646,13 +745,17 @@ export const unzipN = pipeC(tee, R.addIndex(R.map)((xs, i) => map(nth(i), xs)));
 // Iterable<[A, B]> → [AsyncIterator<A>, AsyncIterator<B>]
 export const unzip = unzipN(2);
 
-// insert an item `a` between every item in the iterable
-// a → Iterable<a> → AsyncIterator<a>
+/** Insert an item `a` between every item in the iterable
+  * @func
+  * @sig a → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // AsyncIterator<'a', '-', 'b', '-', 'c'>
+  * intersperse('-', from('a', 'b', 'c'));
+*/
 export const intersperse = R.useWith(flatMap, [
   spacer => ([i, x]) => (i ? [spacer, x] : [x]),
   enumerate,
 ]);
-
 
 /** Serialize iterator items to a string with an arbitrary spacer
   * @todo consider taking a function instead of a string
@@ -660,8 +763,8 @@ export const intersperse = R.useWith(flatMap, [
   * @async
   * @sig String → Iterable<a> → Promise<String>
   * @example
-  * const iterator = from(['some', 'slug', 'parts']);
-  * await joinWith('-', iterator); // 'some-slug-parts';
+  * // 'some-slug-parts';
+  * await joinWith('-', from(['some', 'slug', 'parts']));
 */
 export const joinWith = pipeC(
   intersperse,
@@ -672,8 +775,8 @@ export const joinWith = pipeC(
   * @func
   * @sig Iterable<a> → Promise<String>
   * @example
-  * const iterator = from(['a', 'b', 'c', 'd', 'e']);
-  * await join(iterator); // 'abcde';
+  * // 'abcde'
+  * await join(from(['a', 'b', 'c', 'd', 'e']));
 */
 export const join = joinWith('');
 
@@ -706,7 +809,8 @@ export const corresponds = correspondsWith(is);
   * @func
   * @sig Iterable<a> → AsyncIterator<Integer>
   * @example
-  * indices(from(['a', 'b', 'c'])); // AsyncIterator<0, 1, 2>
+  * // AsyncIterator<0, 1, 2>
+  * indices(from(['a', 'b', 'c']));
 */
 export const indices = R.pipe(enumerate, map(R.head));
 
@@ -714,7 +818,8 @@ export const indices = R.pipe(enumerate, map(R.head));
   * @func
   * @sig Integer → a → Iterable<a> → AsyncIterator<a>
   * @example
-  * padTo(6, 'd', from(['a', 'b', 'c'])); // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd'>
+  * // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd'>
+  * padTo(6, 'd', from(['a', 'b', 'c']));
 */
 export const padTo = R.curry(async function* (len, padder, xs) {
   let n = 0;
@@ -726,7 +831,8 @@ export const padTo = R.curry(async function* (len, padder, xs) {
   * @func
   * @sig a → Iterable<a> → AsyncIterator<a>
   * @example
-  * pad('d', from(['a', 'b', 'c'])); // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd', ...>
+  * // AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd', ...>
+  * pad('d', from(['a', 'b', 'c']));
 */
 export const pad = padTo(Infinity);
 

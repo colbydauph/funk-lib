@@ -11,21 +11,22 @@ import styles from './Card.module.css';
 
 const Card = ({ doc, onQuery }) => (
   <div className={ `${ styles.card } ${ styles[doc.kind] }` } style={{ display: (doc.ignore ? 'none' : 'default') }}>
-    <a className={ styles.sourceLink } href={ doc.url } target={ '_new' } title={ 'View Source' }>
-      <Icon type={ 'code' } />
-    </a>
-    <h2>
-      { /* fixme */ }
-      <Link to={ `/#${ doc.path.replace(/\//g, '.') }` }>{ doc.path }</Link>
-    </h2>
-    <Code >{ doc.sig }</Code>
-    <div className={ styles.description }>{ doc.description }</div>
-    <div>{ (doc.deprecated ? 'deprecated' : '') }</div>
+    <div className={ styles.top }>
+      <a className={ styles.sourceLink } href={ doc.url } target={ '_new' } title={ 'View Source' }>
+        <Icon type={ 'code' } />
+      </a>
+      <h2>
+        { /* fixme */ }
+        <Link to={ `/#${ doc.path.replace(/\//g, '.') }` }>{ doc.path }</Link>
+      </h2>
+      <Code >{ doc.sig }</Code>
+      <div className={ styles.description }>{ doc.description }</div>
+      <div>{ (doc.deprecated ? 'deprecated' : '') }</div>
+    </div>
     {
       doc.examples.length
         ? (
-          <div>
-            <h4>{ 'Example' }</h4>
+          <div style={{ lineHeight: 0 }}>
             {
               doc.examples.map((example, i) => (
                 <Code

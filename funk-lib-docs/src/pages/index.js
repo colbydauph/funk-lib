@@ -54,7 +54,10 @@ export default class Index extends Component {
     
   handleQuery = value => {
     const { pathname, search } = this.props.location;
-    const nextQuery = { ...parseQueryString(search), q: value };
+    const nextQuery = {
+      ...parseQueryString(search),
+      q: encodeURIComponent(value),
+    };
     navigate(`${ pathname }?${ serializeQuery(nextQuery) }`);
   }
   

@@ -15,7 +15,7 @@ const MenuBar = ({ className, version }) => (
       <Link className={ styles.home } to={ '/' }>{ 'funk-lib' }</Link>
       <span className={ styles.version }>{ `v${ version }` }</span>
     </h2>
-    <a href={ 'https://github.com/colbydauph/funk-lib' } target={ '_new' }>
+    <a href={ 'https://github.com/colbydauph/funk-lib' } target={ '_new' } title={ 'GitHub Repo' }>
       <img className={ styles.github } src={ github } />
     </a>
   </div>

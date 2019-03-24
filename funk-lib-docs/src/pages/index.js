@@ -1,7 +1,7 @@
 // modules
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { fromPairs, sortBy, prop, curry } from 'ramda';
-import { Link, graphql } from 'gatsby';
+import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import { navigate } from '@reach/router';
 // import { graphql } from "gatsby"

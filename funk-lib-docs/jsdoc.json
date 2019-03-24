@@ -107,13 +107,23 @@
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L83",
     "ignore": false
   },
+  "async/retryWith": {
+    "sig": "Number → (a → b) → (a → Promise<b>)",
+    "description": "Wrap a function to retry based on a predicate function",
+    "examples": [
+      "// retry 10 times with exponential backoff\nconst retry = retryWith(i => {\n  return (i < 10)\n    ? return 50 * Math.pow(2, i)\n    : false;\n});\nconst data = await retry(getData)('https://foo.bar');"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L105",
+    "ignore": false
+  },
   "async/promisify": {
     "description": "Make an errback-calling function promise-returning. Inverse of callbackify",
     "examples": [
       "const callback = (n, cb) => cb(null, n + 1);\nawait promisify(callback)(1); // 2"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L100",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L129",
     "ignore": false
   },
   "async/callbackify": {
@@ -122,7 +132,7 @@
       "const func = async n => n + 1;\nawait callbackify(func)(1, (err, res) => {\n  // err = null, res = 2\n});"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L113",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L142",
     "ignore": false
   },
   "async/deferred": {
@@ -132,7 +142,7 @@
       "const { promise, resolve, reject } = deferred();\nresolve(123);\nawait promise; // 123"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L129",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L158",
     "ignore": false
   },
   "async/reduce": {
@@ -142,7 +152,7 @@
       "// 15\nawait reduce(async (a, n) => a + n, 0, [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L149",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L178",
     "ignore": false
   },
   "async/pipe": {
@@ -152,7 +162,7 @@
       "// 4\nawait pipe(\n  async n => n + 1,\n  async n => n * 2,\n)(1);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L165",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L194",
     "ignore": false
   },
   "async/pipeC": {
@@ -162,7 +172,7 @@
       "const math = pipeC(\n  async (a, b) => a + b,\n  c => (c * 2),\n  async c => (c + 1),\n);\nawait math(2)(5) // 21;"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L181",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L210",
     "ignore": false
   },
   "async/mapLimit": {
@@ -172,7 +182,7 @@
       "// [2, 4, 6, 8, 10]\nawait mapLimit(2, async n => (n * 2), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L191",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L220",
     "ignore": false
   },
   "async/forEachLimit": {
@@ -182,7 +192,7 @@
       "// 1\n// 2\n// 3\nawait forEachLimit(2, async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L223",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L252",
     "ignore": false
   },
   "async/everyLimit": {
@@ -192,7 +202,7 @@
       "// false\nawait everyLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L236",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L265",
     "ignore": false
   },
   "async/someLimit": {
@@ -202,7 +212,7 @@
       "// true\nawait someLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L253",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L282",
     "ignore": false
   },
   "async/findLimit": {
@@ -212,7 +222,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findLimit(2, async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L272",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L301",
     "ignore": false
   },
   "async/flatMapLimit": {
@@ -222,15 +232,17 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapLimit(2, async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L293",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L322",
     "ignore": false
   },
   "async/flatMapPairsLimit": {
-    "sig": "",
+    "sig": "Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>",
     "description": "Flat map pairs with variable parallelization",
-    "examples": [],
+    "examples": [
+      null
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L301",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L331",
     "ignore": false
   },
   "async/mapPairsLimit": {
@@ -240,7 +252,7 @@
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L313",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L343",
     "ignore": false
   },
   "async/filterLimit": {
@@ -250,7 +262,7 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [1, 2]\nawait filterLimit(2, async n => (n < 3), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L327",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L357",
     "ignore": false
   },
   "async/allSettledLimit": {
@@ -258,7 +270,7 @@
     "description": "All settled with variable parallelization",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L336",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L366",
     "ignore": false
   },
   "async/map": {
@@ -268,7 +280,7 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait map(async n => (n * 2), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L355",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L385",
     "ignore": false
   },
   "async/mapSeries": {
@@ -278,21 +290,23 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait mapSeries(async n => (n * 2), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L367",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L397",
     "ignore": false
   },
   "async/flatMapPairs": {
+    "sig": "([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>",
     "description": "Parallel flat map pairs",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L373",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L404",
     "ignore": false
   },
   "async/flatMapPairsSeries": {
+    "sig": "([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>",
     "description": "Serial flat map pairs",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L379",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L411",
     "ignore": false
   },
   "async/mapPairs": {
@@ -302,7 +316,7 @@
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L389",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L421",
     "ignore": false
   },
   "async/mapPairsSeries": {
@@ -312,27 +326,27 @@
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsSeries(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L399",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L431",
     "ignore": false
   },
   "async/forEach": {
     "sig": "(a → Promise<b>) → [a] → Promise<[a]>",
     "description": "Parallel for each",
     "examples": [
-      "// 1\n// 2\n// 3\nawait forEach(async n => console.log(n), [1, 2, 3]);"
+      "// log 1\n// log 2\n// log 3\n// [1, 2, 3]\nawait forEach(async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L411",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L444",
     "ignore": false
   },
   "async/forEachSeries": {
     "sig": "(a → Promise<b>) → [a] → Promise<[a]>",
     "description": "Serial for each",
     "examples": [
-      "// 1\n// 2\n// 3\nawait forEachSeries(async n => console.log(n), [1, 2, 3]);"
+      "// log 1\n// log 2\n// log 3\n// [1, 2, 3]\nawait forEachSeries(async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L423",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L457",
     "ignore": false
   },
   "async/every": {
@@ -342,7 +356,7 @@
       "// false\nawait every(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L433",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L467",
     "ignore": false
   },
   "async/everySeries": {
@@ -352,7 +366,7 @@
       "// false\nawait everySeries(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L443",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L477",
     "ignore": false
   },
   "async/some": {
@@ -362,7 +376,7 @@
       "// true\nawait some(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L453",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L487",
     "ignore": false
   },
   "async/someSeries": {
@@ -372,7 +386,7 @@
       "// true\nawait someSeries(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L463",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L497",
     "ignore": false
   },
   "async/find": {
@@ -382,7 +396,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait find(async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L475",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L509",
     "ignore": false
   },
   "async/findSeries": {
@@ -392,7 +406,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findSeries(async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L487",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L521",
     "ignore": false
   },
   "async/flatMap": {
@@ -402,7 +416,7 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMap(async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L499",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L533",
     "ignore": false
   },
   "async/flatMapSeries": {
@@ -412,7 +426,7 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapSeries(async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L511",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L545",
     "ignore": false
   },
   "async/filter": {
@@ -422,7 +436,7 @@
       "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filter(async n => (n <= 5), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L522",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L556",
     "ignore": false
   },
   "async/filterSeries": {
@@ -432,7 +446,7 @@
       "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filterSeries(async n => (n <= 5), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L533",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L567",
     "ignore": false
   },
   "async/allSettled": {
@@ -440,7 +454,7 @@
     "description": "Parallel all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L540",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L574",
     "ignore": false
   },
   "async/allSettledSeries": {
@@ -448,7 +462,7 @@
     "description": "Serial all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L547",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L581",
     "ignore": false
   },
   "async/props": {
@@ -458,15 +472,17 @@
       "// { one: 1, two: 2, three: 3 }\nawait props({\n  one: Promise.resolve(1),\n  two: 2,\n  three: Promise.resolve(3),\n});"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L561",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L595",
     "ignore": false
   },
   "async/evolve": {
     "sig": "{ k: (a → Promise<b>) } → { k: a } → Promise<{ k: b }>",
     "description": "Async R.evolve",
-    "examples": [],
+    "examples": [
+      "const data = { a: 1, b: 2, c: 3 };\n// { a: 2, b: 4, c: 3 }\nawait evolve({\n  a: async a => a + 1,\n  b: async b => b * 2,\n}, data);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L568",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L609",
     "ignore": false
   },
   "async/timeout": {
@@ -474,7 +490,7 @@
     "description": "Timeout a promise",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L575",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L616",
     "ignore": false
   },
   "color/rgbToHsl": {
@@ -1070,7 +1086,7 @@
     "sig": "(a → Promise<b>) → Iterable<a> → AsyncIterator<b>",
     "description": "Applies a function to each of an async iterable's yielded items. Works on all iterables",
     "examples": [
-      "const iterator = from([1, 2, 3]);\nmap(async n => n * 2, iterator); // AsyncIterator<2, 4, 6>"
+      "// AsyncIterator<2, 4, 6>\nmap(async n => n * 2, from([1, 2, 3]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L32",
@@ -1080,10 +1096,30 @@
     "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Returns an async iterator from an iterable",
     "examples": [
-      "from([1, 2, 3]) // AsyncIterator<1, 2, 3>"
+      "from([1, 2, 3]); // AsyncIterator<1, 2, 3>"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L42",
+    "ignore": false
+  },
+  "iterable/async/nextOr": {
+    "sig": "a → Iterable<a> → Promise<a>",
+    "description": "Return the first or \"next\" item with a default value if iterable is empty",
+    "examples": [
+      "await nextOr(10, from([1, 2, 3])); // 1\nawait nextOr(10, from([])); // 10"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L53",
+    "ignore": false
+  },
+  "iterable/async/next": {
+    "sig": "Iterable<a> → Promise<a>",
+    "description": "Returns the first or \"next\" item. aka head",
+    "examples": [
+      "await next(from([1, 2, 3])); // 1\nawait next(from([])); // StopIterationError()"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L67",
     "ignore": false
   },
   "iterable/async/last": {
@@ -1093,17 +1129,17 @@
       "await last(from(1, 2, 3)); // 3"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L67",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L80",
     "ignore": false
   },
   "iterable/async/flatMap": {
     "sig": "(a → Iterable<b>) → Iterable<a> → AsyncIterator<b>",
     "description": "Maps a function over an iterable and concatenates the results. a.k.a. \"chain\"",
     "examples": [
-      "const iterator = from([1, 2, 3])\n\n// AsyncIterator<1, 2, 2, 4, 3, 6>\nflatMap(async function* (n) {\n  yield await n;\n  yield await n * 2;\n}, iterator);"
+      "const iterator = from([1, 2, 3]);\n\n// AsyncIterator<1, 2, 2, 4, 3, 6>\nflatMap(async function* (n) {\n  yield await n;\n  yield await n * 2;\n}, iterator);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L86",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L99",
     "ignore": false
   },
   "iterable/async/of": {
@@ -1113,7 +1149,7 @@
       "of(1, 2, 3); // AsyncIterator<1, 2, 3>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L96",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L109",
     "ignore": false
   },
   "iterable/async/scan": {
@@ -1123,7 +1159,7 @@
       "// AsyncIterator<1, 1, 2, 6, 24>\nscan(R.multiply, 1, from([1, 2, 3, 4]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L105",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L118",
     "ignore": false
   },
   "iterable/async/reduce": {
@@ -1133,7 +1169,17 @@
       "// 6\nawait reduce((a, b) => a + b, 0, from([1, 2, 3]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L118",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L131",
+    "ignore": false
+  },
+  "iterable/async/zipAllWith": {
+    "sig": "((...a) → Promise<b>) → [Iterable<a>] → AsyncIterator<b>",
+    "description": "Zip multiple iterators with custom zipping function",
+    "examples": [
+      "// AsyncIterator<[7, 4, 1], [8, 5, 2], [9, 6, 3]>\nzipAllWith((a, b, c) => [c, b, a], [\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n  from([7, 8, 9]),\n]);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L144",
     "ignore": false
   },
   "iterable/async/zipAll": {
@@ -1143,7 +1189,17 @@
       "// AsyncIterator<[1, 4, 7], [2, 5, 8], [3, 6, 9]>\nzipAll([\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n  from([7, 8, 9]),\n]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L150",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L173",
+    "ignore": false
+  },
+  "iterable/async/zipWithN": {
+    "sig": "",
+    "description": "Zip with N",
+    "examples": [
+      "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWithN(2)((a, b) => [b, a])(\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L186",
     "ignore": false
   },
   "iterable/async/zipWith": {
@@ -1153,7 +1209,7 @@
       "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWith((a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L161",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L195",
     "ignore": false
   },
   "iterable/async/zip": {
@@ -1163,15 +1219,17 @@
       "// AsyncIterator<[1, 4], [2, 5], [3, 6]>\nzip(from([1, 2, 3]), from([4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L172",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L205",
     "ignore": false
   },
   "iterable/async/rangeStep": {
     "sig": "Number → Number → Number → AsyncIterator<Number>",
     "description": "Iterates from 0 to n by with a step (exclusive)",
-    "examples": [],
+    "examples": [
+      "// AsyncIterator<0, 15, 30, 45, 60, 75, 90>\nrangeStep(15, 0, 100);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L179",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L215",
     "ignore": false
   },
   "iterable/async/range": {
@@ -1181,27 +1239,27 @@
       "range(0, 5); // AsyncIterator<0, 1, 2, 3, 4>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L191",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L227",
     "ignore": false
   },
   "iterable/async/enumerate": {
     "sig": "Iterable<a> → AsyncIterator<[Integer, a]>",
-    "description": "transform an iterable to an iterable of pairs of indices and their items",
+    "description": "Transform an iterable to an iterable of pairs of indices and their items",
     "examples": [
       "// AsyncIterator<[0, 'zero'], [1, 'one'], [2, 'two']>\nenumerate(from(['zero', 'one', 'two']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L200",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L236",
     "ignore": false
   },
   "iterable/async/slice": {
     "sig": "Integer → Integer → Iterable<a> → AsyncIterator<a>",
     "description": "Slice an async iterator between two indices",
     "examples": [
-      "// AsyncIterator<3, 4, 5>\nslice(2, 5, from(1, 2, 3, 4, 5, 6, 7, 8));"
+      "// AsyncIterator<3, 4, 5>\nslice(2, 5, from([1, 2, 3, 4, 5, 6, 7, 8]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L219",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L255",
     "ignore": false
   },
   "iterable/async/concat": {
@@ -1211,7 +1269,7 @@
       "// AsyncIterator<1, 2, 3, 4, 5, 6>\nconcat(from([1, 2, 3]), from([4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L233",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L269",
     "ignore": false
   },
   "iterable/async/prepend": {
@@ -1221,7 +1279,7 @@
       "// AsyncIterator<0, 1, 2, 3>\nprepend(0, from([1, 2, 3]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L245",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L281",
     "ignore": false
   },
   "iterable/async/append": {
@@ -1231,25 +1289,25 @@
       "append(4, from([1, 2, 3])); // AsyncIterator<1, 2, 3, 4>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L252",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L288",
     "ignore": false
   },
   "iterable/async/forEach": {
     "sig": "(a → Promise<b>) → Iterable<a> → AsyncIterator<a>",
-    "description": "run a function (side-effect) once for each item",
+    "description": "Run a function (side-effect) once for each item",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L258",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L294",
     "ignore": false
   },
   "iterable/async/filter": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
-    "description": "yield only items that pass the predicate",
+    "description": "Yield only items that pass the predicate",
     "examples": [
-      "// AsyncIterator<1, 2, 3, 4>\nfilter(async n => (n < 5), from(1, 2, 3, 4, 5, 6, 7, 8));"
+      "// AsyncIterator<1, 2, 3, 4>\nfilter(async n => (n < 5), from([1, 2, 3, 4, 5, 6, 7, 8]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L270",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L306",
     "ignore": false
   },
   "iterable/async/reject": {
@@ -1259,7 +1317,17 @@
       "// AsyncIterator<6, 7, 8>\nreject(async n => (n < 5), from(1, 2, 3, 4, 5, 6, 7, 8));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L281",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L317",
+    "ignore": false
+  },
+  "iterable/async/flattenN": {
+    "sig": "Number → Iterable<Iterable<a>> → AsyncIterator<a>",
+    "description": "Flattens n-levels of a nested iterable of iterables",
+    "examples": [
+      "// AsyncIterator<1, 2, 3, [4]>\nflattenN(2, from([1, [2, [3, [4]]]]))"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L326",
     "ignore": false
   },
   "iterable/async/unnest": {
@@ -1269,7 +1337,7 @@
       "// AsyncIterator<1, 2, [3, [4]]>\nunnest(from([1, [2, [3, [4]]]]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L300",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L341",
     "ignore": false
   },
   "iterable/async/flatten": {
@@ -1279,7 +1347,17 @@
       "// AsyncIterator<1, 2, 3, 4>\nunnest(from([1, [2, [3, [4]]]]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L309",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L350",
+    "ignore": false
+  },
+  "iterable/async/unfold": {
+    "sig": "(a → Promise<[a, a]>) → a → AsyncIterator<a>",
+    "description": "Unfold",
+    "examples": [
+      "// AsyncIterator<1, 2, 4, 8>\nunfold(async n => (n < 10 ? [n, n * 2] : false), 1);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L361",
     "ignore": false
   },
   "iterable/async/flatIterate": {
@@ -1289,7 +1367,7 @@
       "// AsyncIterator<0, 0, 1, 2, 2, 4, 3, 6, 4, 8, ...>\nflatIterate(async function* (n) {\n  yield await n;\n  yield await (n * 2);\n  return n + 1;\n}, 0));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L336",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L383",
     "ignore": false
   },
   "iterable/async/iterate": {
@@ -1299,33 +1377,47 @@
       "// AsyncIterator<0, 2, 4, 6, 8, 10, ...>\niterate(async n => n + 2, 0);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L348",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L395",
     "ignore": false
   },
   "iterable/async/some": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Does any item pass the predicate?",
-    "examples": [],
+    "examples": [
+      "// true\nawait some(n => (n > 5), from([1, 2, 3, 4, 5, 6]));"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L357",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L408",
     "ignore": false
   },
   "iterable/async/none": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items fail the predicate?",
-    "examples": [],
+    "examples": [
+      "// true\nawait none(n => (n > 5), from([1, 2, 3, 4, 5]));"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L366",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L422",
+    "ignore": false
+  },
+  "iterable/async/uniqueWith": {
+    "sig": "((a, a) → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
+    "description": "Yield only items that are unique by the predicate",
+    "examples": [
+      "const records = from([{ id: 1 }, { id: 2 }, { id: 1 }]);\n// AsyncIterator<{ id: 1 }, { id: 2 }>\nuniqueWith((a, b) => (a.id === b.id), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L433",
     "ignore": false
   },
   "iterable/async/unique": {
     "sig": "Iterable<a> → AsyncIterator<a>",
     "description": "Yield only the unique items in an iterable (by strict equality)",
     "examples": [
-      "unique(from([1, 1, 2, 3, 4, 4, 4])) // AsyncIterator<1, 2, 3, 4>"
+      "// AsyncIterator<1, 2, 3, 4>\nunique(from([1, 1, 2, 3, 4, 4, 4]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L387",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L451",
     "ignore": false
   },
   "iterable/async/take": {
@@ -1335,7 +1427,7 @@
       "// AsyncIterator<1, 2, 3>\ntake(3, from(1, 2, 3, 4, 5));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L403",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L467",
     "ignore": false
   },
   "iterable/async/drop": {
@@ -1345,7 +1437,7 @@
       "// AsyncIterator<4, 5>\ndrop(3, from(1, 2, 3, 4, 5));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L415",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L479",
     "ignore": false
   },
   "iterable/async/tail": {
@@ -1355,17 +1447,17 @@
       "// AsyncIterator<2, 3, 4, 5>\ntail(from(1, 2, 3, 4, 5));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L424",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L488",
     "ignore": false
   },
   "iterable/async/repeat": {
-    "sig": "a → Iterator<a>",
+    "sig": "a → AsyncIterator<a>",
     "description": "Infinitely yield an item (a)",
     "examples": [
       "// AsyncIterator<'hi', 'hi', 'hi', ...>\nrepeat('hi');"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L433",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L497",
     "ignore": false
   },
   "iterable/async/times": {
@@ -1375,7 +1467,7 @@
       "// AsyncIterator<'hi', 'hi', 'hi', 'hi'>\ntime(4, 'hi');"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L442",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L506",
     "ignore": false
   },
   "iterable/async/length": {
@@ -1385,7 +1477,17 @@
       "// 5\nawait length(from([1, 2, 3, 4, 5]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L452",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L516",
+    "ignore": false
+  },
+  "iterable/async/count": {
+    "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Integer>",
+    "description": "Return the number of items in an iterable. exhasts input",
+    "examples": [
+      "// 4\nawait count(n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L527",
     "ignore": false
   },
   "iterable/async/sumBy": {
@@ -1393,7 +1495,23 @@
     "description": "Sum by",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L462",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L533",
+    "ignore": false
+  },
+  "iterable/async/minBy": {
+    "sig": "(a → Promise<Number>) → Iterable<a> → Promise<Number>",
+    "description": "Min by",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L539",
+    "ignore": false
+  },
+  "iterable/async/maxBy": {
+    "sig": "(a → Promise<Number>) → Iterable<a> → Promise<Number>",
+    "description": "Max by",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L545",
     "ignore": false
   },
   "iterable/async/sum": {
@@ -1403,7 +1521,7 @@
       "await sum(from([1, 2, 3])); // 6"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L475",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L552",
     "ignore": false
   },
   "iterable/async/min": {
@@ -1413,7 +1531,7 @@
       "await min(from([1, 2, 3])); // 1"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L482",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L559",
     "ignore": false
   },
   "iterable/async/max": {
@@ -1423,41 +1541,55 @@
       "await max(from([1, 2, 3])); // 3"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L489",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L566",
     "ignore": false
   },
   "iterable/async/toArray": {
     "sig": "Iterable<a> → Promise<[a]>",
-    "description": "Transforms an iterable to an array. exhasts input",
+    "description": "Transforms an async iterable to an array. exhasts input",
     "examples": [
       "await toArray(from([1, 2, 3])); // [1, 2, 3]"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L496",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L573",
+    "ignore": false
+  },
+  "iterable/async/nth": {
+    "sig": "Integer → Iterable<a> → Promise<a|undefined>\n// 'b'\nawait nth(1, from(['a', 'b', 'c', 'd']));",
+    "description": "Returns the element at the nth index",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L581",
     "ignore": false
   },
   "iterable/async/every": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items pass their predicate?",
-    "examples": [],
+    "examples": [
+      "// false\nawait every(n => (n < 4), from([1, 2, 3, 4]));"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L511",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L595",
     "ignore": false
   },
   "iterable/async/find": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<a|undefined>",
     "description": "Find",
-    "examples": [],
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// { id: 2 }\nawait find(async record => (record.id === 2), records);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L521",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L609",
     "ignore": false
   },
   "iterable/async/findIndex": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Integer>",
     "description": "Find index",
-    "examples": [],
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// 1\nawait find(record => (record.id === 2), records);"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L530",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L622",
     "ignore": false
   },
   "iterable/async/exhaust": {
@@ -1467,7 +1599,7 @@
       "const iterator = from([1, 2, 3]);\nawait exhaust(iterator);\nawait toArray(iterator); // []"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L546",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L639",
     "ignore": false
   },
   "iterable/async/takeWhile": {
@@ -1475,7 +1607,7 @@
     "description": "Take while",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L554",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L647",
     "ignore": false
   },
   "iterable/async/dropWhile": {
@@ -1483,7 +1615,7 @@
     "description": "Drop while",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L565",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L658",
     "ignore": false
   },
   "iterable/async/reverse": {
@@ -1494,17 +1626,45 @@
       "reverse(from([1, 2, 3])); // AsyncIterator<3, 2, 1>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L578",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L671",
+    "ignore": false
+  },
+  "iterable/async/sort": {
+    "sig": "((a, a) → Promise<Number>) → Iterable<a> → AsyncIterator<a>",
+    "description": "Sort",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L679",
     "ignore": false
   },
   "iterable/async/frame": {
     "sig": "Integer → Iterable<a> → AsyncIterator<[a]>",
-    "description": "Yield a sliding \"window\" of length n\nnote: caches of n items",
+    "description": "Yield a sliding \"window\" of length n. note: caches n items",
     "examples": [
       "// AsyncIterator<[0, 1, 2], [1, 2, 3], [2, 3, 4], [4, 5, 6]>\nframe(3, from([0, 1, 2, 3, 4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L594",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L688",
+    "ignore": false
+  },
+  "iterable/async/dropLast": {
+    "sig": "Number → Iterable<a> → AsyncIterator<a>",
+    "description": "Yield all but the last n items. note: caches n + 1 items",
+    "examples": [
+      "// AsyncIterator<1, 2, 3>\ndropLast(2, from([1, 2, 3, 4, 5]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L708",
+    "ignore": false
+  },
+  "iterable/async/init": {
+    "sig": "Iterable<a> → AsyncIterator<a>",
+    "description": "Yield all but the last 1 item",
+    "examples": [
+      "// AsyncIterator<1, 2, 3, 4>\ninit(from([1, 2, 3, 4, 5]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L724",
     "ignore": false
   },
   "iterable/async/group": {
@@ -1512,7 +1672,7 @@
     "description": "Group",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L646",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L751",
     "ignore": false
   },
   "iterable/async/tee": {
@@ -1522,7 +1682,7 @@
       "// [AsyncIterator<1, 2, 3>, AsyncIterator<1, 2, 3>, AsyncIterator<1, 2, 3>]\ntee(3, from([1, 2, 3]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L656",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L761",
     "ignore": false
   },
   "iterable/async/splitEvery": {
@@ -1532,27 +1692,27 @@
       "// AsyncIterator<[0, 1, 2], [3, 4, 5], [6, 7, 8]>\nsplitEvery(3, from([0, 1, 2, 3, 4, 5, 6, 7, 8]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L682",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L787",
     "ignore": false
   },
   "iterable/async/splitAt": {
     "sig": "Integer → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]",
-    "description": "Split an iterable into a pair of iterables at a particular index",
+    "description": "Split an async iterable into a pair of iterables at a particular index",
     "examples": [
       "// [AsyncIterator<0, 1, 2, 3, 4>, AsyncIterator<5, 6>]\nsplitAt(4, from([0, 1, 2, 3, 4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L700",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L805",
     "ignore": false
   },
   "iterable/async/partition": {
     "sig": "(a → Promise<Boolean>) → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]",
-    "description": "Split an iterable into a pair of iterables based on the truthiness of their predicate",
+    "description": "Split an aynsc iterable into a pair of iterables based on the truthiness of their predicate",
     "examples": [
       "// [AsyncIterator<0, 1, 2>, AsyncIterator<3, 4, 5, 6>]\npartition(n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L712",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L817",
     "ignore": false
   },
   "iterable/async/cycleN": {
@@ -1562,7 +1722,7 @@
       "// AsyncIterator<1, 2, 1, 2, 1, 2>\ncycleN(3, from([1, 2]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L724",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L829",
     "ignore": false
   },
   "iterable/async/cycle": {
@@ -1572,7 +1732,27 @@
       "// AsyncIterator<1, 2, 3, 1, 2, 3, ...>\ncycle(from([1, 2, 3]));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L738",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L843",
+    "ignore": false
+  },
+  "iterable/async/unzipN": {
+    "sig": "Number → Iterable<[A, B, ...Z]> → [AsyncIterator<A>, AsyncIterator<B>, ...AsyncIterator<Z>]",
+    "description": "Transforms an iterable of n-tuple into an n-tuple of iterables",
+    "examples": [
+      "// [AsyncIterator<1, 4, 7>, AsyncIterator<2, 5, 8>, AsyncIterator<3, 6, 9>]\nunzipN(3, from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L853",
+    "ignore": false
+  },
+  "iterable/async/unzip": {
+    "sig": "Iterable<[A, B]> → [AsyncIterator<A>, AsyncIterator<B>]",
+    "description": "Transforms an iterable of pairs into a pairs of iterables",
+    "examples": [
+      "// [AsyncIterator<1, 3, 5>, AsyncIterator<2, 4, 6>]\nunzip(from([[1, 2], [3, 4], [5, 6]]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L862",
     "ignore": false
   },
   "iterable/async/intersperse": {
@@ -1582,7 +1762,7 @@
       "// AsyncIterator<'a', '-', 'b', '-', 'c'>\nintersperse('-', from('a', 'b', 'c'));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L755",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L871",
     "ignore": false
   },
   "iterable/async/joinWith": {
@@ -1592,7 +1772,7 @@
       "// 'some-slug-parts';\nawait joinWith('-', from(['some', 'slug', 'parts']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L769",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L885",
     "ignore": false
   },
   "iterable/async/join": {
@@ -1602,7 +1782,7 @@
       "// 'abcde'\nawait join(from(['a', 'b', 'c', 'd', 'e']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L781",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L897",
     "ignore": false
   },
   "iterable/async/isEmpty": {
@@ -1612,7 +1792,7 @@
       "await isEmpty(from([])); // true\nawait isEmpty(from([1])); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L790",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L906",
     "ignore": false
   },
   "iterable/async/indices": {
@@ -1622,7 +1802,7 @@
       "// AsyncIterator<0, 1, 2>\nindices(from(['a', 'b', 'c']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L815",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L931",
     "ignore": false
   },
   "iterable/async/padTo": {
@@ -1632,7 +1812,7 @@
       "// AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd'>\npadTo(6, 'd', from(['a', 'b', 'c']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L824",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L940",
     "ignore": false
   },
   "iterable/async/pad": {
@@ -1642,7 +1822,7 @@
       "// AsyncIterator<'a', 'b', 'c', 'd', 'd', 'd', ...>\npad('d', from(['a', 'b', 'c']));"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L837",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L953",
     "ignore": false
   },
   "iterable/async": {
@@ -1659,14 +1839,623 @@
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/index.js#L6",
     "ignore": false
   },
+  "iterable/sync/map": {
+    "sig": "(a → b) → Iterable<a> → Iterator<b>",
+    "description": "Applies a function to each of an iterable's yielded items",
+    "examples": [
+      "// Iterator<2, 4, 6>\nmap(n => n * 2, from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L24",
+    "ignore": false
+  },
   "iterable/sync/from": {
     "sig": "Iterable<a> → Iterator<a>",
     "description": "Returns an iterator from an iterable",
     "examples": [
-      "from([1, 2, 3]) // Iterator<1, 2, 3>"
+      "from([1, 2, 3]); // Iterator<1, 2, 3>"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L28",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L34",
+    "ignore": false
+  },
+  "iterable/sync/nextOr": {
+    "sig": "a → Iterable<a> → a",
+    "description": "Return the first or \"next\" item with a default value if iterable is empty",
+    "examples": [
+      "nextOr(10, from([1, 2, 3])); // 1\nnextOr(10, from([])); // 10"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L43",
+    "ignore": false
+  },
+  "iterable/sync/next": {
+    "sig": "Iterable<a> → a",
+    "description": "Returns the first or \"next\" item. aka head",
+    "examples": [
+      "next(from([1, 2, 3])); // 1\nnext(from([])); // StopIterationError()"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L56",
+    "ignore": false
+  },
+  "iterable/sync/last": {
+    "sig": "Iterable<a> → a",
+    "description": "Returns the last item",
+    "examples": [
+      "last(from(1, 2, 3)); // 3"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L69",
+    "ignore": false
+  },
+  "iterable/sync/flatMap": {
+    "sig": "(a → Iterable<b>) → Iterable<a> → Iterator<b>",
+    "description": "Maps a function over an iterable and concatenates the results. a.k.a. \"chain\"",
+    "examples": [
+      "const iterator = from([1, 2, 3]);\n\n// Iterator<1, 2, 2, 4, 3, 6>\nflatMap(function* (n) {\n  yield n;\n  yield n * 2;\n}, iterator);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L87",
+    "ignore": false
+  },
+  "iterable/sync/of": {
+    "sig": "...a → Iterator<a>",
+    "description": "Create an iterator of one or more (variadic) arguments",
+    "examples": [
+      "of(1, 2, 3); // Iterator<1, 2, 3>"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L97",
+    "ignore": false
+  },
+  "iterable/sync/scan": {
+    "sig": "((a, b) → a) → a → Iterable<b> → Iterator<a>",
+    "description": "Scan",
+    "examples": [
+      "// Iterator<1, 1, 2, 6, 24>\nscan(R.multiply, 1, from([1, 2, 3, 4]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L106",
+    "ignore": false
+  },
+  "iterable/sync/reduce": {
+    "sig": "((a, b) → a) → a → Iterable<b> → a",
+    "description": "Reduce",
+    "examples": [
+      "// 6\nreduce((a, b) => a + b, 0, from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L118",
+    "ignore": false
+  },
+  "iterable/sync/zip": {
+    "sig": "Iterable<a> → Iterable<b> → Iterator<[a, b]>",
+    "description": "Zips two iterables into pairs of items from corresponding indices\nof the input iterables. truncated to shorter of two iterables",
+    "examples": [
+      "// Iterator<[1, 4], [2, 5], [3, 6]>\nzip(from([1, 2, 3]), from([4, 5, 6]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L155",
+    "ignore": false
+  },
+  "iterable/sync/rangeStep": {
+    "sig": "Number → Number → Number → Iterator<Number>",
+    "description": "Iterates from 0 to n by with a step (exclusive)",
+    "examples": [
+      "// Iterator<0, 15, 30, 45, 60, 75, 90>\nrangeStep(15, 0, 100);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L164",
+    "ignore": false
+  },
+  "iterable/sync/range": {
+    "sig": "Number → Number → Iterator<Number>",
+    "description": "Iterates from 0 to n - 1 (exclusive)",
+    "examples": [
+      "range(0, 5); // Iterator<0, 1, 2, 3, 4>"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L176",
+    "ignore": false
+  },
+  "iterable/sync/enumerate": {
+    "sig": "Iterable<a> → Iterator<[Integer, a]>",
+    "description": "Transform an iterable to an iterable of pairs of indices and their items",
+    "examples": [
+      "// Iterator<[0, 'zero'], [1, 'one'], [2, 'two']>\nenumerate(from(['zero', 'one', 'two']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L185",
+    "ignore": false
+  },
+  "iterable/sync/slice": {
+    "sig": "Integer → Integer → Iterable<a> → Iterator<a>",
+    "description": "Slice an iterator between two indices",
+    "examples": [
+      "// Iterator<3, 4, 5>\nslice(2, 5, from([1, 2, 3, 4, 5, 6, 7, 8]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L204",
+    "ignore": false
+  },
+  "iterable/sync/concat": {
+    "sig": "Iterable<a> → Iterable<a> → Iterator<a>",
+    "description": "Yield all items from one iterator, then the other",
+    "examples": [
+      "// Iterator<1, 2, 3, 4, 5, 6>\nconcat(from([1, 2, 3]), from([4, 5, 6]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L218",
+    "ignore": false
+  },
+  "iterable/sync/prepend": {
+    "sig": "a → Iterable<a> → Iterator<a>",
+    "description": "Prepend an item `a` to the end of an iterable",
+    "examples": [
+      "// Iterator<0, 1, 2, 3>\nprepend(0, from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L230",
+    "ignore": false
+  },
+  "iterable/sync/append": {
+    "sig": "a → Iterable<a> → Iterator<a>\n// Iterator<1, 2, 3, 4>",
+    "description": "Append an item `a` to the start of an iterable",
+    "examples": [
+      "append(4, from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L238",
+    "ignore": false
+  },
+  "iterable/sync/forEach": {
+    "sig": "(a → b) → Iterable<a> → Iterator<a>",
+    "description": "Run a function (side-effect) once for each item",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L244",
+    "ignore": false
+  },
+  "iterable/sync/filter": {
+    "sig": "(a → Boolean) → Iterable<a> → Iterator<a>",
+    "description": "Yield only items that pass the predicate",
+    "examples": [
+      "// Iterator<1, 2, 3, 4>\nfilter(n => (n < 5), from([1, 2, 3, 4, 5, 6, 7, 8]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L256",
+    "ignore": false
+  },
+  "iterable/sync/reject": {
+    "sig": "(a → Boolean) → Iterable<a> → Iterator<a>",
+    "description": "Yield only items that do not pass the predicate",
+    "examples": [
+      "// Iterator<6, 7, 8>\nreject(n => (n < 5), from(1, 2, 3, 4, 5, 6, 7, 8));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L267",
+    "ignore": false
+  },
+  "iterable/sync/flattenN": {
+    "sig": "Number → Iterable<Iterable<a>> → Iterator<a>",
+    "description": "Flattens n-levels of a nested iterable of iterables",
+    "examples": [
+      "// Iterator<1, 2, 3, [4]>\nflattenN(2, from([1, [2, [3, [4]]]]))"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L276",
+    "ignore": false
+  },
+  "iterable/sync/unnest": {
+    "sig": "Iterable<Iterable<a>> → Iterator<a>",
+    "description": "Flattens one level of a nested iterable of iterables",
+    "examples": [
+      "// Iterator<1, 2, [3, [4]]>\nunnest(from([1, [2, [3, [4]]]]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L291",
+    "ignore": false
+  },
+  "iterable/sync/flatten": {
+    "sig": "Iterable<Iterable<a>> → Iterator<a>",
+    "description": "Flattens a nested iterable of iterables into a single iterable",
+    "examples": [
+      "// Iterator<1, 2, 3, 4>\nunnest(from([1, [2, [3, [4]]]]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L300",
+    "ignore": false
+  },
+  "iterable/sync/unfold": {
+    "sig": "(a → [a, a]) → a → Iterator<a>",
+    "description": "Unfold",
+    "examples": [
+      "// Iterator<1, 2, 4, 8>\nunfold(n => (n < 10 ? [n, n * 2] : false), 1);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L309",
+    "ignore": false
+  },
+  "iterable/sync/flatIterate": {
+    "sig": "(a → Iterable<a>) → a → Iterator<a>",
+    "description": "Flat iterate",
+    "examples": [
+      "// Iterator<0, 0, 1, 2, 2, 4, 3, 6, 4, 8, ...>\nflatIterate(function* (n) {\n  yield n;\n  yield (n * 2);\n  return n + 1;\n}, 0));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L331",
+    "ignore": false
+  },
+  "iterable/sync/iterate": {
+    "sig": "(a → a) → a → Iterator<a>",
+    "description": "Iterate infinitely, yielding items from seed through a predicate",
+    "examples": [
+      "// Iterator<0, 2, 4, 6, 8, 10, ...>\niterate(n => n + 2, 0);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L342",
+    "ignore": false
+  },
+  "iterable/sync/take": {
+    "sig": "Integer → Iterable<a> → Iterator<a>",
+    "description": "Yield only the first n items of an iterable",
+    "examples": [
+      "// Iterator<1, 2, 3>\ntake(3, from(1, 2, 3, 4, 5));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L378",
+    "ignore": false
+  },
+  "iterable/sync/drop": {
+    "sig": "Integer → Iterable<a> → Iterator<a>",
+    "description": "Drop the first n items of an iterable",
+    "examples": [
+      "// Iterator<4, 5>\ndrop(3, from(1, 2, 3, 4, 5));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L390",
+    "ignore": false
+  },
+  "iterable/sync/tail": {
+    "sig": "Iterable<a> → Iterator<a>",
+    "description": "Yield all but the first item",
+    "examples": [
+      "// Iterator<2, 3, 4, 5>\ntail(from(1, 2, 3, 4, 5));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L399",
+    "ignore": false
+  },
+  "iterable/sync/repeat": {
+    "sig": "a → Iterator<a>",
+    "description": "Infinitely yield an item (a)",
+    "examples": [
+      "// Iterator<'hi', 'hi', 'hi', ...>\nrepeat('hi');"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L408",
+    "ignore": false
+  },
+  "iterable/sync/times": {
+    "sig": "Integer → a → Iterator<a>",
+    "description": "Yield an item (a) n times. aka replicate",
+    "examples": [
+      "// Iterator<'hi', 'hi', 'hi', 'hi'>\ntime(4, 'hi');"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L417",
+    "ignore": false
+  },
+  "iterable/sync/length": {
+    "sig": "Iterable<a> → Integer",
+    "description": "Get length of iterable",
+    "examples": [
+      "// 5\nlength(from([1, 2, 3, 4, 5]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L426",
+    "ignore": false
+  },
+  "iterable/sync/count": {
+    "sig": "(a → Boolean) → Iterable<a> → Integer",
+    "description": "Return the number of items in an iterable. exhasts input",
+    "examples": [
+      "// 4\ncount(n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L436",
+    "ignore": false
+  },
+  "iterable/sync/sumBy": {
+    "sig": "(a → Number) → Iterable<a> → Number",
+    "description": "Sum by",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L442",
+    "ignore": false
+  },
+  "iterable/sync/minBy": {
+    "sig": "(a → Number) → Iterable<a> → Number",
+    "description": "Min by",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L448",
+    "ignore": false
+  },
+  "iterable/sync/maxBy": {
+    "sig": "(a → Number) → Iterable<a> → Number",
+    "description": "Max by",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L454",
+    "ignore": false
+  },
+  "iterable/sync/sum": {
+    "sig": "Iterable<Number> → Number",
+    "description": "Sum",
+    "examples": [
+      "sum(from([1, 2, 3])); // 6"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L461",
+    "ignore": false
+  },
+  "iterable/sync/min": {
+    "sig": "Iterable<Number> → Number",
+    "description": "Min",
+    "examples": [
+      "min(from([1, 2, 3])); // 1"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L468",
+    "ignore": false
+  },
+  "iterable/sync/max": {
+    "sig": "Iterable<Number> → Number",
+    "description": "Max",
+    "examples": [
+      "max(from([1, 2, 3])); // 3"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L475",
+    "ignore": false
+  },
+  "iterable/sync/toArray": {
+    "sig": "Iterable<a> → [a]",
+    "description": "Transforms an iterable to an array. exhasts input",
+    "examples": [
+      "toArray(from([1, 2, 3])); // [1, 2, 3]"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L482",
+    "ignore": false
+  },
+  "iterable/sync/nth": {
+    "sig": "Integer → Iterable<a> → a|undefined\n// 'b'\nnth(1, from(['a', 'b', 'c', 'd']));",
+    "description": "Returns the element at the nth index",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L490",
+    "ignore": false
+  },
+  "iterable/sync/every": {
+    "sig": "(a → Boolean) → Iterable<a> → Boolean",
+    "description": "Do all items pass their predicate?",
+    "examples": [
+      "// false\nevery(n => (n < 4), from([1, 2, 3, 4]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L515",
+    "ignore": false
+  },
+  "iterable/sync/find": {
+    "sig": "(a → Boolean) → Iterable<a> → a|undefined",
+    "description": "Find",
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// { id: 2 }\nfind(record => (record.id === 2), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L528",
+    "ignore": false
+  },
+  "iterable/sync/findIndex": {
+    "sig": "(a → Boolean) → Iterable<a> → Integer",
+    "description": "Find index",
+    "examples": [
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// 1\nfind(record => (record.id === 2), records);"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L541",
+    "ignore": false
+  },
+  "iterable/sync/exhaust": {
+    "sig": "Iterable<a> → undefined",
+    "description": "Yield all items",
+    "examples": [
+      "const iterator = from([1, 2, 3]);\nexhaust(iterator);\ntoArray(iterator); // []"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L557",
+    "ignore": false
+  },
+  "iterable/sync/reverse": {
+    "todo:": "there might be a more efficient strategy for arrays. generators are not iterable in reverse",
+    "sig": "Iterable<a> → Iterator<a>",
+    "description": "Reverse",
+    "examples": [
+      "reverse(from([1, 2, 3])); // Iterator<3, 2, 1>"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L583",
+    "ignore": false
+  },
+  "iterable/sync/sort": {
+    "sig": "((a, a) → Number) → Iterable<a> → Iterator<a>",
+    "description": "Sort",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L589",
+    "ignore": false
+  },
+  "iterable/sync/frame": {
+    "sig": "Integer → Iterable<a> → Iterator<[a]>",
+    "description": "Yield a sliding \"window\" of length n. note: caches n items",
+    "examples": [
+      "// Iterator<[0, 1, 2], [1, 2, 3], [2, 3, 4], [4, 5, 6]>\nframe(3, from([0, 1, 2, 3, 4, 5, 6]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L598",
+    "ignore": false
+  },
+  "iterable/sync/dropLast": {
+    "sig": "Number → Iterable<a> → Iterator<a>",
+    "description": "Yield all but the last n items. note: caches n + 1 items",
+    "examples": [
+      "// Iterator<1, 2, 3>\ndropLast(2, from([1, 2, 3, 4, 5]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L617",
+    "ignore": false
+  },
+  "iterable/sync/init": {
+    "sig": "Iterable<a> → Iterator<a>",
+    "description": "Yield all but the last 1 item",
+    "examples": [
+      "// Iterator<1, 2, 3, 4>\ninit(from([1, 2, 3, 4, 5]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L632",
+    "ignore": false
+  },
+  "iterable/sync/tee": {
+    "sig": "Integer → Iterable<a> → [Iterator<a>]",
+    "description": "Copy an iterator n times (exhausts its input)",
+    "examples": [
+      "// [Iterator<1, 2, 3>, Iterator<1, 2, 3>, Iterator<1, 2, 3>]\ntee(3, from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L665",
+    "ignore": false
+  },
+  "iterable/sync/splitEvery": {
+    "sig": "Integer → Iterable<a> → Iterator<[a]>",
+    "description": "Yield groups of length n",
+    "examples": [
+      "// Iterator<[0, 1, 2], [3, 4, 5], [6, 7, 8]>\nsplitEvery(3, from([0, 1, 2, 3, 4, 5, 6, 7, 8]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L688",
+    "ignore": false
+  },
+  "iterable/sync/splitAt": {
+    "sig": "Integer → Iterable<a> → [Iterator<a>, Iterator<a>]",
+    "description": "Split an iterable into a pair of iterables at a particular index",
+    "examples": [
+      "// [Iterator<0, 1, 2, 3, 4>, Iterator<5, 6>]\nsplitAt(4, from([0, 1, 2, 3, 4, 5, 6]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L706",
+    "ignore": false
+  },
+  "iterable/sync/partition": {
+    "sig": "(a → Boolean) → Iterable<a> → [Iterator<a>, Iterator<a>]",
+    "description": "Split an iterable into a pair of iterables based on the truthiness of their predicate",
+    "examples": [
+      "// [Iterator<0, 1, 2>, Iterator<3, 4, 5, 6>]\npartition(n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L718",
+    "ignore": false
+  },
+  "iterable/sync/cycleN": {
+    "sig": "Integer → Iterable<a> → Iterator<a>",
+    "description": "Yield all items from an iterator, n times",
+    "examples": [
+      "// Iterator<1, 2, 1, 2, 1, 2>\ncycleN(3, from([1, 2]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L730",
+    "ignore": false
+  },
+  "iterable/sync/cycle": {
+    "sig": "Iterable<a> → Iterator<a>",
+    "description": "Yield iterable items cyclically, infinitely looping when exhausted",
+    "examples": [
+      "// Iterator<1, 2, 3, 1, 2, 3, ...>\ncycle(from([1, 2, 3]));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L744",
+    "ignore": false
+  },
+  "iterable/sync/intersperse": {
+    "sig": "a → Iterable<a> → Iterator<a>",
+    "description": "Insert an item `a` between every item in the iterable",
+    "examples": [
+      "// Iterator<'a', '-', 'b', '-', 'c'>\nintersperse('-', from('a', 'b', 'c'));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L761",
+    "ignore": false
+  },
+  "iterable/sync/joinWith": {
+    "sig": "String → Iterable<a> → String",
+    "description": "Serialize iterator items to a string with an arbitrary spacer",
+    "examples": [
+      "// 'some-slug-parts';\njoinWith('-', from(['some', 'slug', 'parts']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L774",
+    "ignore": false
+  },
+  "iterable/sync/join": {
+    "sig": "Iterable<a> → String",
+    "description": "Serialize iterator items to a string",
+    "examples": [
+      "// 'abcde'\njoin(from(['a', 'b', 'c', 'd', 'e']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L786",
+    "ignore": false
+  },
+  "iterable/sync/isEmpty": {
+    "sig": "Iterable<a> → Boolean",
+    "description": "Is an iterable empty? (done or length = 0)",
+    "examples": [
+      "isEmpty(from([])); // true\nisEmpty(from([1])); // false"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L795",
+    "ignore": false
+  },
+  "iterable/sync/indices": {
+    "sig": "Iterable<a> → Iterator<Integer>",
+    "description": "Get an iterator of indices (0 to length - 1)",
+    "examples": [
+      "// Iterator<0, 1, 2>\nindices(from(['a', 'b', 'c']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L820",
+    "ignore": false
+  },
+  "iterable/sync/padTo": {
+    "sig": "Integer → a → Iterable<a> → Iterator<a>",
+    "description": "Pad an iterable with with a finite number of items `a`",
+    "examples": [
+      "// Iterator<'a', 'b', 'c', 'd', 'd', 'd'>\npadTo(6, 'd', from(['a', 'b', 'c']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L829",
+    "ignore": false
+  },
+  "iterable/sync/pad": {
+    "sig": "a → Iterable<a> → Iterator<a>",
+    "description": "Pad iterable with an infinite number of items `a`",
+    "examples": [
+      "// Iterator<'a', 'b', 'c', 'd', 'd', 'd', ...>\npad('d', from(['a', 'b', 'c']));"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/sync.js#L842",
     "ignore": false
   },
   "number/random": {

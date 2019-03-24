@@ -89,6 +89,35 @@ export const fromCallback = async f => {
   });
 };
 
+/** Wrap a function to retry based on a predicate function
+  * @func
+  * @async
+  * @sig Number → (a → b) → (a → Promise<b>)
+  * @example
+  * // retry 10 times with exponential backoff
+  * const retry = retryWith(i => {
+  *   return (i < 10)
+  *     ? return 50 * Math.pow(2, i)
+  *     : false;
+  * });
+  * const data = await retry(getData)('https://foo.bar');
+*/
+export const retryWith = R.curry((f, func) => {
+  let retryCount = 0;
+  return async (...args) => {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        return await func(...args);
+      } catch (err) {
+        const int = await f(++retryCount);
+        if (int === false) throw err;
+        await delay(+int);
+      }
+    }
+  };
+});
+
 
 /** Make an errback-calling function promise-returning. Inverse of callbackify
   * @async
@@ -296,7 +325,8 @@ export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 /** Flat map pairs with variable parallelization
   * @async
   * @func
-  * @sig
+  * @sig Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
 */
 export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await flatMapLimit(limit, f, R.toPairs(object)));
@@ -369,12 +399,14 @@ export const mapSeries = mapLimit(1);
 /** Parallel flat map pairs
   * @async
   * @func
+  * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
 */
 export const flatMapPairs = flatMapPairsLimit(Infinity);
 
 /** Serial flat map pairs
   * @async
   * @func
+  * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
 */
 export const flatMapPairsSeries = flatMapPairsLimit(1);
 
@@ -403,9 +435,10 @@ export const mapPairsSeries = mapPairsLimit(1);
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[a]>
   * @example
-  * // 1
-  * // 2
-  * // 3
+  * // log 1
+  * // log 2
+  * // log 3
+  * // [1, 2, 3]
   * await forEach(async n => console.log(n), [1, 2, 3]);
 */
 export const forEach = forEachLimit(Infinity);
@@ -415,9 +448,10 @@ export const forEach = forEachLimit(Infinity);
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[a]>
   * @example
-  * // 1
-  * // 2
-  * // 3
+  * // log 1
+  * // log 2
+  * // log 3
+  * // [1, 2, 3]
   * await forEachSeries(async n => console.log(n), [1, 2, 3]);
 */
 export const forEachSeries = forEachLimit(1);
@@ -564,6 +598,13 @@ export const props = mapPairs(async ([key, val]) => [key, await val]);
   * @async
   * @func
   * @sig { k: (a → Promise<b>) } → { k: a } → Promise<{ k: b }>
+  * @example
+  * const data = { a: 1, b: 2, c: 3 };
+  * // { a: 2, b: 4, c: 3 }
+  * await evolve({
+  *   a: async a => a + 1,
+  *   b: async b => b * 2,
+  * }, data);
 */
 export const evolve = pipeC(R.evolve, props);
 

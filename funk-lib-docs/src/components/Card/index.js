@@ -19,7 +19,7 @@ const Card = ({ doc, onQuery }) => (
         { /* fixme */ }
         <Link to={ `/#${ doc.path.replace(/\//g, '.') }` }>{ doc.path }</Link>
       </h2>
-      <Code >{ doc.sig }</Code>
+      <Code>{ doc.sig }</Code>
       <div className={ styles.description }>{ doc.description }</div>
       <div>{ (doc.deprecated ? 'deprecated' : '') }</div>
     </div>

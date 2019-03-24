@@ -210,18 +210,6 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
   ).then(after);
 });
 
-/** Map pairs with variable parallelization
-  * @async
-  * @func
-  * @sig Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
-  * @example
-  * // { 1: 'a', 2: 'b', 3: 'c' }
-  * await mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
-*/
-export const mapPairsLimit = R.curry(async (limit, f, object) => {
-  return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
-});
-
 /** For each with variable parallelization
   * @async
   * @func
@@ -304,6 +292,28 @@ export const findLimit = R.curry(async (limit, f, xs) => {
 */
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
+
+/** Flat map pairs with variable parallelization
+  * @async
+  * @func
+  * @sig
+*/
+export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
+  return R.fromPairs(await flatMapLimit(limit, f, R.toPairs(object)));
+});
+
+/** Map pairs with variable parallelization
+  * @async
+  * @func
+  * @sig Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
+*/
+export const mapPairsLimit = R.curry(async (limit, f, object) => {
+  return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
+});
+
 /** Filter with variable parallelization
   * @async
   * @func
@@ -355,6 +365,18 @@ export const map = mapLimit(Infinity);
   * await mapSeries(async n => (n * 2), array);
 */
 export const mapSeries = mapLimit(1);
+
+/** Parallel flat map pairs
+  * @async
+  * @func
+*/
+export const flatMapPairs = flatMapPairsLimit(Infinity);
+
+/** Serial flat map pairs
+  * @async
+  * @func
+*/
+export const flatMapPairsSeries = flatMapPairsLimit(1);
 
 /** Parallel map pairs
   * @async

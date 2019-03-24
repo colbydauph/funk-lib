@@ -175,16 +175,6 @@
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L191",
     "ignore": false
   },
-  "async/mapPairsLimit": {
-    "sig": "Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>",
-    "description": "Map pairs with variable parallelization",
-    "examples": [
-      "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
-    ],
-    "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L221",
-    "ignore": false
-  },
   "async/forEachLimit": {
     "sig": "Number → (a → Promise<b>) → [a] → Promise<[a]>",
     "description": "For each with variable parallelization",
@@ -192,7 +182,7 @@
       "// 1\n// 2\n// 3\nawait forEachLimit(2, async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L235",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L223",
     "ignore": false
   },
   "async/everyLimit": {
@@ -202,7 +192,7 @@
       "// false\nawait everyLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L248",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L236",
     "ignore": false
   },
   "async/someLimit": {
@@ -212,7 +202,7 @@
       "// true\nawait someLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L265",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L253",
     "ignore": false
   },
   "async/findLimit": {
@@ -222,7 +212,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findLimit(2, async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L284",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L272",
     "ignore": false
   },
   "async/flatMapLimit": {
@@ -232,7 +222,25 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapLimit(2, async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L305",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L293",
+    "ignore": false
+  },
+  "async/flatMapPairsLimit": {
+    "sig": "",
+    "description": "Flat map pairs with variable parallelization",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L301",
+    "ignore": false
+  },
+  "async/mapPairsLimit": {
+    "sig": "Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>",
+    "description": "Map pairs with variable parallelization",
+    "examples": [
+      "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L313",
     "ignore": false
   },
   "async/filterLimit": {
@@ -242,7 +250,7 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [1, 2]\nawait filterLimit(2, async n => (n < 3), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L317",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L327",
     "ignore": false
   },
   "async/allSettledLimit": {
@@ -250,7 +258,7 @@
     "description": "All settled with variable parallelization",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L326",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L336",
     "ignore": false
   },
   "async/map": {
@@ -260,7 +268,7 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait map(async n => (n * 2), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L345",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L355",
     "ignore": false
   },
   "async/mapSeries": {
@@ -270,7 +278,21 @@
       "const array = [1, 2, 3, 4, 5];\n\n// [2, 4, 6, 8, 10]\nawait mapSeries(async n => (n * 2), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L357",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L367",
+    "ignore": false
+  },
+  "async/flatMapPairs": {
+    "description": "Parallel flat map pairs",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L373",
+    "ignore": false
+  },
+  "async/flatMapPairsSeries": {
+    "description": "Serial flat map pairs",
+    "examples": [],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L379",
     "ignore": false
   },
   "async/mapPairs": {
@@ -280,7 +302,7 @@
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L367",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L389",
     "ignore": false
   },
   "async/mapPairsSeries": {
@@ -290,7 +312,7 @@
       "// { 1: 'a', 2: 'b', 3: 'c' }\nawait mapPairsSeries(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L377",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L399",
     "ignore": false
   },
   "async/forEach": {
@@ -300,7 +322,7 @@
       "// 1\n// 2\n// 3\nawait forEach(async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L389",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L411",
     "ignore": false
   },
   "async/forEachSeries": {
@@ -310,7 +332,7 @@
       "// 1\n// 2\n// 3\nawait forEachSeries(async n => console.log(n), [1, 2, 3]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L401",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L423",
     "ignore": false
   },
   "async/every": {
@@ -320,7 +342,7 @@
       "// false\nawait every(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L411",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L433",
     "ignore": false
   },
   "async/everySeries": {
@@ -330,7 +352,7 @@
       "// false\nawait everySeries(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L421",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L443",
     "ignore": false
   },
   "async/some": {
@@ -340,7 +362,7 @@
       "// true\nawait some(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L431",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L453",
     "ignore": false
   },
   "async/someSeries": {
@@ -350,7 +372,7 @@
       "// true\nawait someSeries(async n => (n > 5), [4, 5, 6, 7]);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L441",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L463",
     "ignore": false
   },
   "async/find": {
@@ -360,7 +382,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait find(async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L453",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L475",
     "ignore": false
   },
   "async/findSeries": {
@@ -370,7 +392,7 @@
       "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n\n// { id: 2 }\nawait findSeries(async ({ id }) => (id === 2), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L465",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L487",
     "ignore": false
   },
   "async/flatMap": {
@@ -380,7 +402,7 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMap(async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L477",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L499",
     "ignore": false
   },
   "async/flatMapSeries": {
@@ -390,7 +412,7 @@
       "const array = [1, 2, 3];\n\n// [1, 2, 2, 4, 3, 6]\nawait flatMapSeries(async n => [n, n * 2], array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L489",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L511",
     "ignore": false
   },
   "async/filter": {
@@ -400,7 +422,7 @@
       "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filter(async n => (n <= 5), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L500",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L522",
     "ignore": false
   },
   "async/filterSeries": {
@@ -410,7 +432,7 @@
       "const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];\n// [0, 1, 2, 3, 4, 5]\nawait filterSeries(async n => (n <= 5), array);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L511",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L533",
     "ignore": false
   },
   "async/allSettled": {
@@ -418,7 +440,7 @@
     "description": "Parallel all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L518",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L540",
     "ignore": false
   },
   "async/allSettledSeries": {
@@ -426,7 +448,7 @@
     "description": "Serial all settled",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L525",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L547",
     "ignore": false
   },
   "async/props": {
@@ -436,7 +458,7 @@
       "// { one: 1, two: 2, three: 3 }\nawait props({\n  one: Promise.resolve(1),\n  two: 2,\n  three: Promise.resolve(3),\n});"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L539",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L561",
     "ignore": false
   },
   "async/evolve": {
@@ -444,7 +466,7 @@
     "description": "Async R.evolve",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L546",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L568",
     "ignore": false
   },
   "async/timeout": {
@@ -452,7 +474,7 @@
     "description": "Timeout a promise",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L553",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L575",
     "ignore": false
   },
   "color/rgbToHsl": {

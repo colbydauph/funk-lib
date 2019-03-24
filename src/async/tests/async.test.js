@@ -20,17 +20,18 @@ import {
   every,
   // everyLimit,
   everySeries,
-  filter,
   // filterLimit,
+  // findLimit,
+  // flatMapLimit,
+  // forEachLimit,
+  filter,
   filterSeries,
   find,
-  // findLimit,
   findSeries,
   flatMap,
-  // flatMapLimit,
+  flatMapPairsLimit,
   flatMapSeries,
   forEach,
-  // forEachLimit,
   forEachSeries,
   fromCallback,
   map,
@@ -389,6 +390,30 @@ describe('async lib', () => {
 
     it('should work with async iterables');
 
+  });
+  
+  describe('flatMapPairsLimit', () => {
+    
+    it('should', async () => {
+      const obj = {
+        a: 1,
+        ab: 2,
+        b: 3,
+        c: 4,
+      };
+      const pred = async ([key, value]) => {
+        if (!key.startsWith('a')) return [];
+        return [[key, value], [value, key]];
+      };
+      await expect(flatMapPairsLimit(2, pred, obj))
+        .to.eventually.eql({
+          a: 1,
+          ab: 2,
+          1: 'a',
+          2: 'ab',
+        });
+    });
+    
   });
   
   describe('flatMapSeries', () => {

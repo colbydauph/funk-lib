@@ -501,7 +501,7 @@ export const repeat = iterate(R.identity);
   * @sig Integer → a → AsyncIterator<a>
   * @example
   * // AsyncIterator<'hi', 'hi', 'hi', 'hi'>
-  * time(4, 'hi');
+  * times(4, 'hi');
 */
 export const times = R.useWith(take, [R.identity, repeat]);
 

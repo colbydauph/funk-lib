@@ -4,11 +4,20 @@
 const R = require('ramda');
 const prefix = '/Users/colby/Development/funk-lib/src';
 
-const { join } = require('../dist/cjs/iterable/async');
-
 const SOURCE_HOST = 'https://github.com/colbydauph/funk-lib/blob/feat-docs/src';
 
-join(process.stdin)
+const toString = async stream => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    /* eslint-disable indent */
+    stream.on('data', (chunk) => chunks.push(chunk.toString()))
+          .on('end', () => resolve(chunks.join('')))
+          .on('error', reject);
+    /* eslint-enable indent */
+  });
+};
+
+toString(process.stdin)
   .then(JSON.parse)
   // eslint-disable-next-line max-statements
   .then(R.reduce((out, doc) => {

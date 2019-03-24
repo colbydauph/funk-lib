@@ -1,0 +1,1 @@
+{"errors":[{"message":"Int cannot represent non-integer value: {}","locations":[{"line":4,"column":7}],"path":["site","siteMetadata","jsdocs",0]}],"data":{"site":{"siteMetadata":{"jsdocs":[null]}}},"pageContext":{}}

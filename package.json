@@ -33,7 +33,8 @@
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
     "build": "rm -rf dist && NODE_ENV=production node scripts/build",
-    "build:docs": "rm -rf doc && npx jsdoc src -r -X | node --no-warnings scripts/doc > funk-lib-docs/jsdoc.json",
+    "parse:docs": "rm -rf doc && npx jsdoc src -r -X | node --no-warnings scripts/doc > funk-lib-docs/jsdoc.json",
+    "build:docs": "cd funk-lib-docs && npx gatsby build && cd .. && cp -r ./funk-lib-docs/public ./docs",
     "init:hard": "rm -rf node_modules && rm -f package-lock.json && npm install",
     "test": "NODE_ENV=test mocha --reporter=list --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",
     "test:watch": "NODE_ENV=test mocha --watch --reporter=min --require=./tests/bootstrap $(find . ! -path '*node_modules*' -name '*.test.js') --",

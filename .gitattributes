@@ -1,2 +1,2 @@
-docs linguist-generated=true
-dist linguist-generated=true
+dist/* linguist-generated
+docs/* linguist-generated

@@ -99,7 +99,11 @@ const NavList = ({
           value={ query }
           // eslint-disable-next-line react/jsx-no-bind
           onChange={ ({ target: { value } }) => onQuery(value) } />
-        <Icon className={ styles.searchIcon } type={ 'search' } />
+        <Icon
+          className={ styles.searchIcon }
+          style={{ cursor: (query ? 'pointer' : 'null') }}
+          onClick={ (query ? _ => onQuery('') : null) }
+          type={ (query ? 'close' : 'search') } />
       </div>
       <ul className={ styles.docs }>
         {

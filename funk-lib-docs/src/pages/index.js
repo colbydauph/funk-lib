@@ -52,6 +52,8 @@ const serializeQuery = pipe(
 
 const docHash = doc => doc.path.replace(/\//g, '.');
 
+const debouncedNavigate = debounce(500, navigate);
+
 export default class Index extends Component {
   
   static propTypes = {
@@ -66,14 +68,30 @@ export default class Index extends Component {
     data: {},
     location: {},
   }
+  
+  state = {
+    query: '',
+    override: false,
+  }
+  
+  static getDerivedStateFromProps = (nextProps, prevState) => {
+    const { query: prevQuery, override } = prevState;
+    const { q: nextQuery } = parseQueryString(nextProps.location.search);
+
+    if (override) return null;
+    if (nextQuery === prevQuery) return null;
+    return { query: nextQuery, override: false };
+  }
     
   handleQuery = value => {
     const { search, hash } = this.props.location;
-    const nextSearch = serializeQuery({
+    const nextQuery = {
       ...parseQueryString(search),
       q: encodeURIComponent(value),
-    });
-    navigate(`/?${ nextSearch }${ hash }`);
+    };
+    const nextSearch = serializeQuery(nextQuery);
+    this.setState({ query: nextQuery.q, override: true });
+    debouncedNavigate(`/?${ nextSearch }${ hash }`);
   }
   
   handleLinkClick = doc => event => {
@@ -84,7 +102,7 @@ export default class Index extends Component {
   
   render() {
     const { data } = this.props;
-    const { q: query = '' } = parseQueryString(this.props.location.search);
+    const { query } = this.state;
     
     const docs = sortBy(prop('path'), data.site.siteMetadata.jsdocs);
     

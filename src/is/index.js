@@ -47,6 +47,8 @@ export const {
   /** Is Buffer?
     * @func
     * @sig a → Boolean
+    * @example
+    * isBuffer(Buffer.from([])); // true
   */
   isBuffer,
 } = Buffer;
@@ -54,12 +56,20 @@ export const {
 /** Is equal (strict reference equality)
   * @func
   * @sig a → b → Boolean
+  * @example
+  * const sym = Symbol();
+  * is(sym, sym); // true
+  * is(1, true); // false
 */
 export const is = R.curry((left, right) => (left === right));
 
 /** Is not equal (strict reference equality)
   * @func
   * @sig a → b → Boolean
+  * @example
+  * const sym = Symbol();
+  * isNot(1, true); // true
+  * isNot(sym, sym); // false
 */
 export const isNot = R.complement(is);
 
@@ -122,7 +132,7 @@ export const isString = isTypeOf('string');
 /** Is symbol?
   * @func
   * @sig a → Boolean
-  * @example isSymbol('foo'); // true
+  * @example isSymbol(Symbol('foo')); // true
 */
 export const isSymbol = isTypeOf('symbol');
 
@@ -211,6 +221,8 @@ export const isPromise = R.allPass([
 /** Is stream?
   * @func
   * @sig a → Boolean
+  * @example
+  * isStream(new Stream.Readable()); // true
 */
 export const isStream = R.allPass([
   isObject,

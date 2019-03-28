@@ -486,9 +486,11 @@
   "async/timeout": {
     "sig": "Number → Promise<a> → Promise<a>",
     "description": "Timeout a promise",
-    "examples": [],
+    "examples": [
+      "await timeout(2000, delay(100)); // undefined\nawait timeout(100, delay(2000)); // TimeoutError"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L615",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/async/index.js#L618",
     "ignore": false
   },
   "color/rgbToHsl": {
@@ -601,9 +603,11 @@
   "crypto/sha512": {
     "sig": "String → String",
     "description": "sha512 hash a string",
-    "examples": [],
+    "examples": [
+      "sha512('hello'); // 'E7C22B994C59D9CF2B48E549B1E24666636045930D3DA7C1ACB299D1C3B7F931F94AAE41EDDA2C2B207A36E10F8BCB8D45223E54878F5B316E7CE3B6BC019629'"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/crypto/index.js#L36",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/crypto/index.js#L37",
     "ignore": false
   },
   "datetime/now": {
@@ -617,9 +621,11 @@
   "function/pipeC": {
     "sig": "...f → f",
     "description": "Curried pipe",
-    "examples": [],
+    "examples": [
+      "const math = pipeC(\n  (a, b) => a + b,\n  c => (c * 2),\n  c => (c + 1),\n);\nawait math(2)(5) // 21;"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L8",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L15",
     "ignore": false
   },
   "function/on": {
@@ -629,7 +635,7 @@
       "const records = [{ age: 9 }, { age: 1 }, { age: 3 }];\n\n// [{ age: 1 }, { age: 3 }, { age: 9 }]\nR.sort(on(R.subtract, R.prop('age'))), records);"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L19",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L26",
     "ignore": false
   },
   "function/once": {
@@ -639,7 +645,7 @@
       "const pred = n => n > 5;\nconst oncePred = once(pred);\noncePred(10); // true\noncePred(1); // true (cached. pred not called again)"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L31",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L38",
     "ignore": false
   },
   "function/noop": {
@@ -649,7 +655,7 @@
       "noop(); // undefined"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L48",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L55",
     "ignore": false
   },
   "function/throttle": {
@@ -657,7 +663,7 @@
     "description": "Throttle a function",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L54",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L61",
     "ignore": false
   },
   "function/debounce": {
@@ -665,7 +671,7 @@
     "description": "Debounce a function",
     "examples": [],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L68",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/function/index.js#L75",
     "ignore": false
   },
   "http/parseContentType": {
@@ -831,25 +837,31 @@
   "is/isBuffer": {
     "sig": "a → Boolean",
     "description": "Is Buffer?",
-    "examples": [],
+    "examples": [
+      "isBuffer(Buffer.from([])); // true"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L51",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L53",
     "ignore": false
   },
   "is/is": {
     "sig": "a → b → Boolean",
     "description": "Is equal (strict reference equality)",
-    "examples": [],
+    "examples": [
+      "const sym = Symbol();\nis(sym, sym); // true\nis(1, true); // false"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L58",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L64",
     "ignore": false
   },
   "is/isNot": {
     "sig": "a → b → Boolean",
     "description": "Is not equal (strict reference equality)",
-    "examples": [],
+    "examples": [
+      "const sym = Symbol();\nisNot(1, true); // true\nisNot(sym, sym); // false"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L64",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L74",
     "ignore": false
   },
   "is/isInstanceOf": {
@@ -859,7 +871,7 @@
       "isInstanceOf(Array, []); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L71",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L81",
     "ignore": false
   },
   "is/isTypeOf": {
@@ -869,7 +881,7 @@
       "isTypeOf('boolean', true); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L78",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L88",
     "ignore": false
   },
   "is/isBoolean": {
@@ -879,7 +891,7 @@
       "isBoolean(false); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L85",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L95",
     "ignore": false
   },
   "is/isDate": {
@@ -889,7 +901,7 @@
       "isDate(new Date()); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L92",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L102",
     "ignore": false
   },
   "is/isRegExp": {
@@ -899,7 +911,7 @@
       "isRegExp(/[a-z]/); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L99",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L109",
     "ignore": false
   },
   "is/isFunction": {
@@ -909,7 +921,7 @@
       "isFunction(() => {}); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L106",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L116",
     "ignore": false
   },
   "is/isNull": {
@@ -919,7 +931,7 @@
       "isNull(null); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L113",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L123",
     "ignore": false
   },
   "is/isString": {
@@ -929,17 +941,17 @@
       "isString('hello'); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L120",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L130",
     "ignore": false
   },
   "is/isSymbol": {
     "sig": "a → Boolean",
     "description": "Is symbol?",
     "examples": [
-      "isSymbol('foo'); // true"
+      "isSymbol(Symbol('foo')); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L127",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L137",
     "ignore": false
   },
   "is/isUndefined": {
@@ -949,7 +961,7 @@
       "isUndefined(undefined); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L134",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L144",
     "ignore": false
   },
   "is/isNumber": {
@@ -959,7 +971,7 @@
       "isNumber(10); // true\nisNumber(NaN); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L143",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L153",
     "ignore": false
   },
   "is/isNegative": {
@@ -969,7 +981,7 @@
       "isNumber(-10); // true\nisNumber(10); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L152",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L162",
     "ignore": false
   },
   "is/isPositive": {
@@ -979,7 +991,7 @@
       "isNumber(10); // true\nisNumber(-10); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L161",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L171",
     "ignore": false
   },
   "is/isFloat": {
@@ -989,7 +1001,7 @@
       "isFloat(1.23); // true\nisFloat(1); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L170",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L180",
     "ignore": false
   },
   "is/isTruthy": {
@@ -999,7 +1011,7 @@
       "isTruthy(1); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L177",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L187",
     "ignore": false
   },
   "is/isFalsey": {
@@ -1009,7 +1021,7 @@
       "isFalsey(0); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L184",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L194",
     "ignore": false
   },
   "is/isObject": {
@@ -1019,7 +1031,7 @@
       "isObject({}); // true\nisObject([]]); // false\nisObject(null); // false"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L194",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L204",
     "ignore": false
   },
   "is/isPromise": {
@@ -1029,15 +1041,17 @@
       "isPromise(Promise.resolve(1)); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L205",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L215",
     "ignore": false
   },
   "is/isStream": {
     "sig": "a → Boolean",
     "description": "Is stream?",
-    "examples": [],
+    "examples": [
+      "isStream(new Stream.Readable()); // true"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L215",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L227",
     "ignore": false
   },
   "is/isPojo": {
@@ -1047,7 +1061,7 @@
       "isPojo({}); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L225",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L237",
     "ignore": false
   },
   "is/isIterator": {
@@ -1057,7 +1071,7 @@
       "const iterator = [][Symbol.iterator]();\nisIterator(iterator); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L237",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L249",
     "ignore": false
   },
   "is/isIterable": {
@@ -1067,7 +1081,7 @@
       "isIterable([]); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L248",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L260",
     "ignore": false
   },
   "is/isAsyncIterable": {
@@ -1077,7 +1091,7 @@
       "const iterator = (async function* () {})();\nisAsyncIterable(iterator); // true"
     ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L260",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/is/index.js#L272",
     "ignore": false
   },
   "iterable/async/map": {
@@ -1164,7 +1178,7 @@
     "sig": "((a, b) → Promise<a>) → a → Iterable<b> → Promise<a>",
     "description": "Reduce",
     "examples": [
-      "// 6\nawait reduce((a, b) => a + b, 0, from([1, 2, 3]));"
+      "// 6\nawait reduce(async (a, b) => a + b, 0, from([1, 2, 3]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L131",
@@ -1174,7 +1188,7 @@
     "sig": "((...a) → Promise<b>) → [Iterable<a>] → AsyncIterator<b>",
     "description": "Zip multiple iterators with custom zipping function",
     "examples": [
-      "// AsyncIterator<[7, 4, 1], [8, 5, 2], [9, 6, 3]>\nzipAllWith((a, b, c) => [c, b, a], [\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n  from([7, 8, 9]),\n]);"
+      "// AsyncIterator<[7, 4, 1], [8, 5, 2], [9, 6, 3]>\nzipAllWith(async (a, b, c) => [c, b, a], [\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n  from([7, 8, 9]),\n]);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L144",
@@ -1194,7 +1208,7 @@
     "sig": "",
     "description": "Zip with N",
     "examples": [
-      "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWithN(2)((a, b) => [b, a])(\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n);"
+      "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWithN(2)(async (a, b) => [b, a])(\n  from([1, 2, 3]),\n  from([4, 5, 6]),\n);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L186",
@@ -1204,7 +1218,7 @@
     "sig": "((a, b) → Promise<c>) → Iterable<a> → Iterable<b> → AsyncIterator<c>",
     "description": "Zip two iterables with a custom zipping function",
     "examples": [
-      "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWith((a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));"
+      "// AsyncIterator<[4, 1], [5, 2], [6, 3]>\nzipWith(async (a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L195",
@@ -1382,7 +1396,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Does any item pass the predicate?",
     "examples": [
-      "// true\nawait some(n => (n > 5), from([1, 2, 3, 4, 5, 6]));"
+      "// true\nawait some(async n => (n > 5), from([1, 2, 3, 4, 5, 6]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L408",
@@ -1392,7 +1406,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items fail the predicate?",
     "examples": [
-      "// true\nawait none(n => (n > 5), from([1, 2, 3, 4, 5]));"
+      "// true\nawait none(async n => (n > 5), from([1, 2, 3, 4, 5]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L422",
@@ -1402,7 +1416,7 @@
     "sig": "((a, a) → Promise<Boolean>) → Iterable<a> → AsyncIterator<a>",
     "description": "Yield only items that are unique by the predicate",
     "examples": [
-      "const records = from([{ id: 1 }, { id: 2 }, { id: 1 }]);\n// AsyncIterator<{ id: 1 }, { id: 2 }>\nuniqueWith((a, b) => (a.id === b.id), records);"
+      "const records = from([{ id: 1 }, { id: 2 }, { id: 1 }]);\n// AsyncIterator<{ id: 1 }, { id: 2 }>\nuniqueWith(async (a, b) => (a.id === b.id), records);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L433",
@@ -1482,7 +1496,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Integer>",
     "description": "Return the number of items in an iterable. exhasts input",
     "examples": [
-      "// 4\nawait count(n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));"
+      "// 4\nawait count(async n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L527",
@@ -1564,7 +1578,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>",
     "description": "Do all items pass their predicate?",
     "examples": [
-      "// false\nawait every(n => (n < 4), from([1, 2, 3, 4]));"
+      "// false\nawait every(async n => (n < 4), from([1, 2, 3, 4]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L595",
@@ -1584,7 +1598,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → Promise<Integer>",
     "description": "Find index",
     "examples": [
-      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// 1\nawait find(record => (record.id === 2), records);"
+      "const records = [{ id: 1 }, { id: 2 }, { id: 3 }];\n// 1\nawait find(async record => (record.id === 2), records);"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L622",
@@ -1707,7 +1721,7 @@
     "sig": "(a → Promise<Boolean>) → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]",
     "description": "Split an aynsc iterable into a pair of iterables based on the truthiness of their predicate",
     "examples": [
-      "// [AsyncIterator<0, 1, 2>, AsyncIterator<3, 4, 5, 6>]\npartition(n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));"
+      "// [AsyncIterator<0, 1, 2>, AsyncIterator<3, 4, 5, 6>]\npartition(async n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));"
     ],
     "kind": "function",
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/iterable/async.js#L817",
@@ -2545,20 +2559,34 @@
     "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/process/index.js#L7",
     "ignore": false
   },
+  "stream/from": {
+    "sig": "Iterable → Stream",
+    "description": "Readable stream from iterable",
+    "examples": [
+      "from([1, 2, 3]); // ReadableStream<1, 2, 3>"
+    ],
+    "kind": "function",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/stream/index.js#L10",
+    "ignore": false
+  },
   "stream/toString": {
     "sig": "Stream → String",
     "description": "Stream to string",
-    "examples": [],
+    "examples": [
+      "await toString(from(['a', 'b', 'c'])); // 'abc'"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/stream/index.js#L8",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/stream/index.js#L23",
     "ignore": false
   },
   "stream/fromString": {
     "sig": "String → Stream",
     "description": "String to stream",
-    "examples": [],
+    "examples": [
+      "fromString('hello'); // ReadableStream<'hello'>"
+    ],
     "kind": "function",
-    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/stream/index.js#L23",
+    "url": "https://github.com/colbydauph/funk-lib/blob/feat-docs/src/stream/index.js#L40",
     "ignore": false
   },
   "string/localeCompare": {

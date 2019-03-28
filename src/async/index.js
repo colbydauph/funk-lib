@@ -611,6 +611,9 @@ export const evolve = pipeC(R.evolve, props);
   * @async
   * @func
   * @sig Number → Promise<a> → Promise<a>
+  * @example
+  * await timeout(2000, delay(100)); // undefined
+  * await timeout(100, delay(2000)); // TimeoutError
 */
 export const timeout = R.curry((ms, promise) => race([
   promise,

@@ -15,7 +15,7 @@
 }
 
 .card h2 {
-  margin-top: 0;
+  margin: 0;
 }
 
 .card h2 a {
@@ -24,13 +24,12 @@
 }
 
 .card.module {
-  background: rgb(239, 239, 239);
-  color: black;
-  /* box-shadow: none; */
-  /* border: none; */
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  border: none;
   /* position: -webkit-sticky;
   position: sticky;
-  top: 0; */
+  top: 80px; */
 }
 
 .description {
@@ -45,7 +44,7 @@
 
 .source-link {
   position: absolute;
-  top: 10px;
+  top: 12px;
   right: 10px;
   text-decoration: none;
   color: inherit;
@@ -54,6 +53,10 @@
   justify-content: center;
   height: 30px;
   width: 30px;
+}
+
+.sig {
+  margin-top: 10px;
 }
 
 .source-link:hover {

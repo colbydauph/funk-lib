@@ -126,7 +126,7 @@ export const scan = R.curry(async function* (f, acc, xs) {
   * @sig ((a, b) → Promise<a>) → a → Iterable<b> → Promise<a>
   * @example
   * // 6
-  * await reduce((a, b) => a + b, 0, from([1, 2, 3]));
+  * await reduce(async (a, b) => a + b, 0, from([1, 2, 3]));
 */
 export const reduce = asyncPipeC(scan, last);
 
@@ -135,7 +135,7 @@ export const reduce = asyncPipeC(scan, last);
   * @sig ((...a) → Promise<b>) → [Iterable<a>] → AsyncIterator<b>
   * @example
   * // AsyncIterator<[7, 4, 1], [8, 5, 2], [9, 6, 3]>
-  * zipAllWith((a, b, c) => [c, b, a], [
+  * zipAllWith(async (a, b, c) => [c, b, a], [
   *   from([1, 2, 3]),
   *   from([4, 5, 6]),
   *   from([7, 8, 9]),
@@ -178,7 +178,7 @@ export const zipAll = zipAllWith(Array.of);
   * @sig
   * @example
   * // AsyncIterator<[4, 1], [5, 2], [6, 3]>
-  * zipWithN(2)((a, b) => [b, a])(
+  * zipWithN(2)(async (a, b) => [b, a])(
   *   from([1, 2, 3]),
   *   from([4, 5, 6]),
   * );
@@ -190,7 +190,7 @@ export const zipWithN = n => R.curryN(n + 1)((f, ...iterables) => zipAllWith(f, 
   * @sig ((a, b) → Promise<c>) → Iterable<a> → Iterable<b> → AsyncIterator<c>
   * @example
   * // AsyncIterator<[4, 1], [5, 2], [6, 3]>
-  * zipWith((a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));
+  * zipWith(async (a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));
 */
 export const zipWith = zipWithN(2);
 
@@ -403,7 +403,7 @@ export const iterate = R.useWith(unfold, [
   * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>
   * @example
   * // true
-  * await some(n => (n > 5), from([1, 2, 3, 4, 5, 6]));
+  * await some(async n => (n > 5), from([1, 2, 3, 4, 5, 6]));
 */
 export const some = R.curry(async (f, xs) => {
   for await (const x of xs) if (await f(x)) return true;
@@ -417,7 +417,7 @@ export const some = R.curry(async (f, xs) => {
   * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>
   * @example
   * // true
-  * await none(n => (n > 5), from([1, 2, 3, 4, 5]));
+  * await none(async n => (n > 5), from([1, 2, 3, 4, 5]));
 */
 export const none = complementP(some);
 
@@ -428,7 +428,7 @@ export const none = complementP(some);
   * @example
   * const records = from([{ id: 1 }, { id: 2 }, { id: 1 }]);
   * // AsyncIterator<{ id: 1 }, { id: 2 }>
-  * uniqueWith((a, b) => (a.id === b.id), records);
+  * uniqueWith(async (a, b) => (a.id === b.id), records);
 */
 export const uniqueWith = R.curry(async function* (f, xs) {
   const seen = [];
@@ -522,7 +522,7 @@ export const length = reduce(R.add(1), 0);
   * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<Integer>
   * @example
   * // 4
-  * await count(n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));
+  * await count(async n => (n > 3), from([1, 2, 3, 4, 5, 6, 7]));
 */
 export const count = pipeC(filter, length);
 
@@ -590,7 +590,7 @@ export const nth = R.curry(async (n, xs) => {
   * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<Boolean>
   * @example
   * // false
-  * await every(n => (n < 4), from([1, 2, 3, 4]));
+  * await every(async n => (n < 4), from([1, 2, 3, 4]));
 */
 export const every = R.curry(async (f, xs) => {
   for await (const x of xs) if (!await f(x)) return false;
@@ -617,7 +617,7 @@ export const find = R.curry(async (f, xs) => {
   * @example
   * const records = [{ id: 1 }, { id: 2 }, { id: 3 }];
   * // 1
-  * await find(record => (record.id === 2), records);
+  * await find(async record => (record.id === 2), records);
 */
 export const findIndex = R.curry(async (f, xs) => {
   for await (const [i, x] of enumerate(xs)) {
@@ -812,7 +812,7 @@ export const splitAt = R.curry((n, xs) => {
   * @sig (a → Promise<Boolean>) → Iterable<a> → [AsyncIterator<a>, AsyncIterator<a>]
   * @example
   * // [AsyncIterator<0, 1, 2>, AsyncIterator<3, 4, 5, 6>]
-  * partition(n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));
+  * partition(async n => n < 3, from([0, 1, 2, 3, 4, 5, 6]));
 */
 export const partition = R.curry((f, xs) => {
   const [pass, fail] = tee(2, xs);

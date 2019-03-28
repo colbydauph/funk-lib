@@ -82,7 +82,14 @@ const filter = R.curry((match, docs) => {
   }, docs);
 });
 
-const NavList = ({ className, jsdocs, query, onQuery }) => {
+const NavList = ({
+  className,
+  jsdocs,
+  query,
+  onQuery,
+  onLinkClick,
+  getLink,
+}) => {
   
   return (
     <div className={ `${ styles.navList } ${ className }` }>
@@ -109,7 +116,8 @@ const NavList = ({ className, jsdocs, query, onQuery }) => {
               >
                 <Link
                   className={ styles.link }
-                  to={ `/?q=${ query }#${ jsdoc.path.replace(/\//g, '.') }` }
+                  onClick={ onLinkClick(jsdoc) }
+                  to={ getLink(jsdoc) }
                   style={{
                     borderBottom: jsdoc.kind === 'module' && (arr[i + 1] && arr[i + 1].kind === 'module')
                       ? 'none'
@@ -131,7 +139,9 @@ const NavList = ({ className, jsdocs, query, onQuery }) => {
 
 NavList.propTypes = {
   className: PropTypes.string,
+  getLink: PropTypes.func,
   jsdocs: PropTypes.arrayOf(PropTypes.shape({})),
+  onLinkClick: PropTypes.func,
   onQuery: PropTypes.func,
   query: PropTypes.string,
 };
@@ -139,6 +149,8 @@ NavList.propTypes = {
 NavList.defaultProps = {
   jsdocs: {},
   onQuery: () => {},
+  onLinkClick: () => () => {},
+  getLink: () => {},
 };
 
 export default NavList;

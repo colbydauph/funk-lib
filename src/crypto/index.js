@@ -32,5 +32,6 @@ export const sha256 = hashWith('sha256');
 /** sha512 hash a string
   * @func
   * @sig String → String
+  * @example sha512('hello'); // 'E7C22B994C59D9CF2B48E549B1E24666636045930D3DA7C1ACB299D1C3B7F931F94AAE41EDDA2C2B207A36E10F8BCB8D45223E54878F5B316E7CE3B6BC019629'
 */
 export const sha512 = hashWith('sha512');

@@ -4,6 +4,13 @@ import { curry, curryN, pipe } from 'ramda';
 /** Curried pipe
   * @func
   * @sig ...f → f
+  * @example
+  * const math = pipeC(
+  *   (a, b) => a + b,
+  *   c => (c * 2),
+  *   c => (c + 1),
+  * );
+  * await math(2)(5) // 21;
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 

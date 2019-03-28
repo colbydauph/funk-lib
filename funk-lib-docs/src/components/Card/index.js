@@ -27,22 +27,29 @@ const cjsStatement = curry((mod, path) => {
   return `const { ${ name } } = require('${ modulePath }');`;
 });
 
-const Card = ({ doc, onQuery }) => (
+const Card = ({ doc, onQuery, collapse, onLinkClick, link }) => (
   <div className={ `${ styles.card } ${ styles[doc.kind] }` } style={{ display: (doc.ignore ? 'none' : 'default') }}>
     <div className={ styles.top }>
-      <a className={ styles.sourceLink } href={ doc.url } target={ '_new' } title={ 'View Source' }>
+      <a
+        className={ styles.sourceLink }
+        href={ doc.url }
+        target={ '_new' }
+        title={ 'View Source' }
+      >
         <Icon type={ 'code' } />
       </a>
       <h2>
-        { /* fixme */ }
-        <Link to={ `/#${ doc.path.replace(/\//g, '.') }` }>{ doc.path }</Link>
+        <Link onClick={ onLinkClick } to={ link }>{ doc.path }</Link>
       </h2>
-      <Code>{ doc.sig }</Code>
-      <div className={ styles.description }>{ doc.description }</div>
-      <div>{ (doc.deprecated ? 'deprecated' : '') }</div>
+      <div style={{ display: collapse ? 'none' : 'block', paddingTop: '15px' }}>
+        <Code className={ styles.sig }>{ doc.sig }</Code>
+        <div className={ styles.description }>{ doc.description }</div>
+        <div>{ (doc.deprecated ? 'deprecated' : '') }</div>
+      </div>
+      
     </div>
     {
-      doc.examples.length
+      doc.examples.length && !collapse
         ? (
           <div style={{ lineHeight: 0 }}>
             {
@@ -63,14 +70,19 @@ const Card = ({ doc, onQuery }) => (
 );
 
 Card.propTypes = {
+  collapse: PropTypes.bool,
   doc: PropTypes.shape({
     path: PropTypes.string,
   }),
   id: PropTypes.string,
+  link: PropTypes.string,
+  onLinkClick: PropTypes.func,
   onQuery: PropTypes.func,
 };
 
 Card.defaultProps = {
+  onLinkClick: () => {},
+  collapse: false,
   doc: {},
   onQuery: () => {},
 };

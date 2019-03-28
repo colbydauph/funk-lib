@@ -1,15 +1,30 @@
 // core
 import { Readable as ReadableStream } from 'stream';
 
+/** Readable stream from iterable
+  * @func
+  * @sig Iterable → Stream
+  * @example
+  * from([1, 2, 3]); // ReadableStream<1, 2, 3>
+*/
+const from = iterable => {
+  const stream = new ReadableStream();
+  for (const item of iterable) stream.push(item);
+  stream.push(null);
+  return stream;
+};
+
 /** Stream to string
   * @func
   * @sig Stream → String
+  * @example
+  * await toString(from(['a', 'b', 'c'])); // 'abc'
 */
 export const toString = async stream => {
   return new Promise((resolve, reject) => {
     const chunks = [];
     /* eslint-disable indent */
-    stream.on('data', (chunk) => chunks.push(chunk.toString()))
+    stream.on('data', chunk => chunks.push(chunk.toString()))
           .on('end', () => resolve(chunks.join('')))
           .on('error', reject);
     /* eslint-enable indent */
@@ -19,12 +34,7 @@ export const toString = async stream => {
 /** String to stream
   * @func
   * @sig String → Stream
+  * @example
+  * fromString('hello'); // ReadableStream<'hello'>
 */
-export const fromString = string => {
-  const stream = new ReadableStream();
-  // eslint-disable-next-line no-underscore-dangle
-  stream._read = () => {};
-  stream.push(string);
-  stream.push(null);
-  return stream;
-};
+export const fromString = string => from([string]);

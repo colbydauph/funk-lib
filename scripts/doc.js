@@ -18,7 +18,7 @@ const toString = async stream => {
 };
 
 // eslint-disable-next-line max-statements
-const dothing = ({
+const parseDoc = ({
   name,
   kind,
   undocumented = false,
@@ -71,7 +71,7 @@ toString(process.stdin)
   // eslint-disable-next-line max-statements
   .then(R.reduce((out, doc) => ({
     ...out,
-    ...dothing(doc),
+    ...parseDoc(doc),
   }), {}))
   .then(R.tap(obj => console.log(JSON.stringify(obj, null, 2))))
   .catch(console.error);

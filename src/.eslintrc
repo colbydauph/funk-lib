@@ -3,7 +3,7 @@ parserOptions:
   sourceType: module
 rules:
   valid-jsdoc: 0
-  max-len: [0, 120, 4, {
+  max-len: [1, 120, 4, {
     ignoreComments: true,
     ignoreUrls: true,
   }]

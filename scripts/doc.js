@@ -4,13 +4,13 @@
 const R = require('ramda');
 const prefix = '/Users/colby/Development/funk-lib/src';
 
-const SOURCE_HOST = 'https://github.com/colbydauph/funk-lib/blob/feat-docs/src';
+const SOURCE_HOST = 'https://github.com/colbydauph/funk-lib/blob/master/src';
 
 const toString = async stream => {
   return new Promise((resolve, reject) => {
     const chunks = [];
     /* eslint-disable indent */
-    stream.on('data', (chunk) => chunks.push(chunk.toString()))
+    stream.on('data', chunk => chunks.push(chunk.toString()))
           .on('end', () => resolve(chunks.join('')))
           .on('error', reject);
     /* eslint-enable indent */

@@ -6,6 +6,8 @@ Functional JavaScript Library
 [![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
 
 
+Documentation at [`funk-lib.com`](https://funk-lib.com)
+
 ## Install
 ```shell
 $ npm i -P colbydauph/funk-lib
@@ -33,6 +35,7 @@ import { mapKeys } from 'funk-lib-es/object';
 | `cover`      | Run test coverage |
 | `init`       | Re/Install deps |
 | `init:hard`  | `init` with a fresh `package-lock` |
+| `docs`       | parse docs to `json` |
 | `lint`       | Lint the source |
 | `test`       | Run tests |
 | `test:watch` | Run tests on change |

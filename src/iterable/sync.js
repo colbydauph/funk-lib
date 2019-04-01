@@ -33,7 +33,7 @@ export const map = R.curry(function* (f, xs) {
 */
 export const from = map(R.identity);
 
-/** Return the first or "next" item with a default value if iterable is empty
+/** Return the next item, or a default value if iterable is empty
   * @func
   * @sig a → Iterable<a> → a
   * @example
@@ -117,7 +117,17 @@ export const scan = R.curry(function* (f, acc, xs) {
 */
 export const reduce = pipeC(scan, last);
 
-// ((...A) → B) → [Iterable<A>] → Iterator<B>
+/** Zip multiple iterators with custom zipping function
+  * @func
+  * @sig ((...a) → Promise<b>) → [Iterable<a>] → Iterator<b>
+  * @example
+  * // Iterator<[7, 4, 1], [8, 5, 2], [9, 6, 3]>
+  * zipAllWith((a, b, c) => [c, b, a], [
+  *   from([1, 2, 3]),
+  *   from([4, 5, 6]),
+  *   from([7, 8, 9]),
+  * ]);
+*/
 export const zipAllWith = R.curry(function* (func, iterators) {
   iterators = R.map(from, iterators);
   while (true) {
@@ -134,14 +144,39 @@ export const zipAllWith = R.curry(function* (func, iterators) {
   }
 });
 
-// zip an array of iterables into an iterables of arrays of items from corresponding indices
-// of the input iterables
-// [Iterable<A>] → Iterator<B>
+/** Zip an array of iterables into an async iterator of arrays of items from corresponding indices
+  * of the input iterables
+  * @func
+  * @sig [Iterable<a>, Iterable<b>, Iterable<c>] → Iterator<[a, b, c]>
+  * @example
+  * // Iterator<[1, 4, 7], [2, 5, 8], [3, 6, 9]>
+  * zipAll([
+  *   from([1, 2, 3]),
+  *   from([4, 5, 6]),
+  *   from([7, 8, 9]),
+  * ]);
+*/
 export const zipAll = zipAllWith(Array.of);
 
+/** Zip N iterables with a custom zipping function
+  * @func
+  * @sig
+  * @example
+  * // Iterator<[4, 1], [5, 2], [6, 3]>
+  * zipWithN(2)((a, b) => [b, a])(
+  *   from([1, 2, 3]),
+  *   from([4, 5, 6]),
+  * );
+*/
 export const zipWithN = n => R.curryN(n + 1)((f, ...iterables) => zipAllWith(f, iterables));
 
-// ((A, B) → C) → Iterable<A> → Iterable<B> → Iterator<C>
+/** Zip two iterables with a custom zipping function
+  * @func
+  * @sig ((a, b) → Promise<c>) → Iterable<a> → Iterable<b> → Iterator<c>
+  * @example
+  * // Iterator<[4, 1], [5, 2], [6, 3]>
+  * zipWith((a, b) => [b, a])(from([1, 2, 3]), from([4, 5, 6]));
+*/
 export const zipWith = zipWithN(2);
 
 /** Zips two iterables into pairs of items from corresponding indices
@@ -232,8 +267,9 @@ export const prepend = R.useWith(concat, [of, R.identity]);
 /** Append an item `a` to the start of an iterable
   * @func
   * @sig a → Iterable<a> → Iterator<a>
+  * @example
   * // Iterator<1, 2, 3, 4>
-  * @example append(4, from([1, 2, 3]));
+  * append(4, from([1, 2, 3]));
 */
 export const append = R.useWith(R.flip(concat), [of, R.identity]);
 
@@ -344,8 +380,14 @@ export const iterate = R.useWith(unfold, [
   R.identity,
 ]);
 
-// yield only items that are unique by their predicate
-// ((T, T) → Boolean) → Iterable<T> → Iterator<T>
+/** Yield only items that are unique by the predicate
+  * @func
+  * @sig ((a, a) → Boolean) → Iterable<a> → Iterator<a>
+  * @example
+  * const records = from([{ id: 1 }, { id: 2 }, { id: 1 }]);
+  * // Iterator<{ id: 1 }, { id: 2 }>
+  * uniqueWith((a, b) => (a.id === b.id), records);
+*/
 export const uniqueWith = R.curry(function* (f, xs) {
   const seen = [];
   const add = saw => seen.push(saw);
@@ -357,8 +399,13 @@ export const uniqueWith = R.curry(function* (f, xs) {
   }, xs);
 });
 
-// yield only the unique items in an iterable (using Set)
-// Iterable<T> → Iterator<T>
+/** Yield only the unique items in an async iterable (by strict equality)
+  * @func
+  * @sig Iterable<a> → Iterator<a>
+  * @example
+  * // Iterator<1, 2, 3, 4>
+  * unique(from([1, 1, 2, 3, 4, 4, 4]));
+*/
 export const unique = function* (xs) {
   const set = new Set();
   yield* filter(x => {
@@ -407,7 +454,7 @@ export const tail = drop(1);
 */
 export const repeat = iterate(R.identity);
 
-/** Yield an item (a) n times. aka replicate
+/** Yield an item `a` n times. aka replicate
   * @func
   * @sig Integer → a → Iterator<a>
   * @example
@@ -484,6 +531,7 @@ export const toArray = reduce(R.flip(R.append), []);
 /** Returns the element at the nth index
   * @func
   * @sig Integer → Iterable<a> → a|undefined
+  * @example
   * // 'b'
   * nth(1, from(['a', 'b', 'c', 'd']));
 */
@@ -501,8 +549,13 @@ export const some = R.curry((f, xs) => {
   return false;
 });
 
-// do all items fail their predicate?
-// (T → Boolean) → Iterable<T> → Boolean
+/** Do all items fail the predicate?
+  * @func
+  * @sig (a → Boolean) → Iterable<a> → Boolean
+  * @example
+  * // true
+  * none(n => (n > 5), from([1, 2, 3, 4, 5]));
+*/
 export const none = R.complement(some);
 
 /** Do all items pass their predicate?
@@ -558,7 +611,13 @@ export const exhaust = xs => {
   for (const _ of xs);
 };
 
-// (T → Boolean) → Iterable<T> → Iterator<T>
+/** Take while
+  * @func
+  * @sig (a → Boolean) → Iterable<a> → Iterator<a>
+  * @example
+  * // Iterator<2, 3, 4>
+  * takeWhile(n => (n < 5), from([2, 3, 4, 5, 6, 1]));
+*/
 export const takeWhile = R.curry(function* (f, xs) {
   for (const x of xs) {
     if (!f(x)) return;
@@ -566,7 +625,13 @@ export const takeWhile = R.curry(function* (f, xs) {
   }
 });
 
-// (T → Boolean) → Iterable<T> → Iterator<T>
+/** Ignore yielded items until the predicate returns false
+  * @func
+  * @sig (a → Boolean) → Iterable<a> → Iterator<a>
+  * @example
+  * // Iterator<5, 6, 1>
+  * dropWhile(n => (n < 5), from([2, 3, 4, 5, 6, 1]));
+*/
 export const dropWhile = R.curry(function* (f, xs) {
   xs = from(xs);
   for (const x of xs) {
@@ -585,6 +650,9 @@ export const reverse = R.pipe(toArray, R.reverse);
 /** Sort
   * @func
   * @sig ((a, a) → Number) → Iterable<a> → Iterator<a>
+  * @example
+  * // Iterator<'c', 'b', 'a'>
+  * sort((a, b) => b.localeCompare(a), from(['a', 'b', 'c']));
 */
 export const sort = R.useWith(R.sort, [R.identity, toArray]);
 
@@ -637,9 +705,13 @@ export const indexOf = R.useWith(findIndex, [is, R.identity]);
 // * → Iterable<T> → Boolean
 export const includes = R.useWith(some, [is, R.identity]);
 
-// yield groups of items where the predicate returns truthy
-// for all adjacent items
-// ((T , T) → Boolean) → Iterable<T> → Iterator<[T]>
+/** Yield groups of items where the predicate returns truthy for adjacent items
+  * @func
+  * @sig ((a, a) → Boolean) → Iterable<a> → Iterator<[a]>
+  * @example
+  * // Iterator<[1, 1, 1], [2, 2], [3]>
+  * groupWith(n => n, from([1, 1, 1, 2, 2, 3]));
+*/
 export const groupWith = R.curry(function* (f, xs) {
   let last, group = [];
   yield* flatMap(function* ([i, x]) {
@@ -652,7 +724,13 @@ export const groupWith = R.curry(function* (f, xs) {
   if (group.length) yield group;
 });
 
-// Iterable<T> → Iterator<[T]>
+/** Yield groups of items where the adjacent items are strictly equal
+  * @func
+  * @sig Iterable<a> → Iterator<[a]>
+  * @example
+  * // Iterator<[1, 1, 1], [2, 2], [3]>
+  * group(from([1, 1, 1, 2, 2, 3]));
+*/
 export const group = groupWith(is);
 
 /** Copy an iterator n times (exhausts its input)
@@ -734,7 +812,7 @@ export const cycleN = R.curry(function* (n, xs) {
   while (n-- > 1) yield* buffer;
 });
 
-/** Yield iterable items cyclically, infinitely looping when exhausted
+/** Yield iterable items cyclically, infinitely looping when the input is exhausted
   * @func
   * @sig Iterable<a> → Iterator<a>
   * @example
@@ -743,12 +821,22 @@ export const cycleN = R.curry(function* (n, xs) {
 */
 export const cycle = cycleN(Infinity);
 
-// transforms an iterable of n-tuple into an n-tuple of iterables
-// Number → Iterable<[A, B, ...Z]> → [Iterator<A>, Iterator<B>, ...Iterator<Z>]
+/** Transforms an iterable of n-tuple into an n-tuple of iterators
+  * @func
+  * @sig Number → Iterable<[A, B, ...Z]> → [Iterator<A>, Iterator<B>, ...Iterator<Z>]
+  * @example
+  * // [AsyncIterator<1, 4, 7>, AsyncIterator<2, 5, 8>, AsyncIterator<3, 6, 9>]
+  * unzipN(3, from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]));
+*/
 export const unzipN = pipeC(tee, R.addIndex(R.map)((xs, i) => map(nth(i), xs)));
 
-// transforms an iterable of pairs into a pairs of iterables
-// Iterable<[A, B]> → [Iterator<A>, Iterator<B>]
+/** Transforms an iterable of pairs into a pair of iterators
+  * @func
+  * @sig Iterable<[A, B]> → [Iterator<A>, Iterator<B>]
+  * @example
+  * // [Iterator<1, 3, 5>, Iterator<2, 4, 6>]
+  * unzip(from([[1, 2], [3, 4], [5, 6]]));
+*/
 export const unzip = unzipN(2);
 
 /** Insert an item `a` between every item in the iterable

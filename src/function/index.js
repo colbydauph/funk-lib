@@ -10,7 +10,7 @@ import { curry, curryN, pipe } from 'ramda';
   *   c => (c * 2),
   *   c => (c + 1),
   * );
-  * await math(2)(5) // 21;
+  * math(2)(5) // 21;
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 

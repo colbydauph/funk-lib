@@ -34,7 +34,7 @@ export const all = Promise.all.bind(Promise);
   * await race([
   *   delay(1).then(_ => true),
   *   delay(10).then(_ => false),
-  *   delay(100).then(_ => throw Error('oops')),
+  *   delay(100).then(_ => { throw Error('oops') }),
   * ]);
 */
 export const race = Promise.race.bind(Promise);

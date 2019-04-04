@@ -334,10 +334,8 @@ export const findLimit = R.curry(async (limit, f, xs) => {
   * @func
   * @sig Number → (a → Promise<[b]>) → [a] → Promise<[b]>
   * @example
-  * const array = [1, 2, 3];
-  *
   * // [1, 2, 2, 4, 3, 6]
-  * await flatMapLimit(2, async n => [n, n * 2], array);
+  * await flatMapLimit(2, async n => [n, n * 2], [1, 2, 3]);
 */
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
@@ -374,10 +372,8 @@ export const mapPairsLimit = R.curry(async (limit, f, object) => {
   * @func
   * @sig Number → (a → Promise<Boolean>) → [a] → Promise<[a]>
   * @example
-  * const array = [1, 2, 3, 4, 5];
-  *
   * // [1, 2]
-  * await filterLimit(2, async n => (n < 3), array);
+  * await filterLimit(2, async n => (n < 3), [1, 2, 3, 4, 5]);
 */
 export const filterLimit = R.curry(async (limit, f, xs) => {
   return flatMapLimit(limit, async x => (await f(x) ? [x] : []), xs);
@@ -546,10 +542,8 @@ export const findSeries = findLimit(1);
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
   * @example
-  * const array = [1, 2, 3];
-  *
   * // [1, 2, 2, 4, 3, 6]
-  * await flatMap(async n => [n, n * 2], array);
+  * await flatMap(async n => [n, n * 2], [1, 2, 3]);
 */
 export const flatMap = flatMapLimit(Infinity);
 
@@ -558,10 +552,8 @@ export const flatMap = flatMapLimit(Infinity);
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
   * @example
-  * const array = [1, 2, 3];
-  *
   * // [1, 2, 2, 4, 3, 6]
-  * await flatMapSeries(async n => [n, n * 2], array);
+  * await flatMapSeries(async n => [n, n * 2], [1, 2, 3]);
 */
 export const flatMapSeries = flatMapLimit(1);
 

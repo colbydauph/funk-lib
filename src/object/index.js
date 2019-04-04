@@ -33,8 +33,8 @@ export const firstValue = R.pipe(firstPair, R.nth(1));
   * @func
   * @sig { k: w } → { k: v } → { w: v }
   * @example
-  * // { a: 2, b: 1 }
-  * pickAs({ a: 'b', b: 'a' }, { a: 1, b: 2 });
+  * // { b: 1, c: 2 }
+  * pickAs({ a: 'b', b: 'c' }, { a: 1, b: 2 });
 */
 export const pickAs = R.curry((keyVals, obj) => {
   return R.toPairs(keyVals).reduce((result, [key, val]) => {
@@ -69,7 +69,10 @@ export const mapValues = R.curryN(2)(deprecate(
 /** Recursive freeze a nested object (mutating + identity)
   * @func
   * @sig {*} → {*}
-  * @example deepFreeze({ a: 1 }); // { a: 1 }
+  * @example
+  * const obj = { a: 1 };
+  * deepFreeze(obj); // { a: 1 }
+  * obj.a = 2; // TypeError
 */
 export const deepFreeze = obj => {
   Object.freeze(obj);
@@ -145,10 +148,10 @@ export const clear = obj => Object.keys(obj).reduce(R.flip(del), obj);
   * @sig (a → b) → { k: a } → { k: b }
   * @example
   * // { a: { b: 2, c: { d: 3 } } }
-  * mapLeafNodes(n => (n + 1), { a: { b: 1, c: { d: 2 } } });
+  * mapDeep(n => (n + 1), { a: { b: 1, c: { d: 2 } } });
 */
-export const mapLeafNodes = R.curry((pred, obj) => {
-  const transform = R.ifElse(isObject, mapLeafNodes(pred), pred);
+export const mapDeep = R.curry((pred, obj) => {
+  const transform = R.ifElse(isObject, mapDeep(pred), pred);
 
   return isObject(obj)
     ? R.map(transform, obj)

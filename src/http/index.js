@@ -15,6 +15,8 @@ import {
   * //  charset: 'utf-8',
   * // }
   * parseContentType('multipart/form-data; boundary=abc; charset=utf-8');
+  * // { mimeType: 'multipart/form-data' }
+  * parseContentType('multipart/form-data');
 */
 export const parseContentType = pipe(
   defaultTo(''),

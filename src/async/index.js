@@ -24,6 +24,26 @@ export class TimeoutError extends Error {}
 */
 export const all = Promise.all.bind(Promise);
 
+/** Resolve
+  * @async
+  * @func
+  * @sig a → Promise<a>
+  * @example
+  * // Promise<1>
+  * resolve(1);
+*/
+export const resolve = Promise.resolve.bind(Promise);
+
+/** Reject
+  * @async
+  * @func
+  * @sig Error → Promise<Error>
+  * @example
+  * // Promise<Error('oops')>
+  * reject(Error('oops'));
+*/
+export const reject = Promise.reject.bind(Promise);
+
 /** Returns a promise that resolves or rejects as soon as one of the promises in an
   * iterable resolves or rejects, with the value or reason from that promise.
   * @async
@@ -326,10 +346,16 @@ export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
   * @async
   * @func
   * @sig Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairsLimit(10, ([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
 */
 export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await flatMapLimit(limit, f, R.toPairs(object)));
 });
+
 
 /** Map pairs with variable parallelization
   * @async
@@ -355,20 +381,6 @@ export const mapPairsLimit = R.curry(async (limit, f, object) => {
 */
 export const filterLimit = R.curry(async (limit, f, xs) => {
   return flatMapLimit(limit, async x => (await f(x) ? [x] : []), xs);
-});
-
-/** All settled with variable parallelization
-  * @async
-  * @func
-  * @sig Number → [Promise] → Promise<[{ status, value, reason }]>
-*/
-export const allSettledLimit = R.curry((limit, promises) => {
-  return mapLimit(limit, promise => {
-    return Promise
-      .resolve(promise)
-      .then(value => ({ status: 'fulfilled', value }))
-      .catch(reason => ({ status: 'rejected', reason }));
-  }, promises);
 });
 
 /** Parallel map
@@ -399,6 +411,11 @@ export const mapSeries = mapLimit(1);
   * @async
   * @func
   * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairs(([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
 */
 export const flatMapPairs = flatMapPairsLimit(Infinity);
 
@@ -406,6 +423,11 @@ export const flatMapPairs = flatMapPairsLimit(Infinity);
   * @async
   * @func
   * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairsSeries(([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
 */
 export const flatMapPairsSeries = flatMapPairsLimit(1);
 
@@ -565,19 +587,26 @@ export const filter = filterLimit(Infinity);
 */
 export const filterSeries = filterLimit(1);
 
-/** Parallel all settled
-  * @async
-  * @func
-  * @sig [Promise] → Promise<[{ status, value, reason }]>
-*/
-export const allSettled = allSettledLimit(Infinity);
 
-/** Serial all settled
+/** All settled
   * @async
   * @func
   * @sig [Promise] → Promise<[{ status, value, reason }]>
+  * @example
+  * // [
+  * //   { status: 'fulfilled', value: 1 },
+  * //   { status: 'rejected', reason: Error('oops') },
+  * // ]
+  * await allSettled([
+  *   Promise.resolve(1),
+  *   Promise.reject(Error('oops')),
+  * ]);
 */
-export const allSettledSeries = allSettledLimit(1);
+export const allSettled = map(promise => {
+  return resolve(promise)
+    .then(value => ({ status: 'fulfilled', value }))
+    .catch(reason => ({ status: 'rejected', reason }));
+});
 
 /** Parallel props
   * @async

@@ -10,9 +10,9 @@ Documentation at [`funk-lib.com`](https://funk-lib.com)
 
 ## Install
 ```shell
-$ npm i -P colbydauph/funk-lib
+$ npm i -P funk-lib
 # or: es-module compatible build
-$ npm i -P colbydauph/funk-lib-es
+$ npm i -P funk-lib-es
 ```
 
 ## Import

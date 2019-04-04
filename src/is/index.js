@@ -152,6 +152,24 @@ export const isUndefined = isTypeOf('undefined');
 */
 export const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 
+/** Is even?
+  * @func
+  * @sig a → Boolean
+  * @example
+  * isEven(2); // true
+  * isEven(3); // false
+*/
+export const isEven = n => !(n % 2);
+
+/** Is odd?
+  * @func
+  * @sig a → Boolean
+  * @example
+  * isOdd(1); // true
+  * isOdd(2); // false
+*/
+export const isOdd = R.complement(isEven);
+
 /** Is negative?
   * @func
   * @sig a → Boolean
@@ -231,6 +249,7 @@ export const isStream = R.allPass([
 
 /** Is "plain old javascript object"?
   * @func
+  * @todo consider renaming to isPlainObj
   * @sig a → Boolean
   * @example isPojo({}); // true
 */
@@ -256,6 +275,7 @@ export const isIterator = R.allPass([
   * @sig a → Boolean
   * @example
   * isIterable([]); // true
+  * isIterable({ [Symbol.iterator]: () => {} }); // true
 */
 export const isIterable = R.allPass([
   isTruthy,
@@ -266,8 +286,8 @@ export const isIterable = R.allPass([
   * @func
   * @sig a → Boolean
   * @example
-  * const iterator = (async function* () {})();
-  * isAsyncIterable(iterator); // true
+  * isAsyncIterable((async function* () {})()); // true
+  * isAsyncIterable({ [Symbol.asyncIterator]: () => {} }); // true
 */
 export const isAsyncIterable = R.allPass([
   isTruthy,

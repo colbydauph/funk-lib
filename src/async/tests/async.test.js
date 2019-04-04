@@ -12,8 +12,6 @@ import { from } from '../../iterable/sync';
 import {
   // all,
   allSettled,
-  // allSettledLimit,
-  // allSettledSeries,
   callbackify,
   deferred,
   delay,
@@ -46,6 +44,8 @@ import {
   props,
   race,
   reduce,
+  // reject,
+  // resolve,
   retryWith,
   some,
   // someLimit,

@@ -54,9 +54,12 @@ export const once = fn => {
 */
 export const noop = () => {};
 
-/** Throttle a function
+/** Wraps a function so that it is only invoked at most once every `delay` ms
   * @func
   * @sig Number → (a → b) → (a → b)
+  * @example
+  * const throttled = throttle(100, expensiveMath);
+  * throttled(1, 2);
 */
 export const throttle = curry((delay, fn) => {
   let lastCall = 0;
@@ -68,9 +71,13 @@ export const throttle = curry((delay, fn) => {
   };
 });
 
-/** Debounce a function
+/** Wrap a function to delay invocation until after `delay` ms
+  * have elapsed since the last call
   * @func
   * @sig Number → (a → b) → (a → undefined)
+  * @example
+  * const debounce = debounce(100, expensiveMath);
+  * debounced(1, 2);
 */
 export const debounce = curry((delay, fn) => {
   let timeoutID;

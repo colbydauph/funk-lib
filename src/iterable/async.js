@@ -634,9 +634,10 @@ export const findIndex = R.curry(async (f, xs) => {
   * @async
   * @sig Iterable<a> → Promise<undefined>
   * @example
+  * // AsyncIterator<1, 2, 3>
   * const iterator = from([1, 2, 3]);
+  * // AsyncIterator<>
   * await exhaust(iterator);
-  * await toArray(iterator); // []
 */
 export const exhaust = async xs => {
   for await (const _ of xs);

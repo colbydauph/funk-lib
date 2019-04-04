@@ -1,5 +1,3 @@
-
-
 // local
 import { fromString } from '../../stream';
 import assert from './assert-is';
@@ -10,6 +8,7 @@ import {
   isBoolean,
   isBuffer,
   isDate,
+  isEven,
   isFalsey,
   // isFinite,
   isFloat,
@@ -24,6 +23,7 @@ import {
   isNull,
   isNumber,
   isObject,
+  isOdd,
   isPojo,
   isPositive,
   isPromise,
@@ -116,6 +116,12 @@ describe('is', () => {
       {}, [], Date(), () => {},
       null, undefined, 1, false,
     ],
+  });
+  
+  assert('isEven', {
+    func: isEven,
+    pass: [0, -0, 2, -2, 4, -4],
+    fail: [1, -1, 3, -3, 5, -5],
   });
   
   assert('isFalsey', {
@@ -245,6 +251,12 @@ describe('is', () => {
     func: isNull,
     pass: [null],
     fail: [0, -0, Infinity, NaN, {}, [], false, true, undefined, () => {}],
+  });
+  
+  assert('isOdd', {
+    func: isOdd,
+    pass: [1, -1, 3, -3, 5, -5],
+    fail: [0, -0, 2, -2, 4, -4],
   });
   
   assert('isObject', {

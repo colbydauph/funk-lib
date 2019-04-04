@@ -16,9 +16,10 @@ import {
 /** Locale compare
   * @func
   * @sig String → String → Number
+  * @example
+  * localeCompare('b', 'a'); // -1
 */
 export const localeCompare = invoker(1, 'localeCompare');
-
 
 export const toUpperCase = unary(deprecate(
   toUpper,
@@ -36,7 +37,14 @@ export const toLowerCase = unary(deprecate(
 */
 export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
 
-// String → String
+/** Escape a string for use with the `RegExp` constructor
+  * @func
+  * @sig String → String
+  * @example
+  * const rx = '^a';
+  * new RegExp(escapeRegExpStr(rx)).test('a'); // false
+  * new RegExp(rx).test('a'); // true
+*/
 // eslint-disable-next-line no-useless-escape
 export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 

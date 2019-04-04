@@ -12,9 +12,16 @@ const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 */
 export const isDataUrl = test(DATA_URL_REGEXP);
 
-/** Parse Data URL
+/** Parse a data url into its parts
   * @func
   * @sig String → { mediatype, data, base64 }
+  * @example
+  * // {
+  * //   base64: true,
+  * //   data: 'eyJ0ZXN0IjoidGV4dCJ9',
+  * //   mediatype: 'application/json',
+  * // }
+  * parseDataUrl('data:application/json;base64,eyJ0ZXN0IjoidGV4dCJ9');
 */
 export const parseDataUrl = url => {
   const [
@@ -28,3 +35,4 @@ export const parseDataUrl = url => {
   const base64 = (encoding === 'base64');
   return { mediatype, data, base64 };
 };
+

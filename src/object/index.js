@@ -29,10 +29,13 @@ export const firstKey = R.pipe(firstPair, R.nth(0));
 */
 export const firstValue = R.pipe(firstPair, R.nth(1));
 
-// todo: pickAsDeep (recursive)
-// pick the keys from the first argument, renaming by the values in the second arg
-// pickAs({ a: 'b', b: 'a' }, { a: 1, b: 2 }) === { a: 2, b: 1 }
-// object → object → object
+/** Pick and rename object keys in a single operation
+  * @func
+  * @sig { k: w } → { k: v } → { w: v }
+  * @example
+  * // { a: 2, b: 1 }
+  * pickAs({ a: 'b', b: 'a' }, { a: 1, b: 2 });
+*/
 export const pickAs = R.curry((keyVals, obj) => {
   return R.toPairs(keyVals).reduce((result, [key, val]) => {
     return R.assoc(val, obj[key], result);
@@ -63,7 +66,7 @@ export const mapValues = R.curryN(2)(deprecate(
   'funk-lib/object/mapValues → R.map'
 ));
 
-/** recursive + mutating + identity
+/** Recursive freeze a nested object (mutating + identity)
   * @func
   * @sig {*} → {*}
   * @example deepFreeze({ a: 1 }); // { a: 1 }
@@ -74,8 +77,13 @@ export const deepFreeze = obj => {
   return obj;
 };
 
-// flatten a deeply nested object, joining keys with pred
-// inverse of nestWith
+/** Flatten a deeply nested object, joining keys with pred. inverse of nestWith
+  * @func
+  * @sig ((k, k) → l) → { k: v } → { l: v }
+  * @example
+  * // { 'src/one': 1, 'src/two/three': 3 }
+  * flattenWith(R.unapply(R.join('/')), { src: { one: 1, two: { three: 3 } } });
+*/
 export const flattenWith = R.curry((pred, obj) => {
   const flatPairs = R.pipe(
     R.toPairs,
@@ -88,8 +96,13 @@ export const flattenWith = R.curry((pred, obj) => {
   return R.fromPairs(flatPairs(obj));
 });
 
-// deeply nest a flattened object, splitting keys with pred
-// inverse of flattenWith
+/** Deeply nest a flattened object, splitting keys with pred. inverse of flattenWith
+  * @func
+  * @sig (k → [l]) → { k: v } → { l: v }
+  * @example
+  * // { src: { one: 1, two: { three: 3 } } }
+  * nestWith(R.split('/'), { 'src/one': 1, 'src/two/three': 3 });
+*/
 export const nestWith = R.curry((pred, obj) => {
   return R.reduce((obj, [key, val]) => {
     return R.assocPath(pred(key), val, obj);
@@ -109,11 +122,43 @@ export const nestWith = R.curry((pred, obj) => {
 */
 export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 
+/** Delete an object property. mutative / identity
+  * @func
+  * @sig String → {a} → {a}
+  * @example
+  * const obj = { a: 1, b: 2 };
+  * del('a', obj); // obj === { b: 2 }
+*/
+export const del = R.curry((prop, obj) => (delete obj[prop], obj));
 
-// // recursive R.merge with predicate for custom merging
-// const mergeDeepWith = R.curry((pred, left, right) => {
-//   return R.mergeWith((left, right) => {
-//     if (isObject(left) && isObject(right)) return mergeDeepWith(pred, left, right);
-//     return pred(left, right);
-//   }, left, right);
-// });
+/** Delete all object properties. mutative / identity
+  * @func
+  * @sig {a} → {}
+  * @example
+  * const obj = { a: 1, b: 2 };
+  * clear(obj); // obj === {}
+*/
+export const clear = obj => Object.keys(obj).reduce(R.flip(del), obj);
+
+/** Recursively map a deep object's leaf nodes
+  * @func
+  * @sig (a → b) → { k: a } → { k: b }
+  * @example
+  * // { a: { b: 2, c: { d: 3 } } }
+  * mapLeafNodes(n => (n + 1), { a: { b: 1, c: { d: 2 } } });
+*/
+export const mapLeafNodes = R.curry((pred, obj) => {
+  const transform = R.ifElse(isObject, mapLeafNodes(pred), pred);
+
+  return isObject(obj)
+    ? R.map(transform, obj)
+    : transform(obj);
+});
+
+/** Is an object empty?
+  * @func
+  * @sig {a} -> Boolean
+  * @example
+  * isEmpty({}); // true
+*/
+export const isEmpty = obj => !Object.keys(obj).length;

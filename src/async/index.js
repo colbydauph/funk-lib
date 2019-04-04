@@ -59,7 +59,7 @@ export const reject = Promise.reject.bind(Promise);
 */
 export const race = Promise.race.bind(Promise);
 
-/** Promise returning setTimeout
+/** Creates a promise that resolves in `n` ms
   * @async
   * @func
   * @sig Number → Promise<undefined>

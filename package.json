@@ -44,7 +44,7 @@
   "nyc": {
     "statements": 96,
     "branches": 95,
-    "functions": 95,
+    "functions": 94,
     "lines": 96,
     "reporter": [
       "html",

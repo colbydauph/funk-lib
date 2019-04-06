@@ -66,7 +66,7 @@ export const mapValues = R.curryN(2)(deprecate(
   'funk-lib/object/mapValues → R.map'
 ));
 
-/** Recursive freeze a nested object (mutating + identity)
+/** Recursive freeze a nested object. mutating + identity
   * @func
   * @sig {*} → {*}
   * @example
@@ -125,7 +125,7 @@ export const nestWith = R.curry((pred, obj) => {
 */
 export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 
-/** Delete an object property. mutative / identity
+/** Delete an object property. mutating + identity
   * @func
   * @sig String → {a} → {a}
   * @example
@@ -134,7 +134,7 @@ export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 */
 export const del = R.curry((prop, obj) => (delete obj[prop], obj));
 
-/** Delete all object properties. mutative / identity
+/** Delete all object properties. mutating + identity
   * @func
   * @sig {a} → {}
   * @example
@@ -150,13 +150,10 @@ export const clear = obj => Object.keys(obj).reduce(R.flip(del), obj);
   * // { a: { b: 2, c: { d: 3 } } }
   * mapDeep(n => (n + 1), { a: { b: 1, c: { d: 2 } } });
 */
-export const mapDeep = R.curry((pred, obj) => {
-  const transform = R.ifElse(isObject, mapDeep(pred), pred);
-
-  return isObject(obj)
-    ? R.map(transform, obj)
-    : transform(obj);
-});
+export const mapDeep = R.useWith(R.map, [
+  pred => R.ifElse(isObject, mapDeep(pred), pred),
+  R.identity,
+]);
 
 /** Is an object empty?
   * @func

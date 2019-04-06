@@ -14,6 +14,18 @@ import { curry, curryN, pipe } from 'ramda';
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
+/** Y combinator. Define recursive functions without the need for variable assignment.
+  * @func
+  * @sig ((a → b) → (a → b)) → (a → b)
+  * @example
+  * const fib = Y(f => n => {
+  *   return (n <= 2) ? 1 : f(n - 1) + f(n - 2);
+  * });
+  * fib(7); // 13
+*/
+// eslint-disable-next-line id-length
+export const Y = f => (g => g(g))(g => f(x => g(g)(x)));
+
 /** on
   * @func
   * @sig (b → b → c) → (a → b) → a → a → c

@@ -80,7 +80,7 @@ export const deepFreeze = obj => {
   return obj;
 };
 
-/** Flatten a deeply nested object, joining keys with pred. inverse of nestWith
+/** Flatten a deeply nested object, joining keys with with a binary function. Inverse of `object/nestWith`
   * @func
   * @sig ((k, k) → l) → { k: v } → { l: v }
   * @example
@@ -99,7 +99,7 @@ export const flattenWith = R.curry((pred, obj) => {
   return R.fromPairs(flatPairs(obj));
 });
 
-/** Deeply nest a flattened object, splitting keys with pred. inverse of flattenWith
+/** Deeply nest a flattened object, splitting keys with a unary function. Inverse of `object/flattenWith`
   * @func
   * @sig (k → [l]) → { k: v } → { l: v }
   * @example

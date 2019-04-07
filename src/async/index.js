@@ -200,7 +200,7 @@ export const reduce = R.curry(async (f, acc, xs) => {
   return acc;
 });
 
-/** serial + async R.pipe. works with sync or async functions
+/** Left-to-right function composition that works with sync or async functions
   * @async
   * @func
   * @sig (...f) → f

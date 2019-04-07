@@ -26,7 +26,7 @@ export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 // eslint-disable-next-line id-length
 export const Y = f => (g => g(g))(g => f(x => g(g)(x)));
 
-/** on
+/** Transforms two inputs and combines the outputs
   * @func
   * @sig (b → b → c) → (a → b) → a → a → c
   * @example

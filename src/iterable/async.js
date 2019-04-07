@@ -41,7 +41,6 @@ export const map = R.curry(async function* (f, xs) {
 */
 export const from = map(R.identity);
 
-
 /** Return the next item, or a default value if iterable is empty
   * @func
   * @async
@@ -260,7 +259,7 @@ export const slice = R.curry(async function* (start, stop, xs) {
   }
 });
 
-/** Yield all items from one iterator, then the other
+/** Yield all items from one async iterator, then the other
   * @func
   * @sig Iterable<a> → Iterable<a> → AsyncIterator<a>
   * @example
@@ -594,7 +593,7 @@ export const toArray = reduce(R.flip(R.append), []);
 
 /** Returns the element at the nth index
   * @func
-  * @sig Integer → Iterable<a> → Promise<a|undefined>
+  * @sig Integer → Iterable<a> → Promise<a>
   * @example
   * // 'b'
   * await nth(1, from(['a', 'b', 'c', 'd']));
@@ -621,7 +620,7 @@ export const every = R.curry(async (f, xs) => {
 /** Find
   * @func
   * @async
-  * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<a|undefined>
+  * @sig (a → Promise<Boolean>) → Iterable<a> → Promise<a>
   * @example
   * const records = [{ id: 1 }, { id: 2 }, { id: 3 }];
   * // { id: 2 }
@@ -956,8 +955,15 @@ export const isEmpty = none(R.T);
 export const correspondsWith = R.useWith(async (func, iterator1, iterator2) => {
   let done;
   do {
-    const { done: done1, value: value1 } = await iterator1.next();
-    const { done: done2, value: value2 } = await iterator2.next();
+    // resolve next values in parallel
+    const [
+      { done: done1, value: value1 },
+      { done: done2, value: value2 },
+    ] = await Promise.all([
+      iterator1.next(),
+      iterator2.next(),
+    ]);
+    
     // different lengths imply not corresponding
     if (done1 !== done2) return false;
     done = (done1 && done2);

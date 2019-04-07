@@ -1,112 +1,80 @@
-/** Array functions
+/** Functions for working with `Array`
   * @module array
-  * @description
-  * Functions for working with `Array`
 */
 export * as array from './array';
 
-/** Async functions
+/** Functions for working with promises, `async` + `await`, and parallelism
   * @module async
-  * @description
-  * Functions for working with promises, `async` + `await`, and parallelism
 */
 export * as async from './async';
 
-/** Color functions
+/** Functions for generating and transforming colors
   * @module color
-  * @description
-  * Functions for generating and transforming colors
 */
 export * as color from './color';
 
-/** Crypto functions
+/** Functions for cryptography
   * @module crypto
-  * @description
-  * Functions for cryptography
 */
 export * as crypto from './crypto';
 
-/** Datetime functions
+/** Functions for `date` and `time`
   * @module datetime
-  * @description
-  * Functions for `date` and `time`
 */
 export * as datetime from './datetime';
 
-/** Function functions
+/** Functions for working with `Function`
   * @module function
-  * @description
-  * Functions for working with `Function`
 */
 export * as function from './function';
 
-/** HTTP functions
+/** Functions for working with `HTTP` interfaces
   * @module http
-  * @description
-  * Functions for working with `HTTP` interfaces
 */
 export * as http from './http';
 
-/** Is functions
+/** Functions for typechecking
   * @module is
-  * @description
-  * Functions for typechecking
 */
 export * as is from './is';
 
-/** Iterable functions
+/** A `Module` containing functions for working with sync and async iterables.
+  * Contains two symmetrical child modules: `iterable/sync` and `iterable/async`
   * @module iterable
-  * @description
-  * A `Module` containing functions for working with sync and async iterables
-  * Two symmetrical child modules: `iterable/sync` and `iterable/async`
 */
 export * as iterable from './iterable';
 
-/** Number functions
+/** Functions for working with `Number`
   * @module number
-  * @description
-  * Functions for working with `Number`
 */
 export * as number from './number';
 
-/** Object functions
+/** Functions for working with `Object`
   * @module object
-  * @description
-  * Functions for working with `Object`
 */
 export * as object from './object';
 
-/** Process functions
+/** Functions for working with `Process`
   * @module process
-  * @description
-  * Functions for working with `Process`
 */
 export * as process from './process';
 
-/** Stream functions
+/** Functions for working with `Stream`
   * @module stream
-  * @description
-  * Functions for working with `Stream`
 */
 export * as stream from './stream';
 
-/** String functions
+/** Functions for working with `String`
   * @module string
-  * @description
-  * Functions for working with `String`
 */
 export * as string from './string';
 
-/** Url functions
+/** Functions for working with urls, and querystrings
   * @module url
-  * @description
-  * Functions for working with urls, and querystrings
 */
 export * as url from './url';
 
-/** UUID functions
+/** Functions for working with UUIDs
   * @module uuid
-  * @description
-  * Functions for working with UUIDs
 */
 export * as uuid from './uuid';

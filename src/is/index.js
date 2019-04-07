@@ -8,7 +8,7 @@ import * as R from 'ramda';
 import 'core-js/modules/es7.symbol.async-iterator';
 
 export const {
-  /** Is finite?
+  /** Is a value finite?
     * @func
     * @sig a → Boolean
     * @example
@@ -17,7 +17,7 @@ export const {
   */
   isFinite,
   
-  /** Is integer?
+  /** Is a value an integer?
     * @func
     * @sig a → Boolean
     * @example
@@ -26,7 +26,7 @@ export const {
   */
   isInteger,
   
-  /** Is NaN?
+  /** Is a value NaN?
     * @func
     * @sig a → Boolean
     * @example isNaN(NaN); // true
@@ -35,7 +35,7 @@ export const {
 } = Number;
 
 export const {
-  /** Is Array?
+  /** Is a value an Array?
     * @func
     * @sig a → Boolean
     * @example isArray([]); // true
@@ -44,7 +44,7 @@ export const {
 } = Array;
 
 export const {
-  /** Is Buffer?
+  /** Is a value a Buffer?
     * @func
     * @sig a → Boolean
     * @example
@@ -53,7 +53,7 @@ export const {
   isBuffer,
 } = Buffer;
 
-/** Is equal (strict reference equality)
+/** Are two values equal by strict reference equality?
   * @func
   * @sig a → b → Boolean
   * @example
@@ -63,7 +63,7 @@ export const {
 */
 export const is = R.curry((left, right) => (left === right));
 
-/** Is not equal (strict reference equality)
+/** Are two values not equal by strict reference equality?
   * @func
   * @sig a → b → Boolean
   * @example
@@ -73,77 +73,77 @@ export const is = R.curry((left, right) => (left === right));
 */
 export const isNot = R.complement(is);
 
-/** Is instance of class?
+/** Is a value an instance of a class?
   * @func
   * @sig String → a → Boolean
   * @example isInstanceOf(Array, []); // true
 */
 export const isInstanceOf = R.curry((type, thing) => (thing instanceof type));
 
-/** Is type of?
+/** Does a value have a certin type (via `typeof`)?
   * @func
   * @sig String → a → Boolean
   * @example isTypeOf('boolean', true); // true
 */
 export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 
-/** Is Boolean?
+/** Is a value a Boolean?
   * @func
   * @sig a → Boolean
   * @example isBoolean(false); // true
 */
 export const isBoolean = isTypeOf('boolean');
 
-/** Is Date?
+/** Is a value a Date?
   * @func
   * @sig a → Boolean
   * @example isDate(new Date()); // true
 */
 export const isDate = isInstanceOf(Date);
 
-/** Is regular expression?
+/** Is a value a regular expression?
   * @func
   * @sig a → Boolean
   * @example isRegExp(/[a-z]/); // true
 */
 export const isRegExp = isInstanceOf(RegExp);
 
-/** Is function?
+/** Is a value a function?
   * @func
   * @sig a → Boolean
   * @example isFunction(() => {}); // true
 */
 export const isFunction = isTypeOf('function');
 
-/** Is null?
+/** Is a value null?
   * @func
   * @sig a → Boolean
   * @example isNull(null); // true
 */
 export const isNull = is(null);
 
-/** Is string?
+/** Is a value a string?
   * @func
   * @sig a → Boolean
   * @example isString('hello'); // true
 */
 export const isString = isTypeOf('string');
 
-/** Is symbol?
+/** Is a value a symbol?
   * @func
   * @sig a → Boolean
   * @example isSymbol(Symbol('foo')); // true
 */
 export const isSymbol = isTypeOf('symbol');
 
-/** Is undefined?
+/** Is a value undefined?
   * @func
   * @sig a → Boolean
   * @example isUndefined(undefined); // true
 */
 export const isUndefined = isTypeOf('undefined');
 
-/** Is number?
+/** Is a value a number?
   * @func
   * @sig a → Boolean
   * @example
@@ -152,7 +152,7 @@ export const isUndefined = isTypeOf('undefined');
 */
 export const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 
-/** Is even?
+/** Is a value even?
   * @func
   * @sig a → Boolean
   * @example
@@ -161,7 +161,7 @@ export const isNumber = R.allPass([isTypeOf('number'), R.complement(isNaN)]);
 */
 export const isEven = n => !(n % 2);
 
-/** Is odd?
+/** Is a value odd?
   * @func
   * @sig a → Boolean
   * @example
@@ -170,7 +170,7 @@ export const isEven = n => !(n % 2);
 */
 export const isOdd = R.complement(isEven);
 
-/** Is negative?
+/** Is a value negative?
   * @func
   * @sig a → Boolean
   * @example
@@ -179,7 +179,7 @@ export const isOdd = R.complement(isEven);
 */
 export const isNegative = R.lt(R.__, 0);
 
-/** Is positive?
+/** Is a value positive?
   * @func
   * @sig a → Boolean
   * @example
@@ -188,7 +188,7 @@ export const isNegative = R.lt(R.__, 0);
 */
 export const isPositive = R.gte(R.__, 0);
 
-/** Is float?
+/** Is a value a float?
   * @func
   * @sig a → Boolean
   * @example
@@ -197,21 +197,21 @@ export const isPositive = R.gte(R.__, 0);
 */
 export const isFloat = R.allPass([isFinite, R.complement(isInteger)]);
 
-/** Is truthy?
+/** Is a value truthy?
   * @func
   * @sig a → Boolean
   * @example isTruthy(1); // true
 */
 export const isTruthy = R.pipe(R.not, R.not);
 
-/** Is false?
+/** Is a value falsey?
   * @func
   * @sig a → Boolean
   * @example isFalsey(0); // true
 */
 export const isFalsey = R.not;
 
-/** Is object?
+/** Is a value an object?
   * @func
   * @sig a → Boolean
   * @example
@@ -225,7 +225,7 @@ export const isObject = R.allPass([
   R.complement(isArray),
 ]);
 
-/** Is promise?
+/** Is a value a promise?
   * @func
   * @sig a → Boolean
   * @example isPromise(Promise.resolve(1)); // true
@@ -236,7 +236,7 @@ export const isPromise = R.allPass([
   R.propSatisfies(isFunction, 'catch'),
 ]);
 
-/** Is stream?
+/** Is a value a stream?
   * @func
   * @sig a → Boolean
   * @example
@@ -247,7 +247,7 @@ export const isStream = R.allPass([
   R.propSatisfies(isFunction, 'pipe'),
 ]);
 
-/** Is "plain old javascript object"?
+/** Is a value a "plain old javascript object"?
   * @func
   * @todo consider renaming to isPlainObj
   * @sig a → Boolean
@@ -258,7 +258,7 @@ export const isPojo = R.allPass([
   R.pipe(Object.getPrototypeOf, is(Object.prototype)),
 ]);
 
-/** Is iterator?
+/** Is a value an iterator?
   * @func
   * @sig a → Boolean
   * @example
@@ -270,7 +270,7 @@ export const isIterator = R.allPass([
   R.propSatisfies(isFunction, 'next'),
 ]);
 
-/** Is iterable?
+/** Is a value an iterable?
   * @func
   * @sig a → Boolean
   * @example
@@ -282,7 +282,7 @@ export const isIterable = R.allPass([
   R.propSatisfies(isFunction, Symbol.iterator),
 ]);
 
-/** Is async iterable?
+/** Is a value an async iterable?
   * @func
   * @sig a → Boolean
   * @example

@@ -1,8 +1,20 @@
 import { max, min, useWith } from 'ramda';
 
-/** Get a random number between two inclusive bounds
+/** Get a random float between two inclusive bounds
   * @func
-  * @sig Integer → Integer → Integer
+  * @sig Number → Number → Float
+  * @example random(0, 100); // 42
+*/
+export const randomFloat = useWith((min, max) => {
+  return Math.random() * (max - min) + min;
+}, [
+  max(Number.MIN_SAFE_INTEGER),
+  min(Number.MAX_SAFE_INTEGER),
+]);
+
+/** Get a random integer between two inclusive bounds
+  * @func
+  * @sig Number → Number → Integer
   * @example random(0, 100); // 42
 */
 export const random = useWith((min, max) => {

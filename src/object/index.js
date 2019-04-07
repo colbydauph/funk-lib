@@ -141,7 +141,7 @@ export const del = R.curry((prop, obj) => (delete obj[prop], obj));
   * const obj = { a: 1, b: 2 };
   * clear(obj); // obj === {}
 */
-export const clear = obj => Object.keys(obj).reduce(R.flip(del), obj);
+export const clear = obj => R.keys(obj).reduce(R.flip(del), obj);
 
 /** Recursively map a deep object's leaf nodes
   * @func
@@ -161,4 +161,4 @@ export const mapDeep = R.useWith(R.map, [
   * @example
   * isEmpty({}); // true
 */
-export const isEmpty = obj => !Object.keys(obj).length;
+export const isEmpty = obj => !R.keys(obj).length;

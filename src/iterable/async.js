@@ -291,6 +291,12 @@ export const append = R.useWith(R.flip(concat), [of, R.identity]);
 /** Run a function (side-effect) once for each item
   * @func
   * @sig (a → Promise<b>) → Iterable<a> → AsyncIterator<a>
+  * @example
+  * // log 1
+  * // log 2
+  * // log 3
+  * // AsyncIterator<1, 2, 3>
+  * forEach(console.log, from([1, 2, 3]));
 */
 export const forEach = R.curry(async function* (f, xs) {
   // eslint-disable-next-line no-unused-expressions
@@ -529,19 +535,32 @@ export const count = pipeC(filter, length);
 
 /** Sum by
   * @func
+  * @async
   * @sig (a → Promise<Number>) → Iterable<a> → Promise<Number>
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 6
+  * await sumBy(R.prop('total'), iterator);
 */
 export const sumBy = pipeC(map, reduce(R.add, 0));
 
 /** Min by
   * @func
   * @sig (a → Promise<Number>) → Iterable<a> → Promise<Number>
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 1
+  * await minBy(R.prop('total'), iterator);
 */
 export const minBy = pipeC(map, reduce(Math.min, Infinity));
 
 /** Max by
   * @func
   * @sig (a → Promise<Number>) → Iterable<a> → Promise<Number>
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 3
+  * await maxBy(R.prop('total'), iterator);
 */
 export const maxBy = pipeC(map, reduce(Math.max, -Infinity));
 
@@ -925,12 +944,21 @@ export const join = joinWith('');
 */
 export const isEmpty = none(R.T);
 
-// ((a, a) → Promise<Boolean>) → Iterable<a> → Iterable<a> → Promise<Boolean>
+/** Check if two async iterables match for every index with a custom comparator
+  * @func
+  * @sig ((a, b) → Promise<Boolean>) → Iterable<a> → Iterable<b> → Promise<Boolean>
+  * @example
+  * const one = from([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  * const two = from([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  * // true
+  * await correspondsWith(R.prop('id'), one, two);
+*/
 export const correspondsWith = R.useWith(async (func, iterator1, iterator2) => {
   let done;
   do {
     const { done: done1, value: value1 } = await iterator1.next();
     const { done: done2, value: value2 } = await iterator2.next();
+    // different lengths imply not corresponding
     if (done1 !== done2) return false;
     done = (done1 && done2);
     if (!done && !await func(value1, value2)) return false;

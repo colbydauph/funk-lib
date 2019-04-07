@@ -276,6 +276,12 @@ export const append = R.useWith(R.flip(concat), [of, R.identity]);
 /** Run a function (side-effect) once for each item
   * @func
   * @sig (a → b) → Iterable<a> → Iterator<a>
+  * @example
+  * // log 1
+  * // log 2
+  * // log 3
+  * // Iterator<1, 2, 3>
+  * forEach(console.log, from([1, 2, 3]));
 */
 export const forEach = R.curry(function* (f, xs) {
   // eslint-disable-next-line no-unused-expressions
@@ -485,18 +491,30 @@ export const count = pipeC(filter, length);
 /** Sum by
   * @func
   * @sig (a → Number) → Iterable<a> → Number
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 6
+  * sumBy(R.prop('total'), iterator);
 */
 export const sumBy = pipeC(map, reduce(R.add, 0));
 
 /** Min by
   * @func
   * @sig (a → Number) → Iterable<a> → Number
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 1
+  * minBy(R.prop('total'), iterator);
 */
 export const minBy = pipeC(map, reduce(Math.min, Infinity));
 
 /** Max by
   * @func
   * @sig (a → Number) → Iterable<a> → Number
+  * @example
+  * const iterator = from([{ total: 1 }, { total: 2 }, { total: 3 }]);
+  * // 3
+  * maxBy(R.prop('total'), iterator);
 */
 export const maxBy = pipeC(map, reduce(Math.max, -Infinity));
 
@@ -882,7 +900,15 @@ export const join = joinWith('');
 */
 export const isEmpty = none(_ => true);
 
-// ((T, T) → Boolean) → Iterable<T> → Iterable<T> → Boolean
+/** Check if two iterables match for every index with a custom comparator
+  * @func
+  * @sig ((a, b) → Boolean) → Iterable<a> → Iterable<b> → Boolean
+  * @example
+  * const one = from([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  * const two = from([{ id: 1 }, { id: 2 }, { id: 3 }]);
+  * // true
+  * correspondsWith(R.prop('id'), one, two);
+*/
 export const correspondsWith = R.useWith((pred, iterator1, iterator2) => {
   let done;
   do {

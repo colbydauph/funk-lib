@@ -2,7 +2,13 @@
 import { deprecate } from 'util';
 
 // modules
-import * as R from 'ramda';
+import {
+  curryN,
+  fromPairs,
+  indexBy,
+  pipe,
+  toPairs,
+} from 'ramda';
 
 // aliased
 import { random } from 'funk-lib/number';
@@ -15,7 +21,7 @@ import { random } from 'funk-lib/number';
   * @example
   * toObj(['a', 'b', 'c']); // { 0: a, 1: b, 2: c }
 */
-export const toObj = R.pipe(R.toPairs, R.fromPairs);
+export const toObj = pipe(toPairs, fromPairs);
 
 /** Given a function that generates a key, turns a list of objects into an object indexing the objects by the given key
   * @ignore
@@ -23,8 +29,8 @@ export const toObj = R.pipe(R.toPairs, R.fromPairs);
   * @deprecated
   * @sig (a → b) → [a] → { b: a }
 */
-export const toObjBy = R.curryN(2)(deprecate(
-  R.indexBy,
+export const toObjBy = curryN(2)(deprecate(
+  indexBy,
   'funk-lib/object/toObjBy → R.indexBy'
 ));
 
@@ -36,6 +42,14 @@ export const toObjBy = R.curryN(2)(deprecate(
 */
 export const sample = arr => arr[random(0, arr.length - 1)];
 
+/** Delete all items. mutating + identity
+  * @func
+  * @sig [a] → []
+  * @example
+  * const arr = [1, 2, 3];
+  * clear(arr); // arr === []
+*/
+export const clear = arr => (arr.splice(0), arr);
 
 /**
   * Immutably randomize array element order

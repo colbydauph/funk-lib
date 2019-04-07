@@ -24,7 +24,7 @@ export class TimeoutError extends Error {}
 */
 export const all = Promise.all.bind(Promise);
 
-/** Resolve
+/** Create a resolved promise
   * @async
   * @func
   * @sig a → Promise<a>
@@ -34,7 +34,7 @@ export const all = Promise.all.bind(Promise);
 */
 export const resolve = Promise.resolve.bind(Promise);
 
-/** Reject
+/** Create a rejected promise
   * @async
   * @func
   * @sig Error → Promise<Error>
@@ -600,7 +600,7 @@ export const allSettled = map(promise => {
     .catch(reason => ({ status: 'rejected', reason }));
 });
 
-/** Parallel props
+/** Resolve object values in parallel
   * @async
   * @func
   * @sig { k: Promise<v> } → Promise<{ k: v }>

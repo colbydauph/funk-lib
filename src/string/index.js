@@ -35,7 +35,7 @@ export const toLowerCase = unary(deprecate(
   * @sig String → String
   * @example capitalize('hello'); // 'Hello'
 */
-export const capitalize = (str) => toUpper(nth(0, str)) + str.slice(1);
+export const capitalize = str => toUpper(nth(0, str)) + str.slice(1);
 
 /** Escape a string for use with the `RegExp` constructor
   * @func

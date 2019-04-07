@@ -14,7 +14,7 @@ import { curry, curryN, pipe } from 'ramda';
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
-/** Y combinator. Define recursive functions without the need for variable assignment.
+/** Y combinator. Define recursive functions without variable assignment.
   * @func
   * @sig ((a → b) → (a → b)) → (a → b)
   * @example
@@ -77,7 +77,7 @@ export const throttle = curry((delay, fn) => {
   let lastCall = 0;
   return (...args) => {
     const now = (new Date()).getTime();
-    if (now - lastCall < delay) return;
+    if ((now - lastCall) < delay) return;
     lastCall = now;
     return fn(...args);
   };

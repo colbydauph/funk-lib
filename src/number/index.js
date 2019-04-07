@@ -3,7 +3,7 @@ import { max, min, useWith } from 'ramda';
 /** Get a random float between two inclusive bounds
   * @func
   * @sig Number → Number → Float
-  * @example random(0, 100); // 42
+  * @example randomFloat(0, 100); // 42.38076848431584
 */
 export const randomFloat = useWith((min, max) => {
   return Math.random() * (max - min) + min;

@@ -9,6 +9,7 @@
   "contributors": [
     "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)"
   ],
+  "homepage": "https://funk-lib.com",
   "dependencies": {
     "core-js": "~2.6.5",
     "ramda": "~0.26.1"
@@ -76,5 +77,6 @@
   "bugs": {
     "url": "https://github.com/colbydauph/funk-lib/issues"
   },
+  "keywords": ["functional", "ramda", "utils", "fp", "curried", "iterable", "pure", "async"],
   "license": "MIT"
 }

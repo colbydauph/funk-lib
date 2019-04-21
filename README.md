@@ -6,7 +6,7 @@ Functional JavaScript Library
 [![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
 
 
-Documentation at [`funk-lib.com`](https://funk-lib.com)
+For a full list of functions see the [`Documentation For The Latest Release`](https://funk-lib.com).
 
 ## Install
 ```shell

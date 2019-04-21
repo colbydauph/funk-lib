@@ -7,13 +7,13 @@ import * as R from 'ramda';
   * @memberof iterable/sync
   * @sig (a → b) → Iterator<a> → b
   * @example
-  * const iterator = (function*() {
-  *   const one = yield { val: 1 };
-  *   const two = yield { val: 2 };
-  *   return one + two;
+  * const fetch = url => ({ id: 1 });
+  * const iterator = (function* () {
+  *   const user = yield 'https://foo.bar/user/1';
+  *   return user;
   * })();
-  * // 3
-  * yieldWith(({ val }) => val, iterator);
+  * // { id: 1 }
+  * yieldWith(fetch, iterator);
 */
 const yieldWith = R.curry((onYield, iterator) => {
 
@@ -43,13 +43,13 @@ const yieldWith = R.curry((onYield, iterator) => {
   * @async
   * @sig (a → Promise<b>) → AsyncIterator<a> → Promise<b>
   * @example
-  * const iterator = (async function*() {
-  *   const one = yield await { val: 1 };
-  *   const two = yield await { val: 2 };
-  *   return one + two;
+  * const fetch = async url => ({ id: 1 });
+  * const iterator = (async function* () {
+  *   const user = yield await 'https://foo.bar/user/1';
+  *   return user;
   * })();
-  * // 3
-  * await yieldWith(async ({ val }) => val, iterator);
+  * // { id: 1 }
+  * await yieldWith(fetch, iterator);
 */
 const yieldWithAsync = R.curry(async (onYield, iterator) => {
 

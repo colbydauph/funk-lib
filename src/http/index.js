@@ -6,10 +6,18 @@ import {
   split,
 } from 'ramda';
 
-// parse a content-type http header into its parts
-// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
-// content-type -> { mimeType, charset, boundary }
-// string -> object
+/** Parse a content-type HTTP header into its parts
+  * @sig String → { mimeType, charset, boundary }
+  * @example
+  * // {
+  * //  mimeType: 'multipart/form-data',
+  * //  boundary: 'abc',
+  * //  charset: 'utf-8',
+  * // }
+  * parseContentType('multipart/form-data; boundary=abc; charset=utf-8');
+  * // { mimeType: 'multipart/form-data' }
+  * parseContentType('multipart/form-data');
+*/
 export const parseContentType = pipe(
   defaultTo(''),
   split(/;\s*/),

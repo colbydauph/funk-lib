@@ -8,21 +8,98 @@ import { isObject, isIterator } from 'funk-lib/is';
 // local
 import mapLimitCallback from './map-limit-cb';
 
+export class TimeoutError extends Error {}
 
-// @async parallel resolve promises
+/** Resolve promises in parallel
+  * @async
+  * @func
+  * @sig [Promise<a>] → [a]
+  * @example
+  * // [1, 2, 3]
+  * await all([
+  *   Promise.resolve(1),
+  *   2,
+  *   Promise.resolve(3),
+  * ]);
+*/
 export const all = Promise.all.bind(Promise);
 
-// @async array<promise> -> *
+/** Create a resolved promise
+  * @async
+  * @func
+  * @sig a → Promise<a>
+  * @example
+  * // Promise<1>
+  * resolve(1);
+*/
+export const resolve = Promise.resolve.bind(Promise);
+
+/** Create a rejected promise
+  * @async
+  * @func
+  * @sig Error → Promise<Error>
+  * @example
+  * // Promise<Error('oops')>
+  * reject(Error('oops'));
+*/
+export const reject = Promise.reject.bind(Promise);
+
+/** Returns a promise that resolves or rejects as soon as one of the promises in an
+  * iterable resolves or rejects, with the value or reason from that promise.
+  * @async
+  * @func
+  * @sig [Promise<a>] → a
+  * @example
+  * // true
+  * await race([
+  *   delay(1).then(_ => true),
+  *   delay(10).then(_ => false),
+  *   delay(100).then(_ => { throw Error('oops') }),
+  * ]);
+*/
 export const race = Promise.race.bind(Promise);
 
-// @async number -> undefined
+/** Creates a promise that resolves in `n` ms
+  * @async
+  * @func
+  * @sig Number → Promise<undefined>
+  * @example await delay(100); // resolved in 100ms
+*/
 export const delay = async ms => new Promise(res => setTimeout(res, ms));
 
-// wraps a function to always return a promise
-// (a -> b) -> (a -> promise<b>)
+/** Defers invoking a function until the current call stack has cleared. Passes args to deferred function.
+  * @async
+  * @func
+  * @sig [a] → (a → b) → Promise<b>
+  * @example await deferWith([1, 2], (a, b) => a + b); // 3
+*/
+export const deferWith = R.curry((args, f) => delay(1).then(_ => f(...args)));
+
+/** Defers invoking a function until the current call stack has cleared
+  * @async
+  * @func
+  * @sig (a → b) → Promise<b>
+  * @example await defer(_ => 3); // 3
+*/
+export const defer = deferWith([]);
+
+/** Wraps a function to always return a promise
+  * @async
+  * @func
+  * @sig (a → b) → (a → Promise<b>)
+  * @example
+  * const pred = n => n > 5;
+  * const asyncPred = toAsync(pred);
+  * asyncPred(2); // Promise<false>
+*/
 export const toAsync = f => async (...args) => f(...args);
 
-// returns a promise that is resolved by an err-back function
+/** Returns a promise that is resolved by an err-back function
+  * @func
+  * @example
+  * await fromCallback(cb => cb(null, 123)); // 123
+  * await fromCallback(cb => cb(Error('oops'))); // Error('oops')
+*/
 export const fromCallback = async f => {
   return new Promise((resolve, reject) => {
     f((err, result) => {
@@ -32,14 +109,56 @@ export const fromCallback = async f => {
   });
 };
 
-// make an errback-calling function promise-returning
-// inverse of callbackify
+/** Wrap a function to retry based on a predicate function
+  * @func
+  * @async
+  * @sig Number → (a → b) → (a → Promise<b>)
+  * @example
+  * // retry 10 times with exponential backoff
+  * const retry = retryWith(i => {
+  *   return (i < 10)
+  *     ? return 50 * Math.pow(2, i)
+  *     : false;
+  * });
+  * const data = await retry(getData)('https://foo.bar');
+*/
+export const retryWith = R.curry((f, func) => {
+  let retryCount = 0;
+  return async (...args) => {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        return await func(...args);
+      } catch (err) {
+        const int = await f(++retryCount);
+        if (int === false) throw err;
+        await delay(+int);
+      }
+    }
+  };
+});
+
+
+/** Make an errback-calling function promise-returning. Inverse of callbackify
+  * @async
+  * @func
+  * @example
+  * const callback = (n, cb) => cb(null, n + 1);
+  * await promisify(callback)(1); // 2
+*/
 export const promisify = f => async (...args) => {
   return fromCallback(cb => f(...args, cb));
 };
 
-// make a promise-returning function errback-yielding
-// inverse of promisify
+/** Make a promise-returning function errback-yielding. Inverse of promisify
+  * @async
+  * @func
+  * @example
+  * const func = async n => n + 1;
+  * await callbackify(func)(1, (err, res) => {
+  *   // err = null, res = 2
+  * });
+*/
 export const callbackify = f => (...args) => {
   const cb = args.pop();
   toAsync(f)(...args)
@@ -47,8 +166,15 @@ export const callbackify = f => (...args) => {
     .catch(err => cb(err));
 };
 
-// creates an externally controlled promise
-// * -> object
+/** Creates an externally controlled promise
+  * @async
+  * @func
+  * @sig * → Object
+  * @example
+  * const { promise, resolve, reject } = deferred();
+  * resolve(123);
+  * await promise; // 123
+*/
 export const deferred = () => {
   let resolve, reject;
   return {
@@ -60,24 +186,57 @@ export const deferred = () => {
   };
 };
 
-// @async (series)
-// ((a, t) -> a) -> a -> [t] -> a
+
+/** Async reduce
+  * @async
+  * @func
+  * @sig ((a, b) → Promise<a>) → a → [b] → Promise<a>
+  * @example
+  * // 15
+  * await reduce(async (a, n) => a + n, 0, [1, 2, 3, 4, 5]);
+*/
 export const reduce = R.curry(async (f, acc, xs) => {
   for (const x of xs) acc = await f(acc, x);
   return acc;
 });
 
-// serial + async R.pipe
-// works with sync or async functions
+/** Left-to-right function composition that works with sync or async functions
+  * @async
+  * @func
+  * @sig (...f) → f
+  * @example
+  * // 4
+  * await pipe(
+  *   async n => n + 1,
+  *   async n => n * 2,
+  * )(1);
+*/
 export const pipe = (f, ...fs) => async (...args) => {
   return reduce(R.applyTo, await f(...args), fs);
 };
-// curried async pipe
+
+/** Curried async pipe
+  * @async
+  * @func
+  * @sig (...f) → f
+  * @example
+  * const math = pipeC(
+  *   async (a, b) => a + b,
+  *   c => (c * 2),
+  *   async c => (c + 1),
+  * );
+  * await math(2)(5) // 21;
+*/
 export const pipeC = (...f) => R.curryN(f[0].length, pipe(...f));
 
-// @async
-// number -> (a -> b) -> [a] -> [b]
-// number -> (a -> b) -> { k: a } -> { k: b }
+/** Map with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<b>) → [a] → Promise<[b]>
+  * @example
+  * // [2, 4, 6, 8, 10]
+  * await mapLimit(2, async n => (n * 2), [1, 2, 3, 4, 5]);
+*/
 export const mapLimit = R.curry(async (limit, f, xs) => {
   if (isIterator(xs)) xs = [...xs];
   
@@ -100,18 +259,29 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
   ).then(after);
 });
 
-// number -> (v -> w) -> object<k,v> -> object<k,w>
-export const mapPairsLimit = R.curry(async (limit, f, object) => {
-  return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
-});
-
-// number -> (a -> b) -> [a] -> [b]
+/** For each with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<b>) → [a] → Promise<[a]>
+  * @example
+  * // 1
+  * // 2
+  * // 3
+  * await forEachLimit(2, async n => console.log(n), [1, 2, 3]);
+*/
 export const forEachLimit = R.curry(async (limit, f, xs) => {
   await mapLimit(limit, f, xs);
   return xs;
 });
 
-// number -> (a -> boolean) -> [a] -> boolean
+/** Every with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // false
+  * await everyLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);
+*/
 export const everyLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async resolve => {
     await forEachLimit(limit, async x => {
@@ -121,7 +291,14 @@ export const everyLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// number -> (a -> boolean) -> [a] -> boolean
+/** Some with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // true
+  * await someLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);
+*/
 export const someLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async resolve => {
     await forEachLimit(limit, async x => {
@@ -131,8 +308,16 @@ export const someLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// @async (parallel)
-// number -> (a -> boolean) -> [a]
+/** Find with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<Boolean>) → [a] → Promise<a>
+  * @example
+  * const records = [{ id: 1 }, { id: 2 }, { id: 3 }];
+  *
+  * // { id: 2 }
+  * await findLimit(2, async ({ id }) => (id === 2), records);
+*/
 export const findLimit = R.curry(async (limit, f, xs) => {
   return new Promise(async (resolve, reject) => {
     await forEachLimit(limit, async x => {
@@ -144,106 +329,313 @@ export const findLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-// number -> (a -> [a]) -> [a] -> [a]
+/** Flat map (aka. "chain") with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<[b]>) → [a] → Promise<[b]>
+  * @example
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMapLimit(2, async n => [n, n * 2], [1, 2, 3]);
+*/
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
-// @async (parallel)
-// number -> (a -> boolean) -> [a] -> [a]
+
+/** Flat map pairs with variable parallelization
+  * @async
+  * @func
+  * @sig Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairsLimit(10, ([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
+*/
+export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
+  return R.fromPairs(await flatMapLimit(limit, f, R.toPairs(object)));
+});
+
+
+/** Map pairs with variable parallelization
+  * @async
+  * @func
+  * @sig Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairsLimit(2, async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
+*/
+export const mapPairsLimit = R.curry(async (limit, f, object) => {
+  return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
+});
+
+/** Filter with variable parallelization
+  * @async
+  * @func
+  * @sig Number → (a → Promise<Boolean>) → [a] → Promise<[a]>
+  * @example
+  * // [1, 2]
+  * await filterLimit(2, async n => (n < 3), [1, 2, 3, 4, 5]);
+*/
 export const filterLimit = R.curry(async (limit, f, xs) => {
   return flatMapLimit(limit, async x => (await f(x) ? [x] : []), xs);
 });
 
-// @async (parallel)
-// number -> [promise] -> [object]
-export const allSettledLimit = R.curry((limit, promises) => {
-  return mapLimit(limit, promise => {
-    return Promise
-      .resolve(promise)
-      .then(value => ({ status: 'fulfilled', value }))
-      .catch(reason => ({ status: 'rejected', reason }));
-  }, promises);
-});
-
-
-
-// @async (parallel)
-// Functor f => (a -> b) -> f a -> f b
+/** Parallel map
+  * @async
+  * @func
+  * @sig (a → Promise<b>) → [a] → Promise<[b]>
+  * @example
+  * const array = [1, 2, 3, 4, 5];
+  *
+  * // [2, 4, 6, 8, 10]
+  * await map(async n => (n * 2), array);
+*/
 export const map = mapLimit(Infinity);
-// @async (series)
-// predicate -> iterable -> iterable
+
+/** Serial map
+  * @async
+  * @func
+  * @sig (a → Promise<b>) → [a] → Promise<[b]>
+  * @example
+  * const array = [1, 2, 3, 4, 5];
+  *
+  * // [2, 4, 6, 8, 10]
+  * await mapSeries(async n => (n * 2), array);
+*/
 export const mapSeries = mapLimit(1);
 
+/** Parallel flat map pairs
+  * @async
+  * @func
+  * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairs(([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
+*/
+export const flatMapPairs = flatMapPairsLimit(Infinity);
 
-// @async (parallel)
-// (v -> w) -> object<k,v> -> object<k,w>
+/** Serial flat map pairs
+  * @async
+  * @func
+  * @sig ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 2: 2, b: b }
+  * flatMapPairsSeries(([a, b]) => {
+  *   return (b > 1) ? [[a, a], [b, b]] : [];
+  * }, { a: 1, b: 2 });
+*/
+export const flatMapPairsSeries = flatMapPairsLimit(1);
+
+/** Parallel map pairs
+  * @async
+  * @func
+  * @sig ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairs(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
+*/
 export const mapPairs = mapPairsLimit(Infinity);
-// @async (series)
-// (v -> w) -> object<k,v> -> object<k,w>
+
+/** Serial map pairs
+  * @async
+  * @func
+  * @sig ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
+  * @example
+  * // { 1: 'a', 2: 'b', 3: 'c' }
+  * await mapPairsSeries(async pair => pair.reverse(), { a: 1, b: 2, c: 3 });
+*/
 export const mapPairsSeries = mapPairsLimit(1);
 
-
-// @async (parallel)
-// (a -> b) -> [a] -> [b]
+/** Parallel for each
+  * @async
+  * @func
+  * @sig (a → Promise<b>) → [a] → Promise<[a]>
+  * @example
+  * // log 1
+  * // log 2
+  * // log 3
+  * // [1, 2, 3]
+  * await forEach(async n => console.log(n), [1, 2, 3]);
+*/
 export const forEach = forEachLimit(Infinity);
-// @async (series)
-// (a -> b) -> [a] -> [b]
+
+/** Serial for each
+  * @async
+  * @func
+  * @sig (a → Promise<b>) → [a] → Promise<[a]>
+  * @example
+  * // log 1
+  * // log 2
+  * // log 3
+  * // [1, 2, 3]
+  * await forEachSeries(async n => console.log(n), [1, 2, 3]);
+*/
 export const forEachSeries = forEachLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> boolean
+/** Parallel every
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // false
+  * await every(async n => (n > 5), [4, 5, 6, 7]);
+*/
 export const every = everyLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> boolean
+
+/** Serial every
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // false
+  * await everySeries(async n => (n > 5), [4, 5, 6, 7]);
+*/
 export const everySeries = everyLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> boolean
+/** Parallel some
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // true
+  * await some(async n => (n > 5), [4, 5, 6, 7]);
+*/
 export const some = someLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> boolean
+
+/** Serial some
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
+  * @example
+  * // true
+  * await someSeries(async n => (n > 5), [4, 5, 6, 7]);
+*/
 export const someSeries = someLimit(1);
 
-
-// @async (parallel)
-// predicate -> iterable<a> -> a
+/** Parallel find
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<a>
+  * @example
+  * const records = [{ id: 1 }, { id: 2 }, { id: 3 }];
+  *
+  * // { id: 2 }
+  * await find(async ({ id }) => (id === 2), records);
+*/
 export const find = findLimit(Infinity);
-// @async (series)
-// predicate -> iterable<a> -> a
+
+/** Serial find
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<a>
+  * @example
+  * const records = [{ id: 1 }, { id: 2 }, { id: 3 }];
+  *
+  * // { id: 2 }
+  * await findSeries(async ({ id }) => (id === 2), records);
+*/
 export const findSeries = findLimit(1);
 
-
-// @async (parallel)
-// (a -> [a]) -> [a] -> [a]
+/** Parallel flatMap (aka. "chain")
+  * @async
+  * @func
+  * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
+  * @example
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMap(async n => [n, n * 2], [1, 2, 3]);
+*/
 export const flatMap = flatMapLimit(Infinity);
-// @async (series)
-// (a -> [a]) -> [a] -> [a]
+
+/** Serial flatMap (aka. "chain")
+  * @async
+  * @func
+  * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
+  * @example
+  * // [1, 2, 2, 4, 3, 6]
+  * await flatMapSeries(async n => [n, n * 2], [1, 2, 3]);
+*/
 export const flatMapSeries = flatMapLimit(1);
 
-
-// @async (parallel)
-// (a -> boolean) -> [a] -> [a]
+/** Parallel filter
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<[a]>
+  * @example
+  * const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  * // [0, 1, 2, 3, 4, 5]
+  * await filter(async n => (n <= 5), array);
+*/
 export const filter = filterLimit(Infinity);
-// @async (series)
-// (a -> boolean) -> [a] -> [a]
+
+/** Serial filter
+  * @async
+  * @func
+  * @sig (a → Promise<Boolean>) → [a] → Promise<[a]>
+  * @example
+  * const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  * // [0, 1, 2, 3, 4, 5]
+  * await filterSeries(async n => (n <= 5), array);
+*/
 export const filterSeries = filterLimit(1);
 
 
-// @async array<promise> -> array<object>
-export const allSettled = allSettledLimit(Infinity);
+/** All settled
+  * @async
+  * @func
+  * @sig [Promise] → Promise<[{ status, value, reason }]>
+  * @example
+  * // [
+  * //   { status: 'fulfilled', value: 1 },
+  * //   { status: 'rejected', reason: Error('oops') },
+  * // ]
+  * await allSettled([
+  *   Promise.resolve(1),
+  *   Promise.reject(Error('oops')),
+  * ]);
+*/
+export const allSettled = map(promise => {
+  return resolve(promise)
+    .then(value => ({ status: 'fulfilled', value }))
+    .catch(reason => ({ status: 'rejected', reason }));
+});
 
-// @async array<promise> -> array<object>
-export const allSettledSeries = allSettledLimit(1);
-
-
-// @async (parallel)
-// object -> object
+/** Resolve object values in parallel
+  * @async
+  * @func
+  * @sig { k: Promise<v> } → Promise<{ k: v }>
+  * @example
+  * // { one: 1, two: 2, three: 3 }
+  * await props({
+  *   one: Promise.resolve(1),
+  *   two: 2,
+  *   three: Promise.resolve(3),
+  * });
+*/
 export const props = mapPairs(async ([key, val]) => [key, await val]);
 
-// timeout a promise. timeout throws TimeoutError
-export class TimeoutError extends Error {}
-// number -> promise -> promise
+/** Async R.evolve
+  * @async
+  * @func
+  * @sig { k: (a → Promise<b>) } → { k: a } → Promise<{ k: b }>
+  * @example
+  * const data = { a: 1, b: 2, c: 3 };
+  * // { a: 2, b: 4, c: 3 }
+  * await evolve({
+  *   a: async a => a + 1,
+  *   b: async b => b * 2,
+  * }, data);
+*/
+export const evolve = pipeC(R.evolve, props);
+
+/** Timeout a promise
+  * @async
+  * @func
+  * @sig Number → Promise<a> → Promise<a>
+  * @example
+  * await timeout(2000, delay(100)); // undefined
+  * await timeout(100, delay(2000)); // TimeoutError
+*/
 export const timeout = R.curry((ms, promise) => race([
   promise,
   delay(ms).then(() => {

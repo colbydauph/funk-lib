@@ -12,25 +12,24 @@ import { from } from '../../iterable/sync';
 import {
   // all,
   allSettled,
-  // allSettledLimit,
-  // allSettledSeries,
   callbackify,
   deferred,
   delay,
   every,
   // everyLimit,
   everySeries,
-  filter,
   // filterLimit,
+  // findLimit,
+  // flatMapLimit,
+  // forEachLimit,
+  filter,
   filterSeries,
   find,
-  // findLimit,
   findSeries,
   flatMap,
-  // flatMapLimit,
+  flatMapPairsLimit,
   flatMapSeries,
   forEach,
-  // forEachLimit,
   forEachSeries,
   fromCallback,
   map,
@@ -45,6 +44,9 @@ import {
   props,
   race,
   reduce,
+  // reject,
+  // resolve,
+  retryWith,
   some,
   // someLimit,
   // someSeries,
@@ -389,6 +391,30 @@ describe('async lib', () => {
 
     it('should work with async iterables');
 
+  });
+  
+  describe('flatMapPairsLimit', () => {
+    
+    it('should', async () => {
+      const obj = {
+        a: 1,
+        ab: 2,
+        b: 3,
+        c: 4,
+      };
+      const pred = async ([key, value]) => {
+        if (!key.startsWith('a')) return [];
+        return [[key, value], [value, key]];
+      };
+      await expect(flatMapPairsLimit(2, pred, obj))
+        .to.eventually.eql({
+          a: 1,
+          ab: 2,
+          1: 'a',
+          2: 'ab',
+        });
+    });
+    
   });
   
   describe('flatMapSeries', () => {
@@ -910,6 +936,52 @@ describe('async lib', () => {
       const result = await reduce(pred)(init)(iterable);
       expect(result).to.eql(25);
     });
+    
+  });
+    
+  describe('retryWith', () => {
+    
+    it('should resolve if no errors thrown', () => {
+      const retry = retryWith(_ => 10);
+      const func = n => n + 1;
+      const retryable = retry(func);
+      expect(retryable(1)).to.eventually.eql(2);
+    });
+    
+    it('should resolve if ever succeeds', async () => {
+      const NUM_FAILS = 10;
+      const retry = retryWith(_ => 10);
+      const func = sinon.stub();
+      R.range(0, NUM_FAILS).forEach(i => {
+        func.onCall(i).rejects(Error(i));
+      });
+      func.onCall(NUM_FAILS).callsFake(async n => n  + 1);
+      const retryable = retry(func);
+      await expect(retryable(1))
+        .to.eventually.eql(2);
+    });
+    
+    it('should retry until predicate returns false', async () => {
+      const NUM_FAILS = 20;
+      const MAX_ALLOWABLE = 10;
+      
+      const retry = retryWith(i => {
+        if (i < MAX_ALLOWABLE) return i * 5;
+        return false;
+      });
+      const func = sinon.stub();
+      
+      R.range(0, NUM_FAILS).forEach(i => {
+        func.onCall(i).rejects(Error(i + 1));
+      });
+      func.onCall(NUM_FAILS).callsFake(async n => n  + 1);
+      
+      const retryable = retry(func);
+      await expect(retryable(1))
+        .to.eventually.be.rejectedWith(Error, `${ MAX_ALLOWABLE }`);
+    });
+    
+    it('should delay the number of ms returned by the predicate');
     
   });
     

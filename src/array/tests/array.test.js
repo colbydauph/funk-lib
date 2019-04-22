@@ -3,9 +3,30 @@ import { expect } from 'chai';
 import * as R from 'ramda';
 
 // local
-import { toObjBy, toObj, sample, shuffle } from '..';
+import {
+  clear,
+  toObjBy,
+  toObj,
+  sample,
+  shuffle,
+} from '..';
 
 describe('array lib', () => {
+  
+  describe('clear', () => {
+    
+    it('should remove all items', () => {
+      const arr = [1, 2, 3];
+      clear(arr);
+      expect(arr).to.eql([]);
+    });
+    
+    it('should return the input', () => {
+      const arr = [1, 2, 3];
+      expect(clear(arr)).to.equal(arr);
+    });
+    
+  });
   
   describe('toObj', () => {
     

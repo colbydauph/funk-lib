@@ -7,7 +7,10 @@ import * as R from 'ramda';
 import { random } from 'funk-lib/number';
 
 
-// { r, g, b } -> { h, s, l }
+/** RGB to HSL
+  * @func
+  * @sig { r, g, b } → { h, s, l }
+*/
 export const rgbToHsl = ({ r, g, b }) => {
   r /= 255;
   g /= 255;
@@ -38,7 +41,11 @@ export const rgbToHsl = ({ r, g, b }) => {
   return { h: (h * 360), s, l };
 };
 
-// { h, s, l } -> { r, g, b }
+
+/** HSL to RGB
+  * @func
+  * @sig { h, s, l } → { r, g, b }
+*/
 export const hslToRgb = ({ h, s, l }) => {
   h /= 360;
   let r, g, b;
@@ -70,7 +77,10 @@ export const hslToRgb = ({ h, s, l }) => {
   };
 };
 
-// string -> { r, g, b }
+/** Hex to RGB
+  * @func
+  * @sig String → { r, g, b }
+*/
 export const hexToRgb = (hex) => {
   // expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -87,31 +97,52 @@ export const hexToRgb = (hex) => {
   } : null;
 };
 
-// { r, g, b } -> string
+/** RGB to hex
+  * @func
+  * @todo: should this not include the hash prefix?
+  * @sig { r, g, b } → String
+*/
 export const rgbToHex = R.pipe(
-  R.map((color) =>  {
+  R.map(color =>  {
     const hex = color.toString(16);
     return (hex.length === 1) ? `0${ hex }` : hex;
   }),
   ({ r, g, b }) => `#${ r }${ g }${ b }`,
 );
 
-// { h, s, l } -> string
+/** HSL to hex
+  * @func
+  * @sig { h, s, l } → String
+*/
 export const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
-// string -> { h, s, l }
+/** Hex to HSL
+  * @func
+  * @sig String → { h, s, l }
+*/
 export const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
 
-// * -> { r, g, b }
+/** Get a random RGB value
+  * @func
+  * @sig * → { r, g, b }
+  * @example randomRgb(); // { r: 35, g: 125, b: 106 }
+*/
 export const randomRgb = () => ({
   r: random(0, 255),
   g: random(0, 255),
   b: random(0, 255),
 });
 
-// * -> string
+/** Get a random hex string
+  * @func
+  * @sig * → String
+  * @example randomHex(); // #b3a95a
+*/
 export const randomHex = R.pipe(randomRgb, rgbToHex);
 
-// * -> { h, s, l }
+/** Get a random HSL value
+  * @func
+  * @sig * → { h, s, l }
+*/
 export const randomHsl = R.pipe(randomRgb, rgbToHsl);
 

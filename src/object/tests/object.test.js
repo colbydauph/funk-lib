@@ -12,6 +12,7 @@ import {
   firstPair,
   firstValue,
   flattenWith,
+  mapDeep,
   mapKeys,
   mapPairs,
   mapValues,
@@ -109,6 +110,24 @@ describe('object lib', () => {
         flattenWith(path.join),
       )(flat);
       expect(res).to.eql(flat);
+    });
+    
+  });
+  
+  describe('mapDeep', () => {
+    
+    it('should recursively map values', () => {
+      
+      const input = {
+        a: [1],
+        b: { c: 2, d: { e: 3 } },
+      };
+            
+      expect(mapDeep(n => n + 1, input)).to.eql({
+        a: '11',
+        b: { c: 3, d: { e: 4 } },
+      });
+      
     });
     
   });

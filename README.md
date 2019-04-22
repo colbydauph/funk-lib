@@ -1,12 +1,18 @@
 # funk-lib
 
-Functional JavaScript Utilities
+Functional JavaScript Library
+
+[![CircleCI](https://circleci.com/gh/colbydauph/funk-lib/tree/master.svg?style=svg)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
+[![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
+
+
+For a full list of functions see the [`Documentation For The Latest Release`](https://funk-lib.com).
 
 ## Install
 ```shell
-$ npm i -P colbydauph/funk-lib
+npm i -P funk-lib
 # or: es-module compatible build
-$ npm i -P colbydauph/funk-lib-es
+npm i -P funk-lib-es
 ```
 
 ## Import
@@ -29,6 +35,7 @@ import { mapKeys } from 'funk-lib-es/object';
 | `cover`      | Run test coverage |
 | `init`       | Re/Install deps |
 | `init:hard`  | `init` with a fresh `package-lock` |
+| `docs`       | parse docs to `json` |
 | `lint`       | Lint the source |
 | `test`       | Run tests |
 | `test:watch` | Run tests on change |

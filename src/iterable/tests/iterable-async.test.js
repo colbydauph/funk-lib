@@ -35,6 +35,7 @@ import {
   filter,
   find,
   // findIndex,
+  flatIterate,
   flatMap,
   flatten,
   flattenN,
@@ -542,6 +543,38 @@ describe('iterable/async', () => {
   
   });
   
+  describe('flatIterate', () => {
+    
+    let num;
+    beforeEach(() => {
+      num = 10;
+    });
+    
+    it('should yield infinitely', async () => {
+      
+      iterator = R.applyTo(0, R.pipe(
+        flatIterate(function* it(n) {
+          yield n - 1;
+          yield n;
+          yield n + 1;
+          
+          return n + 1;
+        }),
+        take(num),
+      ));
+      
+      const expected = R.applyTo(num, R.pipe(
+        R.range(0),
+        R.chain(n => [n - 1, n, n + 1]),
+        R.take(num),
+      ));
+      
+      return expect(toArray(iterator))
+        .to.eventually.eql(expected);
+    });
+    
+  });
+  
   describe('flatMap', () => {
   
     beforeEach(() => {
@@ -574,10 +607,9 @@ describe('iterable/async', () => {
   describe('flatUnfold', () => {
     
     it('should flatten yielded items', async () => {
-      iterator = flatUnfold(async function* flatUnfold(n) {
+      iterator = flatUnfold(n => {
         if (n >= 5) return null;
-        yield* from([n, n * 2]);
-        return (n + 1);
+        return [from([n, n * 2]), (n + 1)];
       }, 0);
       await expect(toArray(iterator)).to.eventually.eql([
         0, 0, 1, 2, 2, 4, 3, 6, 4, 8,
@@ -1546,6 +1578,14 @@ describe('iterable/async', () => {
       iterator = from(arr);
       await expect(toArray(unnest(iterator)))
         .to.eventually.eql(R.unnest(arr));
+    });
+    
+    it('should flatten iterators', async () => {
+      arr = [1, from([2, 3, 4, 5])];
+      
+      iterator = from(arr);
+      await expect(toArray(unnest(iterator)))
+        .to.eventually.eql([1, 2, 3, 4, 5]);
     });
   
   });

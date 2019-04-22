@@ -4,7 +4,7 @@
   "engines": {
     "node": "8.10"
   },
-  "description": "Functional JavaScript Utilities",
+  "description": "Functional JavaScript Library",
   "author": "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)",
   "contributors": [
     "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)"

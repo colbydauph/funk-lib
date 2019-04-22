@@ -37,6 +37,13 @@ export const toLowerCase = unary(deprecate(
 */
 export const capitalize = str => toUpper(nth(0, str)) + str.slice(1);
 
+/** Lowercase the first letter of a string
+  * @func
+  * @sig String → String
+  * @example uncapitalize('FooBar'); // 'fooBar'
+*/
+export const uncapitalize = str => toLower(nth(0, str)) + str.slice(1);
+
 /** Escape a string for use with the `RegExp` constructor
   * @func
   * @sig String → String

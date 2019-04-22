@@ -77,6 +77,15 @@
   "bugs": {
     "url": "https://github.com/colbydauph/funk-lib/issues"
   },
-  "keywords": ["functional", "ramda", "utils", "fp", "curried", "iterable", "pure", "async"],
+  "keywords": [
+    "async",
+    "curried",
+    "fp",
+    "functional",
+    "iterable",
+    "pure",
+    "ramda",
+    "utils"
+  ],
   "license": "MIT"
 }

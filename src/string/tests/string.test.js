@@ -8,6 +8,7 @@ import {
   template,
   toBase64,
   slugify,
+  uncapitalize,
 } from '..';
 
 describe('string lib', () => {
@@ -16,6 +17,14 @@ describe('string lib', () => {
     
     it('should capitalize first character', () => {
       expect(capitalize('test')).to.eql('Test');
+    });
+    
+  });
+  
+  describe('uncapitalize', () => {
+    
+    it('should lowercase first character', () => {
+      expect(uncapitalize('FooBar')).to.eql('fooBar');
     });
     
   });

@@ -3,7 +3,7 @@ import { Readable as ReadableStream } from 'stream';
 
 /** Readable stream from iterable
   * @func
-  * @sig Iterable → Stream
+  * @sig Iterable<a> → Stream<a>
   * @example
   * from([1, 2, 3]); // ReadableStream<1, 2, 3>
 */
@@ -16,7 +16,7 @@ const from = iterable => {
 
 /** Stream to string
   * @func
-  * @sig Stream → String
+  * @sig Stream<String> → String
   * @example
   * await toString(from(['a', 'b', 'c'])); // 'abc'
 */
@@ -33,7 +33,7 @@ export const toString = async stream => {
 
 /** String to stream
   * @func
-  * @sig String → Stream
+  * @sig String → Stream<String>
   * @example
   * fromString('hello'); // ReadableStream<'hello'>
 */

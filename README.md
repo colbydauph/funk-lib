@@ -9,13 +9,19 @@ Functional JavaScript Library
 ## Features
 
 **Pure functions**
+
 *Mostly*. There are a few documented exceptions
 
+
 **[Curried](https://ramdajs.com/docs/#curry) arguments**
+
 Arranged "data last" for useful partial application
 
+
 **Isomorphic**
+
 Dual-transpiled for [`commonjs`](https://www.npmjs.com/package/funk-lib) (Node.js) or [`es-modules`](https://www.npmjs.com/package/funk-lib-es) (browser)
+
 
 For a full list of functions see the [Documentation For The Latest Release](https://funk-lib.com).
 

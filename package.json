@@ -11,7 +11,7 @@
   ],
   "homepage": "https://funk-lib.com",
   "dependencies": {
-    "core-js": "~2.6.5",
+    "core-js": "^3.0.0",
     "ramda": "~0.26.1"
   },
   "devDependencies": {

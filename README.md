@@ -2,7 +2,6 @@
 
 [![ci](https://img.shields.io/circleci/project/github/colbydauph/funk-lib/master.svg)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
 [![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
-<!-- [![npm downloads](https://img.shields.io/npm/dw/funk-lib.svg)](https://www.npmjs.org/package/funk-lib) -->
 
 ## FP for Vanilla JavaScript
 
@@ -19,7 +18,7 @@ For a full list of functions see the [Documentation For The Latest Release](http
 
 **Currying**
 
-All functions are [curried]((https://ramdajs.com/docs/#curry)), and arguments are arranged "data last" for useful partial application
+All functions are [curried](https://ramdajs.com/docs/#curry), and arguments are arranged "data last" for useful partial application
 
 
 **Isomorphic**

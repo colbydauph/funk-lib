@@ -16,7 +16,6 @@ For a full list of functions see the [Documentation For The Latest Release](http
 **Pure functions**
 
 *Mostly*. There are a few documented exceptions
-s
 
 **Currying**
 

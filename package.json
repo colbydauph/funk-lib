@@ -12,7 +12,7 @@
   "homepage": "https://funk-lib.com",
   "dependencies": {
     "core-js": "~3.6.5",
-    "ramda": "~0.26.1"
+    "ramda": "~0.27.0"
   },
   "devDependencies": {
     "@babel/cli": "~7.8.4",
@@ -45,7 +45,7 @@
   "nyc": {
     "statements": 98,
     "branches": 96,
-    "functions": 96,
+    "functions": 97,
     "lines": 98,
     "reporter": [
       "html",

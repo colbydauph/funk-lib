@@ -55,7 +55,7 @@ export const nextOr = R.curry(async (or, iterator) => {
   return done ? or : value;
 });
 
-/** Returns the first or "next" item. AKA "head". Throws StopIterationError if empty
+/** Returns the first or "next" item. a.k.a. "head". Throws StopIterationError if empty
   * @func
   * @async
   * @sig Iterable<a> → Promise<a>
@@ -501,7 +501,7 @@ export const tail = drop(1);
 */
 export const repeat = iterate(R.identity);
 
-/** Yield an item `a`, `n` times. AKA "replicate"
+/** Yield an item `a`, `n` times. a.k.a. "replicate"
   * @func
   * @sig Integer → a → AsyncIterator<a>
   * @example

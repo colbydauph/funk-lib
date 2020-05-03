@@ -157,8 +157,12 @@ export const mapDeep = R.useWith(R.map, [
 
 /** Is an object empty?
   * @func
+  * @deprecated
   * @sig {a} -> Boolean
   * @example
   * isEmpty({}); // true
 */
-export const isEmpty = obj => !R.keys(obj).length;
+export const isEmpty = R.curryN(1)(deprecate(
+  R.isEmpty,
+  'funk-lib/object/isEmpty → R.isEmpty'
+));

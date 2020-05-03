@@ -7,7 +7,9 @@ import { expect } from 'chai';
 
 // local
 import {
+  clear,
   deepFreeze,
+  del,
   firstKey,
   firstPair,
   firstValue,
@@ -21,7 +23,30 @@ import {
   toHumanJSON,
 } from '..';
 
+
 describe('object lib', () => {
+  
+  describe('clear', () => {
+    
+    let obj;
+    beforeEach(() => {
+      obj = {
+        a: 1,
+        b: true,
+        c: [2, { d: 3 }],
+        d: {
+          e: undefined,
+          f: Symbol('g'),
+        },
+      };
+    });
+    
+    it('should delete all keys', () => {
+      clear(obj);
+      expect(obj).to.eql({});
+    });
+
+  });
   
   describe('deepFreeze', () => {
     
@@ -71,6 +96,23 @@ describe('object lib', () => {
       }).to.throw(Error);
     });
     
+  });
+  
+  describe('del', () => {
+    
+    let obj;
+    beforeEach(() => {
+      obj = {
+        a: 1,
+        b: true,
+      };
+    });
+    
+    it('should delete the key', () => {
+      del('b', obj);
+      expect(obj).to.eql({ a: 1 });
+    });
+
   });
   
   describe('flattenWith', () => {

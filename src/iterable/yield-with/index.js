@@ -7,8 +7,6 @@ import * as R from 'ramda';
   * @memberof iterable/sync
   * @sig (a → b) → Iterator<a> → b
   * @example
-  * const { yieldWith } = require('funk-lib/iterable/sync');
-  *
   * // arguments arranged fs-last
   * const readFile = path => fs => fs.readFile(path);
   *
@@ -58,8 +56,6 @@ const yieldWith = R.curry((onYield, iterator) => {
   * @async
   * @sig (a → Promise<b>) → AsyncIterator<a> → Promise<b>
   * @example
-  * const { yieldWith } = require('funk-lib/iterable/async');
-  *
   * // arguments arranged fs-last
   * const readFile = path => fs => fs.readFile(path);
   *

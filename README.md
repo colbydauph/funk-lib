@@ -2,7 +2,7 @@
 
 [![ci](https://img.shields.io/circleci/project/github/colbydauph/funk-lib/master.svg)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
 [![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
-[![npm downloads](https://img.shields.io/npm/dw/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
+<!-- [![npm downloads](https://img.shields.io/npm/dw/funk-lib.svg)](https://www.npmjs.org/package/funk-lib) -->
 
 ## FP for Vanilla JavaScript
 

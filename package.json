@@ -1,10 +1,10 @@
 {
   "name": "funk-lib",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "engines": {
     "node": "8.10"
   },
-  "description": "Functional JavaScript Library",
+  "description": "FP for Vanilla JavaScript",
   "author": "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)",
   "contributors": [
     "Colby Dauphinais <colby@dauphina.is> (https://colby.dauphina.is)"
@@ -43,10 +43,10 @@
     "verify": "npm run lint && npm run cover"
   },
   "nyc": {
-    "statements": 96,
+    "statements": 98,
     "branches": 96,
     "functions": 96,
-    "lines": 96,
+    "lines": 98,
     "reporter": [
       "html",
       "text-summary"

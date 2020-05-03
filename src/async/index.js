@@ -331,7 +331,7 @@ export const findLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-/** Flat map (a.k.a.. "chain"). (variable parallelization)
+/** Flat map (a.k.a. "chain"). (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<[b]>) → [a] → Promise<[b]>
@@ -539,7 +539,7 @@ export const find = findLimit(Infinity);
 */
 export const findSeries = findLimit(1);
 
-/** Parallel flatMap (a.k.a.. "chain")
+/** Parallel flatMap (a.k.a. "chain")
   * @async
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
@@ -549,7 +549,7 @@ export const findSeries = findLimit(1);
 */
 export const flatMap = flatMapLimit(Infinity);
 
-/** Serial flatMap (a.k.a.. "chain")
+/** Serial flatMap (a.k.a. "chain")
   * @async
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>

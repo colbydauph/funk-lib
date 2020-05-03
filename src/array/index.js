@@ -14,7 +14,7 @@ import {
 import { random } from 'funk-lib/number';
 
 
-/** Transform an array into an object, where keys are indices, and values are elements.
+/** Transform an array into an object, where keys are indices, and values are elements
   * @func
   * @todo rename to index
   * @sig [ k: v ] → { k: v }
@@ -42,7 +42,7 @@ export const toObjBy = curryN(2)(deprecate(
 */
 export const sample = arr => arr[random(0, arr.length - 1)];
 
-/** Delete all items. mutating + identity
+/** Delete all items. Mutating + identity
   * @func
   * @sig [a] → []
   * @example

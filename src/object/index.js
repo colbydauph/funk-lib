@@ -8,7 +8,7 @@ import * as R from 'ramda';
 import { isObject } from 'funk-lib/is';
 
 
-/** Get an object's first key: value pair
+/** Get an object's first [key, value] pair
   * @func
   * @sig { k: v } → [k, v]
   * @example firstPair({ a: 1 }); // ['a', 1]
@@ -66,7 +66,7 @@ export const mapValues = R.curryN(2)(deprecate(
   'funk-lib/object/mapValues → R.map'
 ));
 
-/** Recursive freeze a nested object. mutating + identity
+/** Recursive freeze a nested object. Mutating + identity
   * @func
   * @sig {*} → {*}
   * @example
@@ -125,7 +125,7 @@ export const nestWith = R.curry((pred, obj) => {
 */
 export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 
-/** Delete an object property. mutating + identity
+/** Delete an object property. Mutating + identity
   * @func
   * @sig String → {a} → {a}
   * @example
@@ -134,7 +134,7 @@ export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 */
 export const del = R.curry((prop, obj) => (delete obj[prop], obj));
 
-/** Delete all object properties. mutating + identity
+/** Delete all object properties. Mutating + identity
   * @func
   * @sig {a} → {}
   * @example

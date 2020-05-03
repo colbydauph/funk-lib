@@ -35,7 +35,7 @@ export const {
 } = Number;
 
 export const {
-  /** Is a value an Array?
+  /** Is a value an `Array`?
     * @func
     * @sig a → Boolean
     * @example isArray([]); // true
@@ -44,7 +44,7 @@ export const {
 } = Array;
 
 export const {
-  /** Is a value a Buffer?
+  /** Is a value a `Buffer`?
     * @func
     * @sig a → Boolean
     * @example
@@ -87,14 +87,14 @@ export const isInstanceOf = R.curry((type, thing) => (thing instanceof type));
 */
 export const isTypeOf = R.curry((type, thing) => is(type, typeof thing));
 
-/** Is a value a Boolean?
+/** Is a value a `Boolean`?
   * @func
   * @sig a → Boolean
   * @example isBoolean(false); // true
 */
 export const isBoolean = isTypeOf('boolean');
 
-/** Is a value a Date?
+/** Is a value a `Date`?
   * @func
   * @sig a → Boolean
   * @example isDate(new Date()); // true
@@ -115,7 +115,7 @@ export const isRegExp = isInstanceOf(RegExp);
 */
 export const isFunction = isTypeOf('function');
 
-/** Is a value null?
+/** Is a value `null`?
   * @func
   * @sig a → Boolean
   * @example isNull(null); // true
@@ -136,7 +136,7 @@ export const isString = isTypeOf('string');
 */
 export const isSymbol = isTypeOf('symbol');
 
-/** Is a value undefined?
+/** Is a value `undefined`?
   * @func
   * @sig a → Boolean
   * @example isUndefined(undefined); // true
@@ -225,14 +225,23 @@ export const isObject = R.allPass([
   R.complement(isArray),
 ]);
 
+/** Is a value a "thenable"?
+  * @func
+  * @sig a → Boolean
+  * @example isThenable({ then: _ => {} }); // true
+*/
+export const isThenable = R.allPass([
+  isObject,
+  R.propSatisfies(isFunction, 'then'),
+]);
+
 /** Is a value a promise?
   * @func
   * @sig a → Boolean
   * @example isPromise(Promise.resolve(1)); // true
 */
 export const isPromise = R.allPass([
-  isObject,
-  R.propSatisfies(isFunction, 'then'),
+  isThenable,
   R.propSatisfies(isFunction, 'catch'),
 ]);
 

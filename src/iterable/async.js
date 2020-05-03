@@ -14,7 +14,7 @@ import StopIteration from './stop-iteration';
 // fixme: polyfill Symbol.asyncIterator
 // https://github.com/babel/babel/issues/8450
 // https://github.com/babel/babel/issues/7467
-import 'core-js/modules/es7.symbol.async-iterator';
+import 'core-js/modules/es.symbol.async-iterator';
 
 export { yieldWithAsync as yieldWith } from './yield-with';
 

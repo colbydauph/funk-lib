@@ -11,16 +11,16 @@
   ],
   "homepage": "https://funk-lib.com",
   "dependencies": {
-    "core-js": "~2.6.5",
+    "core-js": "~3.6.5",
     "ramda": "~0.26.1"
   },
   "devDependencies": {
-    "@babel/cli": "~7.2.3",
-    "@babel/core": "~7.3.4",
-    "@babel/plugin-proposal-export-namespace-from": "~7.2.0",
-    "@babel/preset-env": "~7.3.4",
-    "@babel/register": "~7.0.0",
-    "babel-plugin-module-resolver": "~3.2.0",
+    "@babel/cli": "~7.8.4",
+    "@babel/core": "~7.9.6",
+    "@babel/plugin-proposal-export-namespace-from": "~7.8.3",
+    "@babel/preset-env": "~7.9.6",
+    "@babel/register": "~7.9.0",
+    "babel-plugin-module-resolver": "~4.0.0",
     "chai": "~4.2.0",
     "chai-as-promised": "~7.1.1",
     "eslint": "~6.8.0",

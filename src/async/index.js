@@ -13,7 +13,7 @@ export class TimeoutError extends Error {}
 /** Resolve promises in parallel
   * @async
   * @func
-  * @sig [Promise<a>] → [a]
+  * @sig [Promise<a>] → Promise<[a]>
   * @example
   * // [1, 2, 3]
   * await all([
@@ -48,7 +48,7 @@ export const reject = Promise.reject.bind(Promise);
   * iterable resolves or rejects, with the value or reason from that promise.
   * @async
   * @func
-  * @sig [Promise<a>] → a
+  * @sig [Promise<a>] → Promise<a>
   * @example
   * // true
   * await race([
@@ -187,7 +187,7 @@ export const deferred = () => {
 };
 
 
-/** Async reduce
+/** Reduce an array of items to a single item. (serial)
   * @async
   * @func
   * @sig ((a, b) → Promise<a>) → a → [b] → Promise<a>
@@ -200,7 +200,7 @@ export const reduce = R.curry(async (f, acc, xs) => {
   return acc;
 });
 
-/** Left-to-right function composition that works with sync or async functions
+/** Left-to-right function composition of sync and / or async functions
   * @async
   * @func
   * @sig (...f) → f
@@ -215,7 +215,7 @@ export const pipe = (f, ...fs) => async (...args) => {
   return reduce(R.applyTo, await f(...args), fs);
 };
 
-/** Curried async pipe
+/** Curried left-to-right function composition of sync and / or async functions
   * @async
   * @func
   * @sig (...f) → f
@@ -229,7 +229,7 @@ export const pipe = (f, ...fs) => async (...args) => {
 */
 export const pipeC = (...f) => R.curryN(f[0].length, pipe(...f));
 
-/** Map with variable parallelization
+/** Transform each item in an array. (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<b>) → [a] → Promise<[b]>
@@ -259,7 +259,7 @@ export const mapLimit = R.curry(async (limit, f, xs) => {
   ).then(after);
 });
 
-/** For each with variable parallelization
+/** Call a side-effecting function once for each item in the array. (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<b>) → [a] → Promise<[a]>
@@ -274,7 +274,8 @@ export const forEachLimit = R.curry(async (limit, f, xs) => {
   return xs;
 });
 
-/** Every with variable parallelization
+
+/** Does every item in the array satisfy the predicate? (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -283,15 +284,15 @@ export const forEachLimit = R.curry(async (limit, f, xs) => {
   * await everyLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);
 */
 export const everyLimit = R.curry(async (limit, f, xs) => {
-  return new Promise(async resolve => {
-    await forEachLimit(limit, async x => {
+  return new Promise(resolve => {
+    forEachLimit(limit, async x => {
+      // early return
       if (!await f(x)) resolve(false);
-    }, xs);
-    resolve(true);
+    }, xs).then(_ => resolve(true));
   });
 });
 
-/** Some with variable parallelization
+/** Does any item in the array satisfy the predicate? (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -300,15 +301,15 @@ export const everyLimit = R.curry(async (limit, f, xs) => {
   * await someLimit(2, async n => (n > 4), [1, 2, 3, 4, 5]);
 */
 export const someLimit = R.curry(async (limit, f, xs) => {
-  return new Promise(async resolve => {
-    await forEachLimit(limit, async x => {
+  return new Promise(resolve => {
+    forEachLimit(limit, async x => {
+      // early return
       if (await f(x)) resolve(true);
-    }, xs);
-    resolve(false);
+    }, xs).then(_ => resolve(false));
   });
 });
 
-/** Find with variable parallelization
+/** Returns the first item that passes the predicate. (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<Boolean>) → [a] → Promise<a>
@@ -319,8 +320,9 @@ export const someLimit = R.curry(async (limit, f, xs) => {
   * await findLimit(2, async ({ id }) => (id === 2), records);
 */
 export const findLimit = R.curry(async (limit, f, xs) => {
-  return new Promise(async (resolve, reject) => {
-    await forEachLimit(limit, async x => {
+  return new Promise((resolve, reject) => {
+    forEachLimit(limit, async x => {
+      // early return
       if (await f(x)) resolve(x);
     }, xs)
       // resolve undefined if none found
@@ -329,7 +331,7 @@ export const findLimit = R.curry(async (limit, f, xs) => {
   });
 });
 
-/** Flat map (aka. "chain") with variable parallelization
+/** Flat map (a.k.a. "chain"). (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<[b]>) → [a] → Promise<[b]>
@@ -340,7 +342,7 @@ export const findLimit = R.curry(async (limit, f, xs) => {
 export const flatMapLimit = pipeC(mapLimit, R.chain(R.identity));
 
 
-/** Flat map pairs with variable parallelization
+/** Flat map pairs. (variable parallelization)
   * @async
   * @func
   * @sig Number → ([a, b] → Promise<[[c, d]]>) → { a: b } → Promise<{ c: d }>
@@ -355,7 +357,7 @@ export const flatMapPairsLimit = R.curry(async (limit, f, object) => {
 });
 
 
-/** Map pairs with variable parallelization
+/** Transform object keys and values. (variable parallelization)
   * @async
   * @func
   * @sig Number → ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
@@ -367,7 +369,7 @@ export const mapPairsLimit = R.curry(async (limit, f, object) => {
   return R.fromPairs(await mapLimit(limit, f, R.toPairs(object)));
 });
 
-/** Filter with variable parallelization
+/** Keep only array items that pass the predicate. (variable parallelization)
   * @async
   * @func
   * @sig Number → (a → Promise<Boolean>) → [a] → Promise<[a]>
@@ -379,7 +381,7 @@ export const filterLimit = R.curry(async (limit, f, xs) => {
   return flatMapLimit(limit, async x => (await f(x) ? [x] : []), xs);
 });
 
-/** Parallel map
+/** Transform each item in an array. (parallel)
   * @async
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[b]>
@@ -391,7 +393,7 @@ export const filterLimit = R.curry(async (limit, f, xs) => {
 */
 export const map = mapLimit(Infinity);
 
-/** Serial map
+/** Transform each item in an array. (serial)
   * @async
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[b]>
@@ -427,7 +429,7 @@ export const flatMapPairs = flatMapPairsLimit(Infinity);
 */
 export const flatMapPairsSeries = flatMapPairsLimit(1);
 
-/** Parallel map pairs
+/** Transform object keys and values. (parallel)
   * @async
   * @func
   * @sig ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
@@ -437,7 +439,7 @@ export const flatMapPairsSeries = flatMapPairsLimit(1);
 */
 export const mapPairs = mapPairsLimit(Infinity);
 
-/** Serial map pairs
+/** Transform object keys and values. (serial)
   * @async
   * @func
   * @sig ([a, b] → Promise<[c, d]>) → { a: b } → Promise<{ c: d }>
@@ -447,7 +449,7 @@ export const mapPairs = mapPairsLimit(Infinity);
 */
 export const mapPairsSeries = mapPairsLimit(1);
 
-/** Parallel for each
+/** Call a side-effecting function once for each item in the array. (parallel)
   * @async
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[a]>
@@ -460,7 +462,7 @@ export const mapPairsSeries = mapPairsLimit(1);
 */
 export const forEach = forEachLimit(Infinity);
 
-/** Serial for each
+/** Call a side-effecting function once for each item in the array. (serial)
   * @async
   * @func
   * @sig (a → Promise<b>) → [a] → Promise<[a]>
@@ -473,7 +475,7 @@ export const forEach = forEachLimit(Infinity);
 */
 export const forEachSeries = forEachLimit(1);
 
-/** Parallel every
+/** Does every item in the array satisfy the predicate? (parallel)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -483,7 +485,7 @@ export const forEachSeries = forEachLimit(1);
 */
 export const every = everyLimit(Infinity);
 
-/** Serial every
+/** Does every item in the array satisfy the predicate? (serial)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -493,7 +495,7 @@ export const every = everyLimit(Infinity);
 */
 export const everySeries = everyLimit(1);
 
-/** Parallel some
+/** Does any item in the array satisfy the predicate? (parallel)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -503,7 +505,7 @@ export const everySeries = everyLimit(1);
 */
 export const some = someLimit(Infinity);
 
-/** Serial some
+/** Does any item in the array satisfy the predicate? (serial)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<Boolean>
@@ -513,7 +515,7 @@ export const some = someLimit(Infinity);
 */
 export const someSeries = someLimit(1);
 
-/** Parallel find
+/** Returns the first item that satisfies the predicate. (parallel)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<a>
@@ -525,7 +527,7 @@ export const someSeries = someLimit(1);
 */
 export const find = findLimit(Infinity);
 
-/** Serial find
+/** Returns the first item that satisfies the predicate. (serial)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<a>
@@ -537,7 +539,7 @@ export const find = findLimit(Infinity);
 */
 export const findSeries = findLimit(1);
 
-/** Parallel flatMap (aka. "chain")
+/** Parallel flatMap (a.k.a. "chain")
   * @async
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
@@ -547,7 +549,7 @@ export const findSeries = findLimit(1);
 */
 export const flatMap = flatMapLimit(Infinity);
 
-/** Serial flatMap (aka. "chain")
+/** Serial flatMap (a.k.a. "chain")
   * @async
   * @func
   * @sig (a → Promise<[b]>) → [a] → Promise<[b]>
@@ -557,7 +559,7 @@ export const flatMap = flatMapLimit(Infinity);
 */
 export const flatMapSeries = flatMapLimit(1);
 
-/** Parallel filter
+/** Keep only array items that pass the predicate. (parallel)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<[a]>
@@ -568,7 +570,7 @@ export const flatMapSeries = flatMapLimit(1);
 */
 export const filter = filterLimit(Infinity);
 
-/** Serial filter
+/** Keep only array items that pass the predicate. (serial)
   * @async
   * @func
   * @sig (a → Promise<Boolean>) → [a] → Promise<[a]>
@@ -580,7 +582,7 @@ export const filter = filterLimit(Infinity);
 export const filterSeries = filterLimit(1);
 
 
-/** All settled
+/** Returns the resolved / rejected status of multiple promises
   * @async
   * @func
   * @sig [Promise] → Promise<[{ status, value, reason }]>
@@ -628,7 +630,7 @@ export const props = mapPairs(async ([key, val]) => [key, await val]);
 */
 export const evolve = pipeC(R.evolve, props);
 
-/** Timeout a promise
+/** Throws a TimeoutError if the promise takes longer than `n` ms to resolve
   * @async
   * @func
   * @sig Number → Promise<a> → Promise<a>

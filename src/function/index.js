@@ -1,7 +1,7 @@
 import { curry, curryN, pipe } from 'ramda';
 
 
-/** Curried pipe
+/** Curried left-to-right function composition
   * @func
   * @sig ...f → f
   * @example
@@ -14,7 +14,7 @@ import { curry, curryN, pipe } from 'ramda';
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
-/** Y combinator. Define recursive functions without variable assignment.
+/** Y combinator. Define recursive functions without variable assignment
   * @func
   * @sig ((a → b) → (a → b)) → (a → b)
   * @example
@@ -66,7 +66,7 @@ export const once = fn => {
 */
 export const noop = () => {};
 
-/** Wraps a function so that it is only invoked at most once every `delay` ms
+/** Wraps a function so that it is only invoked at most once every `n` ms
   * @func
   * @sig Number → (a → b) → (a → b)
   * @example
@@ -83,7 +83,7 @@ export const throttle = curry((delay, fn) => {
   };
 });
 
-/** Wrap a function to delay invocation until after `delay` ms
+/** Wrap a function to delay invocation until after `n` ms
   * have elapsed since the last call
   * @func
   * @sig Number → (a → b) → (a → undefined)

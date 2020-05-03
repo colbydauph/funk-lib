@@ -7,13 +7,26 @@ import * as R from 'ramda';
   * @memberof iterable/sync
   * @sig (a → b) → Iterator<a> → b
   * @example
-  * const fetch = url => ({ id: 1 });
-  * const iterator = (function* () {
-  *   const user = yield 'https://foo.bar/user/1';
-  *   return user;
-  * })();
-  * // { id: 1 }
-  * yieldWith(fetch, iterator);
+  * // arguments arranged fs-last
+  * const readFile = path => fs => fs.readFile(path);
+  *
+  * // write filesystem logic without specifying *which* filesystem
+  * const combineFiles = function* (paths) {
+  *   let files = [];
+  *   for await (const path of paths) {
+  *     files = [...files, yield readFile(path)];
+  *   }
+  *   return files.join('\n');
+  * }
+  *
+  * // mock filesystem
+  * const fs = {
+  *   readFile: file => `I am ${ file }!`,
+  * };
+  *
+  * // apply filesystem to each yielded function
+  * // "I am hello.txt!\nI am world.text!"
+  * yieldWith(fn => fn(fs), combineFiles(['hello.txt', 'world.text']));
 */
 const yieldWith = R.curry((onYield, iterator) => {
 
@@ -36,20 +49,33 @@ const yieldWith = R.curry((onYield, iterator) => {
 });
 
 /** Create coroutines with custom behavior by transforming yielded values and
-  * returning them as the results of the yield. Works with `sync` iterables
+  * returning them as the results of the yield. Works with `async` and `sync` iterators
   * @name yieldWith
   * @memberof iterable/async
   * @func
   * @async
   * @sig (a → Promise<b>) → AsyncIterator<a> → Promise<b>
   * @example
-  * const fetch = async url => ({ id: 1 });
-  * const iterator = (async function* () {
-  *   const user = yield await 'https://foo.bar/user/1';
-  *   return user;
-  * })();
-  * // { id: 1 }
-  * await yieldWith(fetch, iterator);
+  * // arguments arranged fs-last
+  * const readFile = path => fs => fs.readFile(path);
+  *
+  * // write filesystem logic without specifying *which* filesystem
+  * const combineFiles = async function* (paths) {
+  *   let files = [];
+  *   for await (const path of paths) {
+  *     files = [...files, yield readFile(path)];
+  *   }
+  *   return files.join('\n');
+  * }
+  *
+  * // mock filesystem
+  * const fs = {
+  *   readFile: async file => `I am ${ file }!`,
+  * };
+  *
+  * // apply filesystem to each yielded function
+  * // "I am hello.txt!\nI am world.text!"
+  * await yieldWith(fn => fn(fs), combineFiles(['hello.txt', 'world.text']));
 */
 const yieldWithAsync = R.curry(async (onYield, iterator) => {
 

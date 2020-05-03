@@ -7,6 +7,7 @@ import { delay } from 'funk-lib/async';
 
 // local
 import {
+  noop,
   on,
   once,
   pipeC,
@@ -16,6 +17,14 @@ import {
 } from '..';
 
 describe('function lib', () => {
+  
+  describe('noop', () => {
+    
+    it('should return undefined', () => {
+      expect(noop()).to.eql(undefined);
+    });
+    
+  });
   
   describe('on', () => {
     

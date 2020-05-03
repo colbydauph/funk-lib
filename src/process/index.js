@@ -1,4 +1,4 @@
-/** On SIGINT
+/** On `SIGINT`
   * @func
   * @example
   * const offSigInt = onSigInt(_ => {

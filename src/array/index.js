@@ -26,7 +26,7 @@ export const toObj = pipe(toPairs, fromPairs);
 /** Given a function that generates a key, turns a list of objects into an object indexing the objects by the given key
   * @ignore
   * @func
-  * @deprecated
+  * @deprecated since v0.15.2
   * @sig (a → b) → [a] → { b: a }
 */
 export const toObjBy = curryN(2)(deprecate(
@@ -52,8 +52,7 @@ export const sample = arr => arr[random(0, arr.length - 1)];
 export const clear = arr => (arr.splice(0), arr);
 
 /**
-  * Immutably randomize array element order
-  * Fisher-Yates shuffle
+  * Immutably randomize array element order via Fisher-Yates shuffle
   * @func
   * @sig [a] → [a]
   * @example shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]

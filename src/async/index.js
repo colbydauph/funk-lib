@@ -122,7 +122,7 @@ export const fromCallback = async f => {
   * });
   * const data = await retry(getData)('https://foo.bar');
 */
-export const retryWith = R.curry((f, func) => {
+export const retryWith = R.curry((retry, func) => {
   let retryCount = 0;
   return async (...args) => {
     // eslint-disable-next-line no-constant-condition
@@ -130,7 +130,7 @@ export const retryWith = R.curry((f, func) => {
       try {
         return await func(...args);
       } catch (err) {
-        const int = await f(++retryCount);
+        const int = await retry(++retryCount);
         if (int === false) throw err;
         await delay(+int);
       }
@@ -139,7 +139,7 @@ export const retryWith = R.curry((f, func) => {
 });
 
 
-/** Make an errback-calling function promise-returning. Inverse of callbackify
+/** Make an errback-calling function promise-returning. Inverse of `async/callbackify`
   * @async
   * @func
   * @example
@@ -150,7 +150,7 @@ export const promisify = f => async (...args) => {
   return fromCallback(cb => f(...args, cb));
 };
 
-/** Make a promise-returning function errback-yielding. Inverse of promisify
+/** Make a promise-returning function errback-yielding. Inverse of `async/promisify`
   * @async
   * @func
   * @example
@@ -616,7 +616,7 @@ export const allSettled = map(promise => {
 */
 export const props = mapPairs(async ([key, val]) => [key, await val]);
 
-/** Async R.evolve
+/** Async `R.evolve`
   * @async
   * @func
   * @sig { k: (a → Promise<b>) } → { k: a } → Promise<{ k: b }>
@@ -630,17 +630,31 @@ export const props = mapPairs(async ([key, val]) => [key, await val]);
 */
 export const evolve = pipeC(R.evolve, props);
 
-/** Throws a TimeoutError if the promise takes longer than `n` ms to resolve
+/** Delegate to a function if a `Promise` takes longer than `n` ms to resolve
+  * @async
+  * @func
+  * @since 0.16.0
+  * @sig (Promise<a> -> Promise<b>) → Number → Promise<a> → Promise<a|b>
+  * @example
+  * const timeout = Symbol('Timeout');
+  * await timeoutWith(_ => timeout, 2000, delay(1000)); // undefined
+  * await timeoutWith(_ => timeout, 100, delay(1000)); // Symbol('Timeout')
+*/
+export const timeoutWith = R.curry((fn, ms, promise) => {
+  return race([
+    promise,
+    delay(ms).then(() => fn(ms)),
+  ]);
+});
+
+/** Throws `TimeoutError` if the promise takes longer than `n` ms to resolve
   * @async
   * @func
   * @sig Number → Promise<a> → Promise<a>
   * @example
-  * await timeout(2000, delay(100)); // undefined
-  * await timeout(100, delay(2000)); // TimeoutError
+  * await timeout(2000, delay(1000)); // undefined
+  * await timeout(100, delay(1000)); // TimeoutError
 */
-export const timeout = R.curry((ms, promise) => race([
-  promise,
-  delay(ms).then(() => {
-    throw new TimeoutError(`Promise timed out after ${ ms }ms`);
-  }),
-]));
+export const timeout = timeoutWith(ms => {
+  throw new TimeoutError(`Promise timed out after ${ ms }ms`);
+});

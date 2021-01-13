@@ -2,12 +2,12 @@
 
 [![ci](https://img.shields.io/circleci/project/github/colbydauph/funk-lib/master.svg)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
 [![npm module](https://badge.fury.io/js/funk-lib.svg)](https://www.npmjs.org/package/funk-lib)
+[![test coverage](https://img.shields.io/badge/test%20coverage-97%25-success)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](https://circleci.com/gh/colbydauph/funk-lib/tree/master)
 
 ## FP for Vanilla JavaScript
 
-`funk-lib` is a collection of functions for working with native JavaScript types in a consistent, functional way. It is heavily inspired by [`Ramda`](https://ramdajs.com), but does not duplicate Ramda's functionality.
-
-For a full list of functions see the [Documentation For The Latest Release](https://funk-lib.com)
+`funk-lib` is a standard library for full-stack functional programming with native JavaScript types. It is inspired by [`Ramda`](https://ramdajs.com), but does not intend to duplicate Ramda's functionality. There is some overlap with core `Browser` and `Node.js` APIs, for the sake of normalization and isomorphism.
 
 
 ## Features
@@ -20,13 +20,25 @@ For a full list of functions see the [Documentation For The Latest Release](http
 
 All functions are [curried](https://ramdajs.com/docs/#curry), and arguments are arranged "data last" for useful partial application
 
-
 **Isomorphic**
 
 Packages are available for both
 - `Node.js` (CommonJS) - [`npm/funk-lib`](https://www.npmjs.com/package/funk-lib)
 - `Browser` (ES Modules) - [`npm/funk-lib-es`](https://www.npmjs.com/package/funk-lib-es)
 
+**Vast**
+
+Includes over 300 functions for working with
+- Async (promises)
+- Iterables (sync & async)
+- Type checking
+- Arrays and objects
+- Scalars (string, number)
+- Function composition
+- URLs
+- ... and more
+
+For a full list of functions see the [Documentation For The Latest Release](https://funk-lib.com)
 
 ## Install
 ```shell
@@ -60,3 +72,10 @@ import { mapKeys } from 'funk-lib-es/object';
 | `test`       | Run tests |
 | `test:watch` | Run tests on change |
 | `verify`     | Verify linting, tests, coverage |
+
+
+<br />
+<p style="text-align: center;">
+  Created by
+  <a href="https://colby.dauphina.is">Colby Dauphinais</a>
+</p>

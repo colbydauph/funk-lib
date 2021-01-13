@@ -51,6 +51,7 @@ import {
   // someLimit,
   // someSeries,
   timeout,
+  timeoutWith,
   TimeoutError,
   toAsync,
 } from '..';
@@ -995,6 +996,31 @@ describe('async lib', () => {
       
       pred = n => n > 50;
       await expect(some(pred, arr)).to.eventually.eql(false);
+    });
+    
+  });
+  
+  describe('timeoutWith', () => {
+    
+    let sym;
+    beforeEach(() => {
+      sym = Symbol('Timeout');
+    });
+        
+    it('should call function when promise times out', async () => {
+      return expect(timeoutWith(_ => sym, 100, delay(1000)))
+        .to.eventually.eql(sym);
+    });
+    
+    it('should return promise result when it doesn\'t timeout', async () => {
+      return expect(timeoutWith(_ => sym, 2000, delay(1000)))
+        .to.eventually.eql(undefined);
+    });
+    
+    it('should call function with ms', async () => {
+      const ms = random(0, 100);
+      return expect(timeoutWith(R.identity, ms, delay(1000)))
+        .to.eventually.eql(ms);
     });
     
   });

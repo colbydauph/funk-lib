@@ -157,8 +157,8 @@ export const mapDeep = R.useWith(R.map, [
 
 /** Is an object empty?
   * @func
-  * @deprecated
-  * @sig {a} -> Boolean
+  * @deprecated since v0.15.2
+  * @sig {a} → Boolean
   * @example
   * isEmpty({}); // true
 */

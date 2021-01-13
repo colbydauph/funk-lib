@@ -30,14 +30,14 @@ export const toLowerCase = unary(deprecate(
   'funk-lib/string/toLowerCase → R.toLower'
 ));
 
-/** Capitalize the first letter of a string
+/** Capitalize the first letter of a string. Inverse of `string/uncapitalize`
   * @func
   * @sig String → String
   * @example capitalize('hello'); // 'Hello'
 */
 export const capitalize = str => toUpper(nth(0, str)) + str.slice(1);
 
-/** Lowercase the first letter of a string
+/** Lowercase the first letter of a string. Inverse of `string/capitalize`
   * @func
   * @sig String → String
   * @example uncapitalize('FooBar'); // 'fooBar'

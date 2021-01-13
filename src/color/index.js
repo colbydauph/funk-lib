@@ -7,7 +7,7 @@ import * as R from 'ramda';
 import { random } from 'funk-lib/number';
 
 
-/** RGB to HSL
+/** RGB to HSL. Inverse of `color/hslToRgb`
   * @func
   * @sig { r, g, b } → { h, s, l }
 */
@@ -42,7 +42,7 @@ export const rgbToHsl = ({ r, g, b }) => {
 };
 
 
-/** HSL to RGB
+/** HSL to RGB. Inverse of `color/rgbToHsl`
   * @func
   * @sig { h, s, l } → { r, g, b }
 */
@@ -77,7 +77,7 @@ export const hslToRgb = ({ h, s, l }) => {
   };
 };
 
-/** Hex to RGB
+/** Hex to RGB. Inverse of `color/rgbToHex`
   * @func
   * @sig String → { r, g, b }
 */
@@ -97,7 +97,7 @@ export const hexToRgb = (hex) => {
   } : null;
 };
 
-/** RGB to hex
+/** RGB to hex. Inverse of `color/hexToRgb`
   * @func
   * @todo: should this not include the hash prefix?
   * @sig { r, g, b } → String
@@ -110,13 +110,13 @@ export const rgbToHex = R.pipe(
   ({ r, g, b }) => `#${ r }${ g }${ b }`,
 );
 
-/** HSL to hex
+/** HSL to hex. Inverse of `color/hexToHsl`
   * @func
   * @sig { h, s, l } → String
 */
 export const hslToHex = R.pipe(hslToRgb, rgbToHex);
 
-/** Hex to HSL
+/** Hex to HSL. Inverse of `color/hslToHex`
   * @func
   * @sig String → { h, s, l }
 */

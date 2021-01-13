@@ -14,7 +14,7 @@ import { curry, curryN, pipe } from 'ramda';
 */
 export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
 
-/** Y combinator. Define recursive functions without variable assignment
+/** [Y combinator](https://en.wikipedia.org/wiki/Fixed-point_combinator). Creates anonymous recursive functions
   * @func
   * @sig ((a → b) → (a → b)) → (a → b)
   * @example

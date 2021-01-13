@@ -57,7 +57,7 @@ export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\
 
 /** String interpolation. Reasonably similar to JavaScript template literals.
   * @func
-  * @sig String → {*} → String
+  * @sig String → Object → String
   * @example
   * // 'Hello Pat!'
   * template('Hello ${ name }!', { name: 'Pat' });
@@ -69,7 +69,7 @@ export const template = curry((tmpl, variables) => {
 });
 
 // https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings
-// string → string → string → string
+// String → String → String → String
 const encodeFrom = curry((from, to, string) => Buffer
   .from(string, from)
   .toString(to));

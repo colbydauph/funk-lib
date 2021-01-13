@@ -3,7 +3,7 @@ import { curry, curryN, pipe } from 'ramda';
 
 /** Curried left-to-right function composition
   * @func
-  * @sig ...f → f
+  * @sig ...(* → *) → (* → *)
   * @example
   * const math = pipeC(
   *   (a, b) => a + b,

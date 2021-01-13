@@ -5,7 +5,7 @@ import * as R from 'ramda';
   * returning them as the results of the yield
   * @func
   * @memberof iterable/sync
-  * @sig (a → b) → Iterator<a> → b
+  * @sig (a → b) → Iterator a → b
   * @example
   * // arguments arranged fs-last
   * const readFile = path => fs => fs.readFile(path);
@@ -54,7 +54,7 @@ const yieldWith = R.curry((onYield, iterator) => {
   * @memberof iterable/async
   * @func
   * @async
-  * @sig (a → Promise<b>) → AsyncIterator<a> → Promise<b>
+  * @sig (a → Promise b) → AsyncIterator a → Promise b
   * @example
   * // arguments arranged fs-last
   * const readFile = path => fs => fs.readFile(path);

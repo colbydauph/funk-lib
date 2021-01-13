@@ -68,7 +68,7 @@ export const mapValues = R.curryN(2)(deprecate(
 
 /** Recursive freeze a nested object. Mutating + identity
   * @func
-  * @sig {*} → {*}
+  * @sig Object → Object
   * @example
   * const obj = { a: 1 };
   * deepFreeze(obj); // { a: 1 }
@@ -127,7 +127,7 @@ export const toHumanJSON = obj => JSON.stringify(obj, null, 2);
 
 /** Delete an object property. Mutating + identity
   * @func
-  * @sig String → {a} → {a}
+  * @sig String → Object → Object
   * @example
   * const obj = { a: 1, b: 2 };
   * del('a', obj); // obj === { b: 2 }
@@ -136,7 +136,7 @@ export const del = R.curry((prop, obj) => (delete obj[prop], obj));
 
 /** Delete all object properties. Mutating + identity
   * @func
-  * @sig {a} → {}
+  * @sig Object → Object
   * @example
   * const obj = { a: 1, b: 2 };
   * clear(obj); // obj === {}
@@ -158,7 +158,7 @@ export const mapDeep = R.useWith(R.map, [
 /** Is an object empty?
   * @func
   * @deprecated since v0.15.2
-  * @sig {a} → Boolean
+  * @sig Object → Boolean
   * @example
   * isEmpty({}); // true
 */

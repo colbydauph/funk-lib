@@ -356,7 +356,7 @@ export const unfold = R.curry(function* (f, x) {
   }
 });
 
-// (a → [Iterable b, a]) → * → Iterator b
+// (a → [Iterable b, a]) → a → Iterator b
 export const flatUnfold = pipeC(unfold, unnest);
 
 /** Recursively call a function, yielding items from each resulting iterable

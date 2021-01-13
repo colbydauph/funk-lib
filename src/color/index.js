@@ -124,7 +124,7 @@ export const hexToHsl = R.pipe(hexToRgb, rgbToHsl);
 
 /** Get a random RGB value
   * @func
-  * @sig * → { r, g, b }
+  * @sig _ → { r, g, b }
   * @example randomRgb(); // { r: 35, g: 125, b: 106 }
 */
 export const randomRgb = () => ({
@@ -135,14 +135,14 @@ export const randomRgb = () => ({
 
 /** Get a random hex string
   * @func
-  * @sig * → String
+  * @sig _ → String
   * @example randomHex(); // #b3a95a
 */
 export const randomHex = R.pipe(randomRgb, rgbToHex);
 
 /** Get a random HSL value
   * @func
-  * @sig * → { h, s, l }
+  * @sig _ → { h, s, l }
 */
 export const randomHsl = R.pipe(randomRgb, rgbToHsl);
 

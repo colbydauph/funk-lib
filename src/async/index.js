@@ -169,7 +169,7 @@ export const callbackify = f => (...args) => {
 /** Creates an externally controlled promise
   * @async
   * @func
-  * @sig * → Object
+  * @sig a → Object
   * @example
   * const { promise, resolve, reject } = deferred();
   * resolve(123);
@@ -203,7 +203,7 @@ export const reduce = R.curry(async (f, acc, xs) => {
 /** Left-to-right function composition of sync and / or async functions
   * @async
   * @func
-  * @sig (...f) → f
+  * @sig (...(* → *)) → (* → *)
   * @example
   * // 4
   * await pipe(
@@ -218,7 +218,7 @@ export const pipe = (f, ...fs) => async (...args) => {
 /** Curried left-to-right function composition of sync and / or async functions
   * @async
   * @func
-  * @sig (...f) → f
+  * @sig (...(* → *)) → (* → *)
   * @example
   * const math = pipeC(
   *   async (a, b) => a + b,

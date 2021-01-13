@@ -371,7 +371,7 @@ export const unfold = R.curry(async function* (f, x) {
   }
 });
 
-// (a → Promise [Iterable b, a]) → * → AsyncIterator b
+// (a → Promise [Iterable b, a]) → a → AsyncIterator b
 export const flatUnfold = pipeC(unfold, unnest);
 
 /** Recursively call a function, yielding items from each resulting iterable

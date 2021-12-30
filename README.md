@@ -77,5 +77,5 @@ import { mapKeys } from 'funk-lib-es/object';
 <br />
 <p style="text-align: center;">
   Created by
-  <a href="https://colby.dauphina.is">Colby Dauphinais</a>
+  <a href="https://colby.dauphina.is/?utm_source=funk-lib-docs">Colby Dauphinais</a>
 </p>

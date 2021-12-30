@@ -255,7 +255,7 @@ export const concat = R.curry(function* (xs1, xs2) {
   yield* xs2;
 });
 
-/** Prepend an item `a`
+/** Prepends an element
   * @func
   * @sig a → Iterable a → Iterator a
   * @example
@@ -264,7 +264,7 @@ export const concat = R.curry(function* (xs1, xs2) {
 */
 export const prepend = R.useWith(concat, [of, R.identity]);
 
-/** Append an item `a`
+/** Appends an element
   * @func
   * @sig a → Iterable a → Iterator a
   * @example
@@ -337,7 +337,7 @@ export const unnest = flattenN(1);
   * @sig Iterable Iterable a → Iterator a
   * @example
   * // Iterator(1, 2, 3, 4)
-  * unnest(from([1, [2, [3, [4]]]]));
+  * flatten(from([1, [2, [3, [4]]]]));
 */
 export const flatten = flattenN(Infinity);
 
@@ -751,7 +751,7 @@ export const groupWith = R.curry(function* (f, xs) {
 */
 export const group = groupWith(is);
 
-/** Copy an iterator `n` times. Exhausts input iterators
+/** Copy an iterator `n` times. Exhausts the input iterator
   * @func
   * @sig Integer → Iterable a → [Iterator a]
   * @example

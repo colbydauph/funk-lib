@@ -55,7 +55,7 @@ export const uncapitalize = str => toLower(nth(0, str)) + str.slice(1);
 // eslint-disable-next-line no-useless-escape
 export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
-/** String interpolation. Reasonably similar to JavaScript template literals.
+/** String interpolation. Reasonably similar to [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
   * @func
   * @sig String → Object → String
   * @example
@@ -74,14 +74,14 @@ const encodeFrom = curry((from, to, string) => Buffer
   .from(string, from)
   .toString(to));
 
-/** Encode a string to base64
+/** Encode a string to base64. Inverse of `string/parseBase64`
   * @func
   * @sig String → String
   * @example toBase64('hello'); // 'aGVsbG8='
 */
 export const toBase64 = encodeFrom('utf8', 'base64');
 
-/** Decode a string from base64
+/** Decode a string from base64. Inverse of `string/toBase64`
   * @func
   * @sig String → String
   * @example parseBase64('aGVsbG8='); // 'hello'

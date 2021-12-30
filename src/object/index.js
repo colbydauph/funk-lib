@@ -66,7 +66,7 @@ export const mapValues = R.curryN(2)(deprecate(
   'funk-lib/object/mapValues → R.map'
 ));
 
-/** Recursive freeze a nested object. Mutating + identity
+/** Recursively freeze a nested object. Mutating + identity
   * @func
   * @sig Object → Object
   * @example

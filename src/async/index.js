@@ -112,7 +112,7 @@ export const fromCallback = async f => {
 /** Wrap a function to retry based on a predicate function
   * @func
   * @async
-  * @sig Number → (a → b) → (a → Promise b)
+  * @sig (Int → Float) → (a → Promise b) → (a → Promise b)
   * @example
   * // retry 10 times with exponential backoff
   * const retry = retryWith(i => {
@@ -634,7 +634,7 @@ export const evolve = pipeC(R.evolve, props);
   * @async
   * @func
   * @since 0.16.0
-  * @sig (Promise a -> Promise b) → Number → Promise a → Promise a|b
+  * @sig (Promise a → Promise b) → Number → Promise a → Promise a|b
   * @example
   * const timeout = Symbol('Timeout');
   * await timeoutWith(_ => timeout, 2000, delay(1000)); // undefined

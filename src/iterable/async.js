@@ -270,7 +270,7 @@ export const concat = R.curry(async function* (xs1, xs2) {
   yield* xs2;
 });
 
-/** Prepends an item `a`
+/** Prepends an element
   * @func
   * @sig a → Iterable a → AsyncIterator a
   * @example
@@ -279,10 +279,12 @@ export const concat = R.curry(async function* (xs1, xs2) {
 */
 export const prepend = R.useWith(concat, [of, R.identity]);
 
-/** Appends an item `a`
+/** Appends an element
   * @func
   * @sig a → Iterable a → AsyncIterator a
-  * @example append(4, from([1, 2, 3])); // AsyncIterator(1, 2, 3, 4)
+  * @example
+  * // AsyncIterator(1, 2, 3, 4)
+  * @example append(4, from([1, 2, 3]));
 */
 export const append = R.useWith(R.flip(concat), [of, R.identity]);
 
@@ -350,7 +352,7 @@ export const unnest = flattenN(1);
   * @sig Iterable Iterable a → AsyncIterator a
   * @example
   * // AsyncIterator(1, 2, 3, 4)
-  * unnest(from([1, [2, [3, [4]]]]));
+  * flatten(from([1, [2, [3, [4]]]]));
 */
 export const flatten = flattenN(Infinity);
 
@@ -788,7 +790,7 @@ export const groupWith = R.curry(async function* (f, xs) {
 export const group = groupWith(is);
 
 
-/** Copy an async iterator `n` times. Exhausts input iterators
+/** Copy an async iterator `n` times. Exhausts the input iterator
   * @func
   * @sig Integer → Iterable a → [AsyncIterator a]
   * @example

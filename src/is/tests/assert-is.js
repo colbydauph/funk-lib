@@ -1,4 +1,4 @@
-
+/* istanbul ignore file */
 
 // modules
 import { expect } from 'chai';

@@ -1,5 +1,5 @@
 // modules
-import { test } from 'ramda';
+import * as R from 'ramda';
 
 const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
 
@@ -10,7 +10,7 @@ const DATA_URL_REGEXP = /^data:([^;,]+)?(?:;([^,]+))?,(.+)$/;
   * isDataUrl('data:,Hello%2C%20World!'); // true
   * isDataUrl('https://foo.bar'); // false
 */
-export const isDataUrl = test(DATA_URL_REGEXP);
+export const isDataUrl = R.test(DATA_URL_REGEXP);
 
 /** Parse a data url into its parts
   * @func

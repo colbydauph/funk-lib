@@ -1,10 +1,4 @@
-import {
-  chain,
-  defaultTo,
-  fromPairs,
-  pipe,
-  split,
-} from 'ramda';
+import * as R from 'ramda';
 
 /** Parse a content-type HTTP header into its parts
   * @sig String → { mimeType, charset, boundary }
@@ -18,13 +12,13 @@ import {
   * // { mimeType: 'multipart/form-data' }
   * parseContentType('multipart/form-data');
 */
-export const parseContentType = pipe(
-  defaultTo(''),
-  split(/;\s*/),
-  chain((str) => {
+export const parseContentType = R.pipe(
+  R.defaultTo(''),
+  R.split(/;\s*/),
+  R.chain((str) => {
     const [left, right] = str.split('=');
     if (!left && !right) return [];
     return right ? [[left, right]] : [['mimeType', left]];
   }),
-  fromPairs,
+  R.fromPairs,
 );

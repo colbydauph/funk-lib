@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 
 // module
-import { curry } from 'ramda';
+import * as R from 'ramda';
 
 
 /** Hash with variable algorithm
@@ -10,7 +10,7 @@ import { curry } from 'ramda';
   * @sig String → String → String
   * @example hashWith('md5', 'hello'); // '5d41402abc4b2a76b9719d911017c592'
 */
-export const hashWith = curry((algo, str) => crypto
+export const hashWith = R.curry((algo, str) => crypto
   .createHash(algo)
   .update(str)
   .digest('hex'));

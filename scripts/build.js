@@ -99,7 +99,11 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
   
   // transpile multiple targets in parallel
   await Promise.all([
-    transpileDir(src, esDist, { ...opts, node: false })
+    transpileDir(src, esDist, {
+      ...opts,
+      node: false,
+      // alias: {},
+    })
       .then(async _ => {
         const pack = { ...stripPkg(pkg), name: `${ pkg.name }-es` };
         
@@ -109,7 +113,11 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
         ]);
       })
       .catch(err => console.error('Error transpiling es', err)),
-    transpileDir(src, cjsDist, { ...opts, node: pkg.engines.node })
+    transpileDir(src, cjsDist, {
+      ...opts,
+      node: pkg.engines.node,
+      // alias: {},
+    })
       .then(async _ => {
         const pack = stripPkg(pkg);
         

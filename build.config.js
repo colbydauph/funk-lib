@@ -7,6 +7,12 @@ const srcRoot = ({ env, node }) => {
   return './dist/es';
 };
 
+// const utilPath = ({ env, node }) => {
+//   if (env === 'test') return 'util';
+//   if (node) return 'util';
+//   return 'util';
+// };
+
 module.exports = ({
   env = 'production',
   node = false,
@@ -32,6 +38,7 @@ module.exports = ({
         root: ['.'],
         alias: {
           ...alias,
+          // util: utilPath({ env, node }),
           'funk-lib': srcRoot({ env, node }),
         },
       }],

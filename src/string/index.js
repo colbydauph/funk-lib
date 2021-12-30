@@ -2,16 +2,7 @@
 import { deprecate } from 'util';
 
 // modules
-import {
-  curry,
-  invoker,
-  nth,
-  pipe,
-  replace,
-  toLower,
-  toUpper,
-  unary,
-} from 'ramda';
+import * as R from 'ramda';
 
 /** Locale compare
   * @func
@@ -19,14 +10,14 @@ import {
   * @example
   * localeCompare('b', 'a'); // -1
 */
-export const localeCompare = invoker(1, 'localeCompare');
+export const localeCompare = R.invoker(1, 'localeCompare');
 
-export const toUpperCase = unary(deprecate(
-  toUpper,
+export const toUpperCase = R.unary(deprecate(
+  R.toUpper,
   'funk-lib/string/toUpperCase → R.toUpper'
 ));
-export const toLowerCase = unary(deprecate(
-  toLower,
+export const toLowerCase = R.unary(deprecate(
+  R.toLower,
   'funk-lib/string/toLowerCase → R.toLower'
 ));
 
@@ -35,14 +26,14 @@ export const toLowerCase = unary(deprecate(
   * @sig String → String
   * @example capitalize('hello'); // 'Hello'
 */
-export const capitalize = str => toUpper(nth(0, str)) + str.slice(1);
+export const capitalize = str => R.toUpper(R.nth(0, str)) + str.slice(1);
 
 /** Lowercase the first letter of a string. Inverse of `string/capitalize`
   * @func
   * @sig String → String
   * @example uncapitalize('FooBar'); // 'fooBar'
 */
-export const uncapitalize = str => toLower(nth(0, str)) + str.slice(1);
+export const uncapitalize = str => R.toLower(R.nth(0, str)) + str.slice(1);
 
 /** Escape a string for use with the `RegExp` constructor
   * @func
@@ -53,7 +44,7 @@ export const uncapitalize = str => toLower(nth(0, str)) + str.slice(1);
   * new RegExp(rx).test('a'); // true
 */
 // eslint-disable-next-line no-useless-escape
-export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+export const escapeRegExpStr = R.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
 /** String interpolation. Reasonably similar to [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals).
   * @func
@@ -62,7 +53,7 @@ export const escapeRegExpStr = replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\
   * // 'Hello Pat!'
   * template('Hello ${ name }!', { name: 'Pat' });
 */
-export const template = curry((tmpl, variables) => {
+export const template = R.curry((tmpl, variables) => {
   return tmpl.replace(/\${([\sA-Z0-9_$]+)}/gi, (_, variable) => {
     return variables[variable.trim()] || '';
   });
@@ -70,7 +61,7 @@ export const template = curry((tmpl, variables) => {
 
 // https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings
 // String → String → String → String
-const encodeFrom = curry((from, to, string) => Buffer
+const encodeFrom = R.curry((from, to, string) => Buffer
   .from(string, from)
   .toString(to));
 
@@ -93,10 +84,10 @@ export const parseBase64 = encodeFrom('base64', 'utf8');
   * @sig String → String
   * @example slugify('Hello World!'); // 'hello-world'
 */
-export const slugify = pipe(
-  toLower,
-  replace(/[^a-z0-9]/gi, '-'),
-  replace(/-+/gi, '-'),
-  replace(/^-|-$/gi, ''),
+export const slugify = R.pipe(
+  R.toLower,
+  R.replace(/[^a-z0-9]/gi, '-'),
+  R.replace(/-+/gi, '-'),
+  R.replace(/^-|-$/gi, ''),
 );
 

@@ -644,6 +644,9 @@ export const evolve = pipeC(R.evolve, props);
   * @func
   * @sig (a → Promise b) → a → Promise a
   * @example
+  * const logX = x => console.log(`x is ${ x }`);
+  * R.tap(logX, 100); // 100
+  * // logs 'x is 100'
 */
 export const tap = R.curry(async (fn, arg) => {
   await fn(arg);

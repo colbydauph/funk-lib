@@ -48,6 +48,7 @@ import {
   // resolve,
   retryWith,
   some,
+  juxt,
   // someLimit,
   // someSeries,
   timeout,
@@ -996,6 +997,39 @@ describe('async lib', () => {
       
       pred = n => n > 50;
       await expect(some(pred, arr)).to.eventually.eql(false);
+    });
+    
+  });
+  
+  describe('juxt', () => {
+        
+    it('should juxt', async () => {
+      const args = R.range(0, 10);
+      
+      const result = await juxt([
+        async (...nums) => Math.min(...nums),
+        async (...nums) => Math.max(...nums),
+        async (...nums) => R.sum(nums),
+      ])(...args);
+      
+      expect(result).to.eql([0, 9, 45]);
+    });
+    
+    it('should run funcs in parallel', async () => {
+      const funcIndexes = R.range(0, 100);
+      const args = R.range(0, 10);
+      
+      const out = [];
+      const funcs = funcIndexes.map(i => {
+        return async (...nums) => {
+          await delay(random(0, 10));
+          out.push(i);
+        };
+      });
+      
+      await juxt(funcs)(...args);
+      
+      expect(out).to.not.eql(funcIndexes);
     });
     
   });

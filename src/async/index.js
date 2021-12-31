@@ -73,7 +73,7 @@ export const delay = async ms => new Promise(res => setTimeout(res, ms));
   * @sig [a] → (a → b) → Promise b
   * @example await deferWith([1, 2], (a, b) => a + b); // 3
 */
-export const deferWith = R.curry((args, f) => delay(1).then(_ => f(...args)));
+export const deferWith = R.curry((args, f) => delay(0).then(_ => f(...args)));
 
 /** Defers invoking a function until the current call stack has cleared
   * @async
@@ -581,6 +581,15 @@ export const filter = filterLimit(Infinity);
 */
 export const filterSeries = filterLimit(1);
 
+/** Applies a list of functions to a list of values, in parallel
+  * @async
+  * @func
+  * @sig [(a, b, …, m) → Promise n] → ((a, b, …, m) → Promise [n])
+  * @example
+  * // [-3, 9]
+  * await juxt([Math.min, Math.max], [3, 4, 9, -3]);
+*/
+export const juxt = fns => (...args) => map(f => f(...args), fns);
 
 /** Returns the resolved / rejected status of multiple promises
   * @async

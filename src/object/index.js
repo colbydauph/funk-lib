@@ -53,7 +53,7 @@ export const mapPairs = R.curry((pred, obj) => {
 
 /** Map object keys
   * @func
-  * @sig (k → k) → { k: v } → { k: v }
+  * @sig (k → l) → { k: v } → { l: v }
   * @example mapKeys(R.reverse, { one: 1, two: 2 }); // { eno: 1, owt: 2 }
 */
 export const mapKeys = R.curry((pred, obj) => {

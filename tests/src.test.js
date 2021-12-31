@@ -15,7 +15,11 @@ describe('src', () => {
   const index = require(SRC);
   
   readDirSync(SRC, fs)
-    .filter(file => isDirSync(path.join(SRC, file), fs))
+    .filter(file => {
+      // ignore "internal" modules
+      if (file.startsWith('_')) return false;
+      return isDirSync(path.join(SRC, file), fs);
+    })
     .forEach(module => {
       
       it(`should export the ${ module } module`, () => {

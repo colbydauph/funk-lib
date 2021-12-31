@@ -45,14 +45,24 @@ export const sample = arr => arr[random(0, arr.length - 1)];
 */
 export const clear = arr => (arr.splice(0), arr);
 
+/** Copy array items into a new array. Shallow - does not clone items themselves
+  * @func
+  * @sig [a] → [a]
+  * @example
+  * const arr = [1, 2, 3];
+  * const arr2 = clone(arr); // [1, 2, 3]
+  * arr === arr2 // false
+*/
+export const clone = arr => arr.slice(0);
+
 /**
   * Immutably randomize array element order via Fisher-Yates shuffle
   * @func
   * @sig [a] → [a]
   * @example shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]
 */
-export const shuffle = arr => {
-  arr = [...arr];
+export const shuffle = ogArr => {
+  const arr = clone(ogArr);
   
   // eslint-disable-next-line id-length
   let j, x, i;

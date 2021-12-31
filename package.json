@@ -46,8 +46,8 @@
   "nyc": {
     "statements": 98,
     "branches": 96,
-    "functions": 97,
-    "lines": 98,
+    "functions": 98,
+    "lines": 99,
     "reporter": [
       "html",
       "text-summary"

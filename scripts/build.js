@@ -47,11 +47,11 @@ const transpileDir = async (src, dist, opts) => {
   
   if (!await isDir(src)) throw Error(`${ src } is not a dir`);
   
-  const files = (await readDir(src, fs)).filter((file) => {
+  const files = (await readDir(src, fs)).filter(file => {
     return !opts.ignore.some(reg => reg.test(file));
   });
   
-  if (!files.length) return console.log(`ignoring ${ src }`);
+  if (!files.length) return; // console.log(`ignoring ${ src }`);
   
   for (const file of files) {
     const absPath = path.join(src, file);
@@ -62,7 +62,7 @@ const transpileDir = async (src, dist, opts) => {
     } else if (/\.js$/.test(absPath)) {
       await transpileFile(absPath, absDist, opts);
     } else {
-      console.log('not transpiling', file);
+      console.log('not transpiling: ', file);
     }
   }
   
@@ -77,6 +77,18 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
       .map(file => copyFile(path.join(src, file), path.join(dist, file), fs))
   );
 });
+
+const BROWSER_SRC = './dist/es';
+const NODE_SRC = './dist/cjs';
+
+const POLYFILLS = {
+  BROWSER: {
+    util: `${ BROWSER_SRC }/_polyfills/browser/util`,
+  },
+  NODE: {
+    // util: `${ NODE_SRC }/_polyfills/node/util`,
+  },
+};
 
 // eslint-disable-next-line max-statements
 (async () => {
@@ -99,11 +111,16 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
   
   // transpile multiple targets in parallel
   await Promise.all([
+    // browser target
     transpileDir(src, esDist, {
       ...opts,
       node: false,
-      // alias: {},
+      alias: {
+        ...POLYFILLS.BROWSER,
+        [pkg.name]: BROWSER_SRC,
+      },
     })
+      .then(R.tap(_ => console.log(`Transpiled browser dist from ${ src } to ${ esDist }`)))
       .then(async _ => {
         const pack = { ...stripPkg(pkg), name: `${ pkg.name }-es` };
         
@@ -112,12 +129,18 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
           copyOtherFiles(root, esDist, fs),
         ]);
       })
-      .catch(err => console.error('Error transpiling es', err)),
+      .catch(err => console.error('Error transpiling browser dist (ESM)', err)),
+    
+    // node target
     transpileDir(src, cjsDist, {
       ...opts,
       node: pkg.engines.node,
-      // alias: {},
+      alias: {
+        ...POLYFILLS.NODE,
+        [pkg.name]: NODE_SRC,
+      },
     })
+      .then(R.tap(_ => console.log(`Transpiled node dist from ${ src } to ${ cjsDist }`)))
       .then(async _ => {
         const pack = stripPkg(pkg);
         
@@ -126,7 +149,7 @@ const copyOtherFiles = R.curry(async (src, dist, fs) => {
           copyOtherFiles(root, cjsDist, fs),
         ]);
       })
-      .catch(err => console.error('Error transpiling cjs', err)),
+      .catch(err => console.error('Error transpiling node dist (CJS)', err)),
   ]);
   
 })();

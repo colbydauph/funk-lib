@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-process-exit */
 'use strict';
 
 // core
@@ -89,7 +89,10 @@ const POLYFILLS = {
           copyOtherFiles(root, esDist),
         ])(fs);
       })
-      .catch(err => console.error('Error transpiling browser dist (ESM)', err)),
+      .catch(err => {
+        console.error('Error transpiling browser dist (ESM)', err);
+        process.exit(1);
+      }),
     
     // node target
     Promise.resolve({
@@ -118,7 +121,10 @@ const POLYFILLS = {
           copyOtherFiles(root, cjsDist),
         ])(fs);
       })
-      .catch(err => console.error('Error transpiling node dist (CJS)', err)),
+      .catch(err => {
+        console.error('Error transpiling node dist (CJS)', err);
+        process.exit(1);
+      }),
   ]);
   
 })();

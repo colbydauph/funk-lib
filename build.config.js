@@ -1,15 +1,18 @@
 /* istanbul ignore file */
 'use strict';
 
+const parseNodeVersion = version => (/[^\d]+(.+)$/.exec(version) || [])[1];
+
 module.exports = ({
   env = 'production',
   node = false,
   alias = {},
   ...rest
 } = {}) => {
+  
     
   const envConfig = node
-    ? { targets: { node } }
+    ? { targets: { node: parseNodeVersion(node) } }
     : {
       targets: { browsers: ['last 2 versions'] },
       modules: false,

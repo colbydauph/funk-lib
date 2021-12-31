@@ -7,7 +7,7 @@
 
 ## FP for Vanilla JavaScript
 
-`funk-lib` is a standard library for full-stack functional programming with native JavaScript types. It is inspired by [`Ramda`](https://ramdajs.com), but does not intend to duplicate Ramda's functionality. There is some overlap with core `Browser` and `Node.js` APIs, for the sake of normalization and isomorphism.
+`funk-lib` is a standard library for full-stack functional programming with native JavaScript types. It is inspired by [`Ramda`](https://ramdajs.com), but does not intend to duplicate Ramda's functionality. There is some overlap with core `Browser` and `Node.js` APIs, for the sake of normalization and [isomorphism](https://en.wikipedia.org/wiki/Isomorphic_JavaScript).
 
 
 ## Features
@@ -77,5 +77,5 @@ import { mapKeys } from 'funk-lib-es/object';
 <br />
 <p style="text-align: center;">
   Created by
-  <a href="https://colby.dauphina.is">Colby Dauphinais</a>
+  <a href="https://colby.dauphina.is/?utm_source=funk-lib-docs">Colby Dauphinais</a>
 </p>

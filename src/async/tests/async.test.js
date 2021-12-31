@@ -44,10 +44,12 @@ import {
   props,
   race,
   reduce,
+  tap,
   // reject,
   // resolve,
   retryWith,
   some,
+  juxt,
   // someLimit,
   // someSeries,
   timeout,
@@ -1000,6 +1002,39 @@ describe('async lib', () => {
     
   });
   
+  describe('juxt', () => {
+        
+    it('should juxt', async () => {
+      const args = R.range(0, 10);
+      
+      const result = await juxt([
+        async (...nums) => Math.min(...nums),
+        async (...nums) => Math.max(...nums),
+        async (...nums) => R.sum(nums),
+      ])(...args);
+      
+      expect(result).to.eql([0, 9, 45]);
+    });
+    
+    it('should run funcs in parallel', async () => {
+      const funcIndexes = R.range(0, 100);
+      const args = R.range(0, 10);
+      
+      const out = [];
+      const funcs = funcIndexes.map(i => {
+        return async (...nums) => {
+          await delay(random(0, 10));
+          out.push(i);
+        };
+      });
+      
+      await juxt(funcs)(...args);
+      
+      expect(out).to.not.eql(funcIndexes);
+    });
+    
+  });
+  
   describe('timeoutWith', () => {
     
     let sym;
@@ -1045,6 +1080,24 @@ describe('async lib', () => {
       });
       await expect(timeout(100, promise))
         .to.be.rejectedWith(error);
+    });
+    
+  });
+  
+  describe('tap', () => {
+    
+    let tapper;
+    beforeEach(() => {
+      tapper = sinon.spy(async _ => 1);
+    });
+    
+    it('should return the input arg', async () => {
+      expect(tap(tapper, 123)).to.eventually.eql(123);
+    });
+    
+    it('should call the tap function', async () => {
+      await tap(tapper, 123);
+      expect(tapper.args[0][0]).to.eql(123);
     });
     
   });

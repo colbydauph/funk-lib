@@ -2,13 +2,7 @@
 import { deprecate } from 'util';
 
 // modules
-import {
-  curryN,
-  fromPairs,
-  indexBy,
-  pipe,
-  toPairs,
-} from 'ramda';
+import * as R from 'ramda';
 
 // aliased
 import { random } from 'funk-lib/number';
@@ -21,7 +15,7 @@ import { random } from 'funk-lib/number';
   * @example
   * toObj(['a', 'b', 'c']); // { 0: a, 1: b, 2: c }
 */
-export const toObj = pipe(toPairs, fromPairs);
+export const toObj = R.pipe(R.toPairs, R.fromPairs);
 
 /** Given a function that generates a key, turns a list of objects into an object indexing the objects by the given key
   * @ignore
@@ -29,9 +23,9 @@ export const toObj = pipe(toPairs, fromPairs);
   * @deprecated since v0.15.2
   * @sig (a → b) → [a] → { b: a }
 */
-export const toObjBy = curryN(2)(deprecate(
-  indexBy,
-  'funk-lib/object/toObjBy → R.indexBy'
+export const toObjBy = R.curryN(2)(deprecate(
+  R.indexBy,
+  'funk-lib/object/toObjBy → R.indexBy',
 ));
 
 /** Select a random array item
@@ -51,14 +45,24 @@ export const sample = arr => arr[random(0, arr.length - 1)];
 */
 export const clear = arr => (arr.splice(0), arr);
 
+/** Copy array items into a new array. Shallow - does not clone items themselves
+  * @func
+  * @sig [a] → [a]
+  * @example
+  * const arr = [1, 2, 3];
+  * const arr2 = clone(arr); // [1, 2, 3]
+  * arr === arr2 // false
+*/
+export const clone = arr => arr.slice(0);
+
 /**
   * Immutably randomize array element order via Fisher-Yates shuffle
   * @func
   * @sig [a] → [a]
   * @example shuffle([1, 2, 3, 4, 5]); // [4, 1, 2, 5, 3]
 */
-export const shuffle = arr => {
-  arr = [...arr];
+export const shuffle = ogArr => {
+  const arr = clone(ogArr);
   
   // eslint-disable-next-line id-length
   let j, x, i;

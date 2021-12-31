@@ -1,9 +1,9 @@
-import { curry, curryN, pipe } from 'ramda';
+import * as R from 'ramda';
 
 
 /** Curried left-to-right function composition
   * @func
-  * @sig ...f → f
+  * @sig ...(* → *) → (* → *)
   * @example
   * const math = pipeC(
   *   (a, b) => a + b,
@@ -12,7 +12,7 @@ import { curry, curryN, pipe } from 'ramda';
   * );
   * math(2)(5) // 21;
 */
-export const pipeC = (...funcs) => curryN(funcs[0].length, pipe(...funcs));
+export const pipeC = (...funcs) => R.curryN(funcs[0].length, R.pipe(...funcs));
 
 /** [Y combinator](https://en.wikipedia.org/wiki/Fixed-point_combinator). Creates anonymous recursive functions
   * @func
@@ -35,7 +35,7 @@ export const Y = f => (g => g(g))(g => f(x => g(g)(x)));
   * // [{ age: 1 }, { age: 3 }, { age: 9 }]
   * R.sort(on(R.subtract, R.prop('age'))), records);
 */
-export const on = curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
+export const on = R.curry((bi, un, xa, ya) => bi(un(xa), un(ya)));
 
 /** Creates a function that is restricted to invoking func once.
   * Repeat calls to the function return the value of the first invocation
@@ -73,7 +73,7 @@ export const noop = () => {};
   * const throttled = throttle(100, expensiveMath);
   * throttled(1, 2);
 */
-export const throttle = curry((delay, fn) => {
+export const throttle = R.curry((delay, fn) => {
   let lastCall = 0;
   return (...args) => {
     const now = (new Date()).getTime();
@@ -91,7 +91,7 @@ export const throttle = curry((delay, fn) => {
   * const debounce = debounce(100, expensiveMath);
   * debounced(1, 2);
 */
-export const debounce = curry((delay, fn) => {
+export const debounce = R.curry((delay, fn) => {
   let timeoutID;
   return (...args) => {
     if (timeoutID) clearTimeout(timeoutID);

@@ -1,4 +1,4 @@
-import { test } from 'ramda';
+import *  as R from 'ramda';
 
 
 /** Random UUID v4
@@ -18,4 +18,4 @@ export const uuid = () => {
   * @sig a → Boolean
   * @example isUuid('c4f2e775-a5f9-4796-bd31-46e544bfab06'); // true
 */
-export const isUuid = test(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+export const isUuid = R.test(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

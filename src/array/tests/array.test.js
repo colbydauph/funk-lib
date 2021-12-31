@@ -5,6 +5,7 @@ import * as R from 'ramda';
 // local
 import {
   clear,
+  clone,
   toObjBy,
   toObj,
   sample,
@@ -24,6 +25,31 @@ describe('array lib', () => {
     it('should return the input', () => {
       const arr = [1, 2, 3];
       expect(clear(arr)).to.equal(arr);
+    });
+    
+  });
+  
+  
+  describe('clone', () => {
+    
+    let arr, cloned;
+    beforeEach(() => {
+      arr = R.range(0, 100);
+      cloned = clone(arr);
+    });
+    
+    it('should contain the same elements', () => {
+      expect(arr).to.eql(cloned);
+    });
+    
+    it('should copy into a new array', () => {
+      expect(arr === cloned).to.eql(false);
+    });
+    
+    it('should not clone items', () => {
+      arr.forEach((item, i) => {
+        expect(arr[i] === cloned[i]).to.eql(true);
+      });
     });
     
   });

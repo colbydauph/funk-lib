@@ -1,24 +1,22 @@
-
-
 // modules
 import { expect } from 'chai';
+import * as R from 'ramda';
 
 
-const safeToString = (thing) => ((typeof thing === 'symbol')
+const safeToString = thing => ((typeof thing === 'symbol')
   ? thing.toString()
   : thing);
 
-/* istanbul ignore next */
 module.exports = (name, {
   func,
-  pass: passes = [],
-  fail: fails = [],
+  pass: passes,
+  fail: fails,
   spread = false,
 }) => {
   
   describe(name, () => {
     
-    passes.forEach((pass) => {
+    R.defaultTo([], passes).forEach((pass) => {
       const safe = safeToString(pass);
       
       it(`should return true for: ${ safe }`, () => {
@@ -27,7 +25,7 @@ module.exports = (name, {
       });
     });
       
-    fails.forEach((fail) => {
+    R.defaultTo([], fails).forEach((fail) => {
       const safe = safeToString(fail);
       
       it(`should return false for: ${ safe }`, () => {

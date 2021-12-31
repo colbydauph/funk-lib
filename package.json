@@ -1,6 +1,6 @@
 {
   "name": "funk-lib",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "engines": {
     "node": "8.10"
   },
@@ -15,11 +15,11 @@
     "ramda": "~0.27.0"
   },
   "devDependencies": {
-    "@babel/cli": "~7.16.0",
-    "@babel/core": "~7.16.5",
-    "@babel/plugin-proposal-export-namespace-from": "~7.16.5",
-    "@babel/preset-env": "~7.16.5",
-    "@babel/register": "~7.16.5",
+    "@babel/cli": "~7.16.7",
+    "@babel/core": "~7.16.7",
+    "@babel/plugin-proposal-export-namespace-from": "~7.16.7",
+    "@babel/preset-env": "~7.16.7",
+    "@babel/register": "~7.16.7",
     "babel-plugin-module-resolver": "~4.1.0",
     "babel-plugin-ramda": "^2.0.0",
     "chai": "~4.2.0",
@@ -30,7 +30,7 @@
     "jsdoc": "~3.6.7",
     "mocha": "~7.1.2",
     "nyc": "~15.1.0",
-    "sinon": "~9.0.2"
+    "sinon": "~12.0.1"
   },
   "scripts": {
     "init": "rm -rf node_modules && npm ci",
@@ -44,7 +44,7 @@
     "verify": "npm run lint && npm run cover"
   },
   "nyc": {
-    "statements": 98,
+    "statements": 99,
     "branches": 96,
     "functions": 98,
     "lines": 99,

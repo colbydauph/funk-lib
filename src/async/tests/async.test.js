@@ -44,6 +44,7 @@ import {
   props,
   race,
   reduce,
+  tap,
   // reject,
   // resolve,
   retryWith,
@@ -1079,6 +1080,24 @@ describe('async lib', () => {
       });
       await expect(timeout(100, promise))
         .to.be.rejectedWith(error);
+    });
+    
+  });
+  
+  describe('tap', () => {
+    
+    let tapper;
+    beforeEach(() => {
+      tapper = sinon.spy(async _ => 1);
+    });
+    
+    it('should return the input arg', async () => {
+      expect(tap(tapper, 123)).to.eventually.eql(123);
+    });
+    
+    it('should call the tap function', async () => {
+      await tap(tapper, 123);
+      expect(tapper.args[0][0]).to.eql(123);
     });
     
   });

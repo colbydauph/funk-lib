@@ -639,6 +639,17 @@ export const props = mapPairs(async ([key, val]) => [key, await val]);
 */
 export const evolve = pipeC(R.evolve, props);
 
+/** Async `R.tap`. Run side-effects and ignore their result
+  * @async
+  * @func
+  * @sig (a → Promise b) → a → Promise a
+  * @example
+*/
+export const tap = R.curry(async (fn, arg) => {
+  await fn(arg);
+  return arg;
+});
+
 /** Delegate to a function if a `Promise` takes longer than `n` ms to resolve
   * @async
   * @func

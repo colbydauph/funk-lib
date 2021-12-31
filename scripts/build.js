@@ -27,6 +27,12 @@ const pkg = require('../package.json');
 const { NODE_ENV } = process.env;
 /* eslint-enable no-process-env */
 
+const toHumanJSON = json => JSON.stringify(json, null, 2);
+const map = R.curry((fn, arr) => Promise.all(arr.map(item => fn(item))));
+const juxt = fns => async (...args) => map(f => f(...args), fns);
+
+const stripPkg = R.omit(['devDependencies', 'nyc']);
+
 const transpileFile = async (src, dist, opts) => {
   if (!isFile(src, fs)) throw Error(`${ src } is not a file`);
     
@@ -42,8 +48,7 @@ const transpileFile = async (src, dist, opts) => {
   await writeFile(output, dist, fs);
 };
 
-
-const transpileDir = async (src, dist, opts) => {
+const transpileDir = R.curry(async (src, dist, opts) => {
   
   if (!await isDir(src)) throw Error(`${ src } is not a dir`);
   
@@ -66,32 +71,32 @@ const transpileDir = async (src, dist, opts) => {
     }
   }
   
-};
-
-const stripPkg = R.omit(['devDependencies', 'nyc']);
-const toHumanJSON = json => JSON.stringify(json, null, 2);
-
-const copyOtherFiles = R.curry(async (src, dist, fs) => {
-  await Promise.all(
-    ['./README.md', './LICENSE']
-      .map(file => copyFile(path.join(src, file), path.join(dist, file), fs))
-  );
 });
 
-const BROWSER_SRC = './dist/es';
-const NODE_SRC = './dist/cjs';
+const copyOtherFiles = R.curry(async (src, dist, fs) => {
+  return map(file => copyFile(
+    path.join(src, file),
+    path.join(dist, file),
+    fs,
+  ), ['README.md', 'LICENSE']);
+});
 
-const POLYFILLS = {
-  BROWSER: {
-    util: `${ BROWSER_SRC }/_polyfills/browser/util`,
-  },
-  NODE: {
-    // util: `${ NODE_SRC }/_polyfills/node/util`,
-  },
-};
 
 // eslint-disable-next-line max-statements
 (async () => {
+  
+  const BROWSER_DEST = './dist/es';
+  const NODE_DEST = './dist/cjs';
+  const POLYFILL_SRC = path.join(__dirname, '../polyfills');
+
+  const POLYFILLS = {
+    BROWSER: {
+      util: `${ BROWSER_DEST }/_polyfills/util`,
+    },
+    NODE: {
+      // util: `${ NODE_DEST }/_polyfills/util`,
+    },
+  };
   
   const ignore = [
     // test files
@@ -111,43 +116,62 @@ const POLYFILLS = {
   
   // transpile multiple targets in parallel
   await Promise.all([
+    
     // browser target
-    transpileDir(src, esDist, {
+    Promise.resolve({
       ...opts,
       node: false,
       alias: {
         ...POLYFILLS.BROWSER,
-        [pkg.name]: BROWSER_SRC,
+        [pkg.name]: BROWSER_DEST,
       },
     })
+      .then(juxt([
+        // transpile source
+        transpileDir(src, esDist),
+        // transpile polyfills
+        transpileDir(
+          path.join(POLYFILL_SRC, '/browser'),
+          path.join(esDist, '/_polyfills'),
+        ),
+      ]))
       .then(R.tap(_ => console.log(`Transpiled browser dist from ${ src } to ${ esDist }`)))
-      .then(async _ => {
+      .then(_ => {
         const pack = { ...stripPkg(pkg), name: `${ pkg.name }-es` };
         
-        await Promise.all([
-          writeFile(toHumanJSON(pack), path.join(esDist, 'package.json'), fs),
-          copyOtherFiles(root, esDist, fs),
-        ]);
+        return juxt([
+          writeFile(toHumanJSON(pack), path.join(esDist, 'package.json')),
+          copyOtherFiles(root, esDist),
+        ])(fs);
       })
       .catch(err => console.error('Error transpiling browser dist (ESM)', err)),
     
     // node target
-    transpileDir(src, cjsDist, {
+    Promise.resolve({
       ...opts,
       node: pkg.engines.node,
       alias: {
         ...POLYFILLS.NODE,
-        [pkg.name]: NODE_SRC,
+        [pkg.name]: NODE_DEST,
       },
     })
+      .then(juxt([
+        // transpile source
+        transpileDir(src, cjsDist),
+        // transpile polyfills
+        transpileDir(
+          path.join(POLYFILL_SRC, '/node'),
+          path.join(cjsDist, '/_polyfills'),
+        ),
+      ]))
       .then(R.tap(_ => console.log(`Transpiled node dist from ${ src } to ${ cjsDist }`)))
-      .then(async _ => {
+      .then(_ => {
         const pack = stripPkg(pkg);
         
-        await Promise.all([
-          writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json'), fs),
-          copyOtherFiles(root, cjsDist, fs),
-        ]);
+        return juxt([
+          writeFile(toHumanJSON(pack), path.join(cjsDist, 'package.json')),
+          copyOtherFiles(root, cjsDist),
+        ])(fs);
       })
       .catch(err => console.error('Error transpiling node dist (CJS)', err)),
   ]);

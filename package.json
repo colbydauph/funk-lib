@@ -27,7 +27,7 @@
     "eslint-config-defaults": "github:colbydauph/eslint-config-defaults#1.3.0",
     "funk-fs": "github:colbydauph/funk-fs#0.5.2",
     "jsdoc": "~3.6.4",
-    "mocha": "~7.1.2",
+    "mocha": "~10.2.0",
     "nyc": "~15.0.1",
     "sinon": "~9.0.2"
   },
